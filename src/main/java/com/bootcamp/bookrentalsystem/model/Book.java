@@ -25,6 +25,10 @@ public class Book {
     @ApiModelProperty(notes = "Book maximum request duration")
     private Long maximumRequestPeriod;
 
+    public Book() {
+        // Default constructor
+    }
+
     public Book(Long bookId, String title, String author, String category, String bookImg, String description, Long maximumRequestPeriod) {
         this.bookId = bookId;
         this.title = title;

@@ -27,6 +27,10 @@ public class User {
     @ApiModelProperty(notes = "User's role")
     private String role;
 
+    public User() {
+        // Default constructor
+    }
+
     public User(Long userId, String username, String password, String email, String phoneNumber, String profileImg, String role) {
         this.userId = userId;
         this.username = username;
