@@ -4,7 +4,10 @@ import com.bootcamp.bookrentalsystem.model.Book;
 import com.bootcamp.bookrentalsystem.service.BookService;
 import com.bootcamp.bookrentalsystem.service.RequestService;
 import com.bootcamp.bookrentalsystem.service.UserService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,6 +28,13 @@ public class BookController {
     public Book createBook(@RequestBody Book book) {
         return this.bookService.createBook(book);
     }
+
+    @PatchMapping("/{bookId}")
+    public ResponseEntity<Book> updateBook(@PathVariable Long bookId, @RequestBody Book updatedBook) {
+        Book book = this.bookService.updateBookById(bookId, updatedBook);
+        return new ResponseEntity<>(book, HttpStatus.OK);
+    }
+
 
 
 }
