@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 @Component
 @Qualifier("request")
 @Repository
-public interface RequestReporitoy extends JpaRepository<Request, Long> {
+public interface RequestRepository extends JpaRepository<Request, Long> {
 
 }
