@@ -24,18 +24,8 @@ public class UserController {
         this.requestService = requestService;
     }
 
-
-    @GetMapping
-    public String get() {return "GET:: user controller";}
-
-    @PatchMapping
-    public String update() {return "UPDATE:: user controller";}
-
-    @DeleteMapping
-    public String delete() {return "DELETE:: user controller";}
-
     @PostMapping
-    public User createUser(User user) {
+    public User createUser(@RequestBody User user) {
         return this.userService.createUser(user);
     }
 

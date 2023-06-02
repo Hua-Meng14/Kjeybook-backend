@@ -1,5 +1,6 @@
 package com.bootcamp.bookrentalsystem.service;
 
+import com.bootcamp.bookrentalsystem.exception.ResourceNotFoundException;
 import com.bootcamp.bookrentalsystem.model.User;
 import com.bootcamp.bookrentalsystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -25,32 +28,37 @@ public class UserService {
     }
 
     public Optional<User> findUserById(Long userId) {
-        return userRepository.findById(userId);
+        return Optional.ofNullable(userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId)
+                ));
     }
 
 
     public User updateUserById(Long userId, User updatedUser) {
-        Optional<User> existingUser = userRepository.findById(userId);
-        if(existingUser.isPresent()) {
-            User user = existingUser.get();
-            if (updatedUser.getUsername() != null) {
-                user.setUsername(updatedUser.getUsername());
-            }
-            if (updatedUser.getEmail() != null) {
-                user.setEmail(updatedUser.getEmail());
-            }
-            if (updatedUser.getPhoneNumber() != null) {
-                user.setPhoneNumber(updatedUser.getPhoneNumber());
-            }
-            if (updatedUser.getProfileImg() != null) {
-                user.setProfileImg(updatedUser.getProfileImg());
-            }
-            return userRepository.save(user);
-        }
-        return null;
+
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+
+        Optional.ofNullable(updatedUser.getUsername())
+                .ifPresent(existingUser::setUsername);
+        Optional.ofNullable(updatedUser.getEmail())
+                .ifPresent(existingUser::setEmail);
+        Optional.ofNullable(updatedUser.getPhoneNumber())
+                .ifPresent(existingUser::setPhoneNumber);
+        Optional.ofNullable(updatedUser.getProfileImg())
+                .ifPresent(existingUser::setProfileImg);
+
+        return userRepository.save(existingUser);
     }
 
-    public void deleteUser(Long userId) {
+    public Map<String, Boolean> deleteUser(Long userId) {
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+
         userRepository.deleteById(userId);
+
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("deleted", Boolean.TRUE);
+        return response;
     }
 }
