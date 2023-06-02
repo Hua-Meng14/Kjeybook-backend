@@ -1,9 +1,12 @@
 package com.bootcamp.bookrentalsystem.controller;
 
+import com.bootcamp.bookrentalsystem.model.Request;
 import com.bootcamp.bookrentalsystem.service.BookService;
 import com.bootcamp.bookrentalsystem.service.RequestService;
 import com.bootcamp.bookrentalsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,16 +23,11 @@ public class RequestController {
         this.requestService = requestService;
     }
 
-
-    @GetMapping
-    public String get() {return "GET:: request controller";}
-
-    @PostMapping
-    public String create() {return "POST:: request controller";}
-
-    @PatchMapping
-    public String update() {return "UPDATE:: request controller";}
-
-    @DeleteMapping
-    public String delete() {return "DELETE:: request controller";}
+    @PostMapping()
+    public ResponseEntity<Request> createRequest(@RequestParam("userId") Long userId,
+                                                 @RequestParam("bookId") Long bookId,
+                                                 @RequestParam("requestDuration") Long requestDuration) {
+        Request createdRequest = requestService.createRequest(userId, bookId, requestDuration);
+        return new ResponseEntity<>(createdRequest, HttpStatus.CREATED);
+    }
 }
