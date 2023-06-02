@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/v1/request")
 public class RequestController {
@@ -36,5 +38,11 @@ public class RequestController {
     public ResponseEntity<Request> updateRequest(@PathVariable Long requestId, @RequestBody Request updatedRequest) {
         Request request = this.requestService.updateRequestById(requestId, updatedRequest);
         return new ResponseEntity<>(request, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{requestId}")
+    public ResponseEntity<Map<String, Boolean>> deleteRequestById(@PathVariable Long requestId) {
+        Map<String, Boolean> response = requestService.deleteRequestById(requestId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
