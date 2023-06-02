@@ -1,23 +1,33 @@
 package com.bootcamp.bookrentalsystem.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import jakarta.persistence.*;
 
 import java.util.Date;
 
 @Entity
-@Table(name = "request")
+@Table(name = "_request")
+@ApiModel(description = "Request details")
 public class Request {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @ApiModelProperty(notes = "Request ID")
     private Long requestId;
+    @ApiModelProperty(notes = "User whose this request belongs to")
     @ManyToOne
     private User borrower;
+    @ApiModelProperty(notes = "Book whose this request belongs to")
     @ManyToOne
     private Book book;
+    @ApiModelProperty(notes = "Request acceptance status")
     private String status;
+    @ApiModelProperty(notes = "Request duration")
     private Long requestDuration;
+    @ApiModelProperty(notes = "Date of request got accepted")
     private Date dateOfAccepted;
+    @ApiModelProperty(notes = "Date of book to be returned")
     private Date dateOfReturn;
 
     public Request(Long requestId, User borrower, Book book, String status, Long requestDuration, Date dateOfAccepted, Date dateOfReturn) {

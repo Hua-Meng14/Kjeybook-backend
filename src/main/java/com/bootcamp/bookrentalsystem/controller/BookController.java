@@ -14,7 +14,6 @@ public class BookController {
     private final RequestService requestService;
 
     @Autowired
-
     public BookController(BookService bookService, UserService userService, RequestService requestService) {
         this.bookService = bookService;
         this.userService = userService;

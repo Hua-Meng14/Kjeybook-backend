@@ -1,18 +1,30 @@
 package com.bootcamp.bookrentalsystem.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "_user")
+
+@ApiModel(description = "User details")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @ApiModelProperty(notes = "User ID")
     private Long userId;
+    @ApiModelProperty(notes = "User's username")
     private String username;
+    @ApiModelProperty(notes = "User's password")
     private String password;
+    @ApiModelProperty(notes = "User's email address")
     private String email;
+    @ApiModelProperty(notes = "User's phone number")
     private String phoneNumber;
+    @ApiModelProperty(notes = "User's profile image url")
     private String profileImg;
+    @ApiModelProperty(notes = "User's role")
     private String role;
 
     public User(Long userId, String username, String password, String email, String phoneNumber, String profileImg, String role) {

@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/book")
+@RequestMapping("/api/v1/request")
 public class RequestController {
     private final BookService bookService;
     private final UserService userService;
