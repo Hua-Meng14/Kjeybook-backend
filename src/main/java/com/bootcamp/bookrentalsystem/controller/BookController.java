@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/v1/book")
 public class BookController {
@@ -33,6 +35,12 @@ public class BookController {
     public ResponseEntity<Book> updateBook(@PathVariable Long bookId, @RequestBody Book updatedBook) {
         Book book = this.bookService.updateBookById(bookId, updatedBook);
         return new ResponseEntity<>(book, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{bookId}")
+    public ResponseEntity<Map<String, Boolean>> deleteBookB(@PathVariable Long bookId) {
+        Map<String, Boolean> response = bookService.deletBookById(bookId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 
