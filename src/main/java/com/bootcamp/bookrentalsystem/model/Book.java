@@ -1,19 +1,28 @@
 package com.bootcamp.bookrentalsystem.model;
-
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "_book")
+@ApiModel(description = "User details")
 public class Book {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @ApiModelProperty(notes = "Book ID")
     private Long bookId;
+    @ApiModelProperty(notes = "Book Title")
     private String title;
+    @ApiModelProperty(notes = "Book Author")
     private String author;
+    @ApiModelProperty(notes = "Book Category")
     private String category;
+    @ApiModelProperty(notes = "Book Image URL")
     private String bookImg;
+    @ApiModelProperty(notes = "Book Description")
     private String description;
+    @ApiModelProperty(notes = "Book maximum request duration")
     private Long maximumRequestPeriod;
 
     public Book(Long bookId, String title, String author, String category, String bookImg, String description, Long maximumRequestPeriod) {
