@@ -45,4 +45,10 @@ public class UserController {
                 .map(book -> new ResponseEntity<>(book, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+
+    @PatchMapping("/{userId}")
+    public ResponseEntity<User> updateUserById(@PathVariable Long userId, @RequestBody User updatedUser) {
+        User user = this.userService.updateUserById(userId, updatedUser);
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
 }

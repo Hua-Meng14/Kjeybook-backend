@@ -28,4 +28,25 @@ public class UserService {
         return userRepository.findById(userId);
     }
 
+
+    public User updateUserById(Long userId, User updatedUser) {
+        Optional<User> existingUser = userRepository.findById(userId);
+        if(existingUser.isPresent()) {
+            User user = existingUser.get();
+            if (updatedUser.getUsername() != null) {
+                user.setUsername(updatedUser.getUsername());
+            }
+            if (updatedUser.getEmail() != null) {
+                user.setEmail(updatedUser.getEmail());
+            }
+            if (updatedUser.getPhoneNumber() != null) {
+                user.setPhoneNumber(updatedUser.getPhoneNumber());
+            }
+            if (updatedUser.getProfileImg() != null) {
+                user.setProfileImg(updatedUser.getProfileImg());
+            }
+            return userRepository.save(user);
+        }
+        return null;
+    }
 }
