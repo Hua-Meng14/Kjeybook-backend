@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Component
 @Service
 public class RequestService {
@@ -41,5 +43,22 @@ public class RequestService {
         request.setDateOfReturn(null);
 
         return requestRepository.save(request);
+    }
+
+    public Request updateRequestById(Long requestId, Request updatedRequest) {
+
+        Request existingRequst = requestRepository.findById(requestId)
+                .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
+
+        Optional.ofNullable(updatedRequest.getRequestDuration())
+                .ifPresent(existingRequst::setRequestDuration);
+        Optional.ofNullable(updatedRequest.getStatus())
+                .ifPresent(existingRequst::setStatus);
+        Optional.ofNullable(updatedRequest.getDateOfAccepted())
+                .ifPresent(existingRequst::setDateOfAccepted);
+        Optional.ofNullable(updatedRequest.getDateOfReturn())
+                .ifPresent(existingRequst::setDateOfReturn);
+
+        return requestRepository.save(existingRequst);
     }
 }
