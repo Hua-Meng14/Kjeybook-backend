@@ -52,4 +52,10 @@ public class RequestController {
         return new ResponseEntity<>(requests, HttpStatus.OK);
     }
 
+    @PostMapping("/{requestId}/accept")
+    public ResponseEntity<Request> acceptRequest(@PathVariable Long requestId) {
+        Request acceptedRequest = requestService.acceptRequest(requestId);
+        return new ResponseEntity<>(acceptedRequest, HttpStatus.OK);
+    }
+
 }
