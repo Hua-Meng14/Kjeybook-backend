@@ -51,7 +51,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/users/{userId}/favorites")
+    @GetMapping("/{userId}/favorites")
     public List<Book> getUserFavoriteList(@PathVariable Long userId) {
         return userService.getFavoriteBooks(userId);
     }
@@ -62,7 +62,7 @@ public class UserController {
         return ResponseEntity.ok("Book added to user's favorite list.");
     }
 
-    @DeleteMapping("/users/{userId}/favorites/{bookId}")
+    @DeleteMapping("/{userId}/favorites/{bookId}")
     public ResponseEntity<String> removeBookFromUserFavorites(@PathVariable Long userId, @PathVariable Long bookId) {
         userService.removeBookFromFavorites(userId, bookId);
         return ResponseEntity.ok("Book removed from user's favorite list.");

@@ -46,7 +46,7 @@ public class RequestController {
         Map<String, Boolean> response = requestService.deleteRequestById(requestId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-    @GetMapping("/user/{userId}")
+    @GetMapping("/{userId}")
     public ResponseEntity<List<Request>> getRequestsByUserId(@PathVariable Long userId) {
         List<Request> requests = requestService.getRequestsByUserId(userId);
         return new ResponseEntity<>(requests, HttpStatus.OK);
