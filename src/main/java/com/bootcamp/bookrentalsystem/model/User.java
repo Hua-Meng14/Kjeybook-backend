@@ -28,6 +28,12 @@ public class User {
     private String profileImg;
     @ApiModelProperty(notes = "User's role")
     private String role;
+    @ManyToMany
+    @JoinTable(
+            name = "user_favorite_books",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "book_id")
+    )
     @ApiModelProperty(notes = "User's favorite books list")
     private List<Book> favoriteBooks;
 

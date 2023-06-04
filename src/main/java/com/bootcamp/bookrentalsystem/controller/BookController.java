@@ -46,11 +46,4 @@ public class BookController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/users/{userId}/favorites")
-    public List<Book> getUserFavoriteList(@PathVariable Long userId) {
-        return userService.getFavoriteBooks(userId);
-    }
-
-
-
 }

@@ -3,6 +3,7 @@ package com.bootcamp.bookrentalsystem.service;
 import com.bootcamp.bookrentalsystem.exception.ResourceNotFoundException;
 import com.bootcamp.bookrentalsystem.model.Book;
 import com.bootcamp.bookrentalsystem.model.User;
+import com.bootcamp.bookrentalsystem.repository.BookRepository;
 import com.bootcamp.bookrentalsystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,10 +20,12 @@ import java.util.Optional;
 @Service
 public class UserService {
     private UserRepository userRepository;
+    private BookRepository bookRepository;
 
     @Autowired
-    public UserService(@Qualifier("user") UserRepository userRepository) {
+    public UserService(@Qualifier("user") UserRepository userRepository, BookRepository bookRepository) {
         this.userRepository = userRepository;
+        this.bookRepository = bookRepository;
     }
 
     public User createUser(User user) {
@@ -68,5 +71,17 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
         return user.getFavoriteBooks();
+    }
+
+    public void addBookToUserFavorites(Long userId, Long bookId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
+
+        // Add the book to the user's favorite list
+        user.getFavoriteBooks().add(book);
+        userRepository.save(user);
     }
 }

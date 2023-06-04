@@ -1,5 +1,6 @@
 package com.bootcamp.bookrentalsystem.controller;
 
+import com.bootcamp.bookrentalsystem.model.Book;
 import com.bootcamp.bookrentalsystem.model.User;
 import com.bootcamp.bookrentalsystem.service.BookService;
 import com.bootcamp.bookrentalsystem.service.RequestService;
@@ -8,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -46,5 +49,16 @@ public class UserController {
     public ResponseEntity<User> deleteUserById(@PathVariable Long userId) {
         userService.deleteUser(userId);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/users/{userId}/favorites")
+    public List<Book> getUserFavoriteList(@PathVariable Long userId) {
+        return userService.getFavoriteBooks(userId);
+    }
+
+    @PostMapping("/{userId}/favorites/{bookId}")
+    public ResponseEntity<String> addBookToUserFavorites(@PathVariable Long userId, @PathVariable Long bookId) {
+        userService.addBookToUserFavorites(userId, bookId);
+        return ResponseEntity.ok("Book added to user's favorite list.");
     }
 }
