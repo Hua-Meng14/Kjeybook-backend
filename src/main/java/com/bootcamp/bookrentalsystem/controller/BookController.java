@@ -1,5 +1,6 @@
 package com.bootcamp.bookrentalsystem.controller;
 
+import com.bootcamp.bookrentalsystem.exception.ResourceNotFoundException;
 import com.bootcamp.bookrentalsystem.model.Book;
 import com.bootcamp.bookrentalsystem.service.BookService;
 import com.bootcamp.bookrentalsystem.service.RequestService;
@@ -8,8 +9,10 @@ import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -41,6 +44,11 @@ public class BookController {
     public ResponseEntity<Map<String, Boolean>> deleteBookB(@PathVariable Long bookId) {
         Map<String, Boolean> response = bookService.deletBookById(bookId);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/users/{userId}/favorites")
+    public List<Book> getUserFavoriteList(@PathVariable Long userId) {
+        return userService.getFavoriteBooks(userId);
     }
 
 
