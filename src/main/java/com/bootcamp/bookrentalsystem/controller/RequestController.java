@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -45,4 +46,10 @@ public class RequestController {
         Map<String, Boolean> response = requestService.deleteRequestById(requestId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Request>> getRequestsByUserId(@PathVariable Long userId) {
+        List<Request> requests = requestService.getRequestsByUserId(userId);
+        return new ResponseEntity<>(requests, HttpStatus.OK);
+    }
+
 }
