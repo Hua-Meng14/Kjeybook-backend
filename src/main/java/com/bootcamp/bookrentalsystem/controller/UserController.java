@@ -61,4 +61,10 @@ public class UserController {
         userService.addBookToUserFavorites(userId, bookId);
         return ResponseEntity.ok("Book added to user's favorite list.");
     }
+
+    @DeleteMapping("/users/{userId}/favorites/{bookId}")
+    public ResponseEntity<String> removeBookFromUserFavorites(@PathVariable Long userId, @PathVariable Long bookId) {
+        userService.removeBookFromFavorites(userId, bookId);
+        return ResponseEntity.ok("Book removed from user's favorite list.");
+    }
 }
