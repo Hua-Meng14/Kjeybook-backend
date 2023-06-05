@@ -2,8 +2,10 @@ package com.bootcamp.bookrentalsystem.service;
 
 import com.bootcamp.bookrentalsystem.exception.ResourceNotFoundException;
 import com.bootcamp.bookrentalsystem.model.Book;
+import com.bootcamp.bookrentalsystem.model.Request;
 import com.bootcamp.bookrentalsystem.model.User;
 import com.bootcamp.bookrentalsystem.repository.BookRepository;
+import com.bootcamp.bookrentalsystem.repository.RequestRepository;
 import com.bootcamp.bookrentalsystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,11 +23,16 @@ import java.util.Optional;
 public class UserService {
     private UserRepository userRepository;
     private BookRepository bookRepository;
+    private RequestRepository requestRepository;
+    private EmailService emailService;
+
 
     @Autowired
-    public UserService(@Qualifier("user") UserRepository userRepository, BookRepository bookRepository) {
+    public UserService(@Qualifier("user") UserRepository userRepository, BookRepository bookRepository, RequestRepository requestRepository, EmailService emailService) {
         this.userRepository = userRepository;
         this.bookRepository = bookRepository;
+        this.requestRepository = requestRepository;
+        this.emailService = emailService;
     }
 
     public User createUser(User user) {
@@ -95,5 +102,14 @@ public class UserService {
         // Remove the book from the user's favorite list
         user.getFavoriteBooks().remove(book);
         userRepository.save(user);
+    }
+
+    public void notifyUserRequestAccepted(Long requestId) {
+        Request acceptedRequest = requestRepository.findById(requestId)
+                .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
+
+        // Send the email notification
+        emailService.sendRequestAcceptedEmail(acceptedRequest);
+
     }
 }

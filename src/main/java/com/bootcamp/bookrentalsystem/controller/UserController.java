@@ -1,8 +1,10 @@
 package com.bootcamp.bookrentalsystem.controller;
 
 import com.bootcamp.bookrentalsystem.model.Book;
+import com.bootcamp.bookrentalsystem.model.EmailRequest;
 import com.bootcamp.bookrentalsystem.model.User;
 import com.bootcamp.bookrentalsystem.service.BookService;
+import com.bootcamp.bookrentalsystem.service.EmailService;
 import com.bootcamp.bookrentalsystem.service.RequestService;
 import com.bootcamp.bookrentalsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +20,12 @@ public class UserController {
     private final BookService bookService;
     private final UserService userService;
     private final RequestService requestService;
+    private final EmailService emailService;
 
     @Autowired
 
-    public UserController(BookService bookService, UserService userService, RequestService requestService) {
+    public UserController(BookService bookService, UserService userService, RequestService requestService, EmailService emailService) {
+        this.emailService = emailService;
         this.bookService = bookService;
         this.userService = userService;
         this.requestService = requestService;

@@ -58,4 +58,10 @@ public class RequestController {
         return new ResponseEntity<>(acceptedRequest, HttpStatus.OK);
     }
 
+//    @PostMapping("/requests/{requestId}/notify")
+//    public ResponseEntity<String> notifyUserRequestAccepted(@PathVariable Long requestId) {
+//        userService.notifyUserRequestAccepted(requestId);
+//        return ResponseEntity.ok("User notification sent successfully.");
+//    }
+
 }
