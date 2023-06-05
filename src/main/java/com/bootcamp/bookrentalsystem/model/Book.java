@@ -24,6 +24,8 @@ public class Book {
     private String bookImg;
     @ApiModelProperty(notes = "Book Description")
     private String description;
+    @ApiModelProperty(notes = "Book Rental status")
+    private Boolean isRented = false;
     @ApiModelProperty(notes = "Book maximum request duration")
     private Long maximumRequestPeriod;
     @ApiModelProperty(notes = "User favorite book mapping.")
@@ -34,12 +36,13 @@ public class Book {
         // Default constructor
     }
 
-    public Book(Long bookId, String title, String author, String category, String bookImg, String description, Long maximumRequestPeriod) {
+    public Book(Long bookId, String title, String author, String category, String bookImg,Boolean isRented, String description, Long maximumRequestPeriod) {
         this.bookId = bookId;
         this.title = title;
         this.author = author;
         this.category = category;
         this.bookImg = bookImg;
+        this.isRented = isRented;
         this.description = description;
         this.maximumRequestPeriod = maximumRequestPeriod;
     }
@@ -98,5 +101,13 @@ public class Book {
 
     public void setMaximumRequestPeriod(Long maximumRequestPeriod) {
         this.maximumRequestPeriod = maximumRequestPeriod;
+    }
+
+    public Boolean getRented() {
+        return isRented;
+    }
+
+    public void setRented(Boolean rented) {
+        isRented = rented;
     }
 }

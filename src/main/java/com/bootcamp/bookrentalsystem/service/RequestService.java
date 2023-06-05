@@ -11,8 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Component
@@ -107,6 +105,11 @@ public class RequestService {
 
         // Set the request status to "ACCEPTED"
         request.setStatus("ACCEPTED");
+
+        // Set book isRented to "TRUE"
+        Optional<Object> requestBook = bookService.findBookById(request.getBook().getId());
+        Book book = (Book) requestBook.get();
+        book.setRented(true);
 
         // Send email to notify the borrower
         userService.notifyUserRequestAccepted(requestId);
