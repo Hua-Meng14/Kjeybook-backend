@@ -13,11 +13,20 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHanlder {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<CustomErrorResponse> globalExceptionHanlder (Exception e, WebRequest req) {
+    public ResponseEntity<CustomErrorResponse> globalNotFoundExceptionHanlder (Exception e, WebRequest req) {
         CustomErrorResponse errors = new CustomErrorResponse();
         errors.setTimestamp(LocalDateTime.now());
         errors.setError(e.getMessage());
         errors.setStatus(HttpStatus.NOT_FOUND.value());
         return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<CustomErrorResponse> globalBadRequestExceptionHanlder (Exception e, WebRequest req) {
+        CustomErrorResponse errors = new CustomErrorResponse();
+        errors.setTimestamp(LocalDateTime.now());
+        errors.setError(e.getMessage());
+        errors.setStatus(HttpStatus.BAD_REQUEST.value());
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 }
