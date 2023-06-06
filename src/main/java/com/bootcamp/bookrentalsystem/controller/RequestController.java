@@ -58,6 +58,12 @@ public class RequestController {
         return new ResponseEntity<>(acceptedRequest, HttpStatus.OK);
     }
 
+    @PostMapping("/{requestId}/reject")
+    public ResponseEntity<Request> rejectRequest(@PathVariable Long requestId) {
+        Request rejectedRequest = requestService.rejectRequest(requestId);
+        return new ResponseEntity<>(rejectedRequest, HttpStatus.OK);
+    }
+
 //    @PostMapping("/requests/{requestId}/notify")
 //    public ResponseEntity<String> notifyUserRequestAccepted(@PathVariable Long requestId) {
 //        userService.notifyUserRequestAccepted(requestId);

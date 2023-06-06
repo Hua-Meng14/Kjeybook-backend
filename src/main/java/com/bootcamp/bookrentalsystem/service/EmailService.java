@@ -20,12 +20,13 @@ import static org.hibernate.sql.ast.SqlTreeCreationLogger.LOGGER;
 @Component
 @NoArgsConstructor
 public class EmailService {
-    private final static String EMAIL_CONFIRMATION_SUBJECT = "Book Rental Request Approved";
+//    private final static String EMAIL_CONFIRMATION_SUBJECT = "Book Rental Request Approved";
 
     @Autowired
     private JavaMailSender javaMailSender;
 
     public void sendRequestAcceptedEmail(Request request) {
+        String subject = "Book Rental Request Approved";
 
         String sendTo = request.getBorrower().getEmail();
         String borrower = request.getBorrower().getUsername();
@@ -56,18 +57,50 @@ public class EmailService {
                 "" +
                 "";
         String from = "no-reply@bookrentalsystem.com.kh";
-        send(sendTo, from, message);
+        send(sendTo, from, message, subject);
+    }
+
+    public void sendRequestRejectedEmail(Request request) {
+
+        String subject = "Book Rental Request Rejected";
+
+        String sendTo = request.getBorrower().getEmail();
+        String borrower = request.getBorrower().getUsername();
+        String bookTitle = request.getBook().getTitle();
+        String author = request.getBook().getAuthor();
+        LocalDate requestDate = request.getDateOfRequest();
+
+        // build email
+        // send message
+        String message = "Dear "+ borrower +",\n" +
+                "\n" +
+                "We regret to inform you that your book rental request has been rejected. We appreciate your interest, but unfortunately, we are unable to fulfill your request at this time. Here are the details:\n" +
+                "\n" +
+                "Book Title: "+ bookTitle +"\n" +
+                "Author: "+ author +"\n" +
+                "Request Date: "+ requestDate +"\n" +
+                "\n" +
+                "We apologize for any inconvenience caused. If you have any further questions or concerns, please don't hesitate to reach out to our support team.\n" +
+                "\n" +
+                "Thank you for considering our book rental service.\n" +
+                "\n" +
+                "Best regards,\n" +
+                "The Book Rental Team" +
+                "" +
+                "";
+        String from = "no-reply@bookrentalsystem.com.kh";
+        send(sendTo, from, message, subject);
     }
 
     @Async
-    private void send(String to, String from, String email) {
+    private void send(String to, String from, String email, String subject) {
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper =
                     new MimeMessageHelper(mimeMessage, "utf-8");
             helper.setFrom(from);
             helper.setTo(to);
-            helper.setSubject(EMAIL_CONFIRMATION_SUBJECT);
+            helper.setSubject(subject);
             helper.setText(email);
             javaMailSender.send(mimeMessage);
         } catch (MessagingException e) {

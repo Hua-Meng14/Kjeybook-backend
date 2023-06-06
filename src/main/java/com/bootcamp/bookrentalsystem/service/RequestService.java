@@ -1,5 +1,6 @@
 package com.bootcamp.bookrentalsystem.service;
 
+import com.bootcamp.bookrentalsystem.exception.BadRequestException;
 import com.bootcamp.bookrentalsystem.exception.ResourceNotFoundException;
 import com.bootcamp.bookrentalsystem.model.Book;
 import com.bootcamp.bookrentalsystem.model.Request;
@@ -35,6 +36,17 @@ public class RequestService {
         Book book = (Book) bookService.findBookById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
 
+        // Check book renting status
+        if (book.getRented()) {
+            throw new BadRequestException("Book with id of " + bookId + " is not available for rent!!");
+        }
+
+        // Check request duration and maximum request duration for the requested book
+        if (requestDuration > book.getMaximumRequestPeriod()) {
+            throw new BadRequestException("Request Period has exceed maximum request duration for book with id: " + bookId);
+        }
+
+
         Request request = new Request();
         request.setBorrower(borrower);
         request.setBook(book);
@@ -46,8 +58,6 @@ public class RequestService {
         // Set the dateOfRequest as the current date
         LocalDate currentDate = LocalDate.now();
         request.setDateOfRequest(currentDate);
-
-
 
         return requestRepository.save(request);
     }
@@ -91,7 +101,7 @@ public class RequestService {
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
 
 
-        // Set the dateOfRequest as the current date
+        // Set the accepted date as the current date
         LocalDate currentDate = LocalDate.now();
         request.setDateOfAccepted(currentDate);
 
@@ -113,6 +123,23 @@ public class RequestService {
 
         // Send email to notify the borrower
         userService.notifyUserRequestAccepted(requestId);
+
+        return requestRepository.save(request);
+    }
+
+    public Request rejectRequest(Long requestId) {
+        Request request = requestRepository.findById(requestId)
+                .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
+
+        // Set the rejected date as the current date
+        LocalDate currentDate = LocalDate.now();
+        request.setDateOfRejected(currentDate);
+
+        // Set the request status to "REJECTED"
+        request.setStatus("REJECTED");
+
+        // Send email to notify the borrower
+        userService.notifyUserRequestRejected(requestId);
 
         return requestRepository.save(request);
     }
