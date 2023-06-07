@@ -24,18 +24,8 @@ public class UserController {
         this.requestService = requestService;
     }
 
-
-    @GetMapping
-    public String get() {return "GET:: user controller";}
-
-    @PatchMapping
-    public String update() {return "UPDATE:: user controller";}
-
-    @DeleteMapping
-    public String delete() {return "DELETE:: user controller";}
-
     @PostMapping
-    public User createUser(User user) {
+    public User createUser(@RequestBody User user) {
         return this.userService.createUser(user);
     }
 
@@ -50,5 +40,11 @@ public class UserController {
     public ResponseEntity<User> updateUserById(@PathVariable Long userId, @RequestBody User updatedUser) {
         User user = this.userService.updateUserById(userId, updatedUser);
         return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<User> deleteUserById(@PathVariable Long userId) {
+        userService.deleteUser(userId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
