@@ -5,6 +5,8 @@ import com.bootcamp.bookrentalsystem.service.BookService;
 import com.bootcamp.bookrentalsystem.service.RequestService;
 import com.bootcamp.bookrentalsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -35,5 +37,18 @@ public class UserController {
     @PostMapping
     public User createUser(User user) {
         return this.userService.createUser(user);
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<User> getUserById(@PathVariable Long userId) {
+        return this.userService.findUserById(userId)
+                .map(book -> new ResponseEntity<>(book, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @PatchMapping("/{userId}")
+    public ResponseEntity<User> updateUserById(@PathVariable Long userId, @RequestBody User updatedUser) {
+        User user = this.userService.updateUserById(userId, updatedUser);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 }

@@ -30,6 +30,10 @@ public class Request {
     @ApiModelProperty(notes = "Date of book to be returned")
     private Date dateOfReturn;
 
+    public Request() {
+        // Default constructor
+    }
+
     public Request(Long requestId, User borrower, Book book, String status, Long requestDuration, Date dateOfAccepted, Date dateOfReturn) {
         this.requestId = requestId;
         this.borrower = borrower;
