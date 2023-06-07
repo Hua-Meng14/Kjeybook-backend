@@ -53,8 +53,14 @@ public class BookService {
 
         bookRepository.deleteById(bookId);
 
-        Map<String,Boolean> response = new HashMap<>();
+        Map<String, Boolean> response = new HashMap<>();
         response.put("deleted", Boolean.TRUE);
         return response;
+    }
+
+    public Optional<Object> findBookById(Long bookId) {
+        return Optional.ofNullable(bookRepository.findById(bookId)
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId)
+                ));
     }
 }
