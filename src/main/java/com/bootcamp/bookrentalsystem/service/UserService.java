@@ -1,5 +1,6 @@
 package com.bootcamp.bookrentalsystem.service;
 
+import com.bootcamp.bookrentalsystem.exception.IllegalStateException;
 import com.bootcamp.bookrentalsystem.exception.ResourceNotFoundException;
 import com.bootcamp.bookrentalsystem.model.Book;
 import com.bootcamp.bookrentalsystem.model.Request;
@@ -96,9 +97,20 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
-        Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
+        List<Book> favoriteBooks = user.getFavoriteBooks();
 
+        // Check if the user's favorite list is empty
+        if (favoriteBooks.isEmpty()) {
+            throw new IllegalStateException("Cannot remove book from an empty favorite list.");
+        }
+
+        System.out.println("Book in favorite list---------------------"+favoriteBooks.stream().anyMatch(book -> book.getId().equals(bookId)));
+
+        if (!favoriteBooks.stream().anyMatch(book -> book.getId().equals(bookId))) {
+            throw new ResourceNotFoundException("Book not found in user's favorite with book id: " + bookId);
+        }
+
+        Optional<Book> book = bookRepository.findById(bookId);
         // Remove the book from the user's favorite list
         user.getFavoriteBooks().remove(book);
         userRepository.save(user);
