@@ -21,6 +21,7 @@ public class Request {
     private User borrower;
     @ApiModelProperty(notes = "Book whose this request belongs to")
     @ManyToOne
+    @JoinColumn(name = "book_id")
     private Book book;
     @ApiModelProperty(notes = "Request acceptance status")
     private String status;

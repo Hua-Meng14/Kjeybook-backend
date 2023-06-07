@@ -1,9 +1,11 @@
 package com.bootcamp.bookrentalsystem.service;
 
 
+import com.bootcamp.bookrentalsystem.exception.ForeignKeyConstraintException;
 import com.bootcamp.bookrentalsystem.exception.ResourceNotFoundException;
 import com.bootcamp.bookrentalsystem.model.Book;
 import com.bootcamp.bookrentalsystem.repository.BookRepository;
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -17,10 +19,12 @@ import java.util.Optional;
 @Service
 public class BookService {
     private final BookRepository bookRepository;
+    private final EntityManager entityManager;
 
     @Autowired
-    public BookService(@Qualifier("book") BookRepository bookRepository) {
+    public BookService(@Qualifier("book") BookRepository bookRepository, EntityManager entityManager) {
         this.bookRepository = bookRepository;
+        this.entityManager = entityManager;
     }
 
     public Book createBook(Book book) {
@@ -50,6 +54,12 @@ public class BookService {
     public Map<String, Boolean> deletBookById(Long bookId) {
         Book existingBook = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
+        System.out.println("-----------------------------------"+hasAssociatedRequests(bookId));
+
+//         Check if the book has any associated requests
+        if (!hasAssociatedRequests(bookId)) {
+            throw new ForeignKeyConstraintException("Cannot delete the book because it has associated requests.");
+        }
 
         bookRepository.deleteById(bookId);
 
@@ -63,4 +73,12 @@ public class BookService {
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId)
                 ));
     }
+
+    public boolean hasAssociatedRequests(Long bookId) {
+        Book book = entityManager.find(Book.class, bookId);
+        System.out.println("get all requests relating to the book"+ book.getRequests());
+        System.out.println("get request related to the book--------------------"+book.getRequests().isEmpty());
+        return !book.getRequests().isEmpty();
+    }
+
 }
