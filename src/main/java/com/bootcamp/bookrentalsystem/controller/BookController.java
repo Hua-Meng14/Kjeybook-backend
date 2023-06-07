@@ -1,5 +1,6 @@
 package com.bootcamp.bookrentalsystem.controller;
 
+import com.bootcamp.bookrentalsystem.model.Book;
 import com.bootcamp.bookrentalsystem.service.BookService;
 import com.bootcamp.bookrentalsystem.service.RequestService;
 import com.bootcamp.bookrentalsystem.service.UserService;
@@ -20,16 +21,10 @@ public class BookController {
         this.requestService = requestService;
     }
 
-
-    @GetMapping
-    public String get() {return "GET:: book controller";}
-
     @PostMapping
-    public String create() {return "POST:: book controller";}
+    public Book createBook(@RequestBody Book book) {
+        return this.bookService.createBook(book);
+    }
 
-    @PatchMapping
-    public String update() {return "UPDATE:: book controller";}
 
-    @DeleteMapping
-    public String delete() {return "DELETE:: book controller";}
 }
