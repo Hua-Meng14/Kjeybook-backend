@@ -39,4 +39,13 @@ public class GlobalExceptionHanlder {
         return new ResponseEntity<>(errors, HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<CustomErrorResponse> globalIllegalStateExceptionHanlder (Exception e, WebRequest req) {
+        CustomErrorResponse errors = new CustomErrorResponse();
+        errors.setTimestamp(LocalDateTime.now());
+        errors.setError(e.getMessage());
+        errors.setStatus(HttpStatus.FORBIDDEN.value());
+        return new ResponseEntity<>(errors, HttpStatus.FORBIDDEN);
+    }
+
 }
