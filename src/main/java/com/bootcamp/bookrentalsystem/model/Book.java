@@ -3,6 +3,9 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import jakarta.persistence.*;
 
+import java.util.List;
+import java.util.Map;
+
 @Entity
 @Table(name = "_book")
 @ApiModel(description = "User details")
@@ -22,15 +25,28 @@ public class Book {
     private String bookImg;
     @ApiModelProperty(notes = "Book Description")
     private String description;
+    @ApiModelProperty(notes = "Book Rental status")
+    private Boolean isRented = false;
     @ApiModelProperty(notes = "Book maximum request duration")
     private Long maximumRequestPeriod;
+    @ApiModelProperty(notes = "User favorite book mapping.")
+    @ManyToMany(mappedBy = "favoriteBooks")
+    private List<User> users;
+    @ApiModelProperty(notes = "Requests book mapping.")
+    @OneToMany(mappedBy = "book")
+    private List<Request> requests;
 
-    public Book(Long bookId, String title, String author, String category, String bookImg, String description, Long maximumRequestPeriod) {
+    public Book() {
+        // Default constructor
+    }
+
+    public Book(Long bookId, String title, String author, String category, String bookImg,Boolean isRented, String description, Long maximumRequestPeriod) {
         this.bookId = bookId;
         this.title = title;
         this.author = author;
         this.category = category;
         this.bookImg = bookImg;
+        this.isRented = isRented;
         this.description = description;
         this.maximumRequestPeriod = maximumRequestPeriod;
     }
@@ -89,5 +105,21 @@ public class Book {
 
     public void setMaximumRequestPeriod(Long maximumRequestPeriod) {
         this.maximumRequestPeriod = maximumRequestPeriod;
+    }
+
+    public Boolean getRented() {
+        return isRented;
+    }
+
+    public void setRented(Boolean rented) {
+        isRented = rented;
+    }
+
+    public List<Request> getRequests() {
+        return requests;
+    }
+
+    public void setRequests(List<Request> requests) {
+        this.requests = requests;
     }
 }
