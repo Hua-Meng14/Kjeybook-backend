@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import jakarta.persistence.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(name = "_book")
@@ -31,6 +32,9 @@ public class Book {
     @ApiModelProperty(notes = "User favorite book mapping.")
     @ManyToMany(mappedBy = "favoriteBooks")
     private List<User> users;
+    @ApiModelProperty(notes = "Requests book mapping.")
+    @OneToMany(mappedBy = "book")
+    private List<Request> requests;
 
     public Book() {
         // Default constructor
@@ -109,5 +113,13 @@ public class Book {
 
     public void setRented(Boolean rented) {
         isRented = rented;
+    }
+
+    public List<Request> getRequests() {
+        return requests;
+    }
+
+    public void setRequests(List<Request> requests) {
+        this.requests = requests;
     }
 }
