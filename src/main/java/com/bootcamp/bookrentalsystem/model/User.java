@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "_user")
 
@@ -26,12 +28,21 @@ public class User {
     private String profileImg;
     @ApiModelProperty(notes = "User's role")
     private String role;
+    @ManyToMany
+    @JoinTable(
+            name = "user_favorite_books",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "book_id")
+    )
+    @ApiModelProperty(notes = "User's favorite books list")
+    private List<Book> favoriteBooks;
+
 
     public User() {
         // Default constructor
     }
 
-    public User(Long userId, String username, String password, String email, String phoneNumber, String profileImg, String role) {
+    public User(Long userId, String username, String password, String email, String phoneNumber, String profileImg, String role, List<Book> favoriteBooks) {
         this.userId = userId;
         this.username = username;
         this.password = password;
@@ -39,6 +50,7 @@ public class User {
         this.phoneNumber = phoneNumber;
         this.profileImg = profileImg;
         this.role = role;
+        this.favoriteBooks = favoriteBooks;
     }
 
     public Long getUserId() {
@@ -95,5 +107,13 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public List<Book> getFavoriteBooks() {
+        return favoriteBooks;
+    }
+
+    public void setFavoriteBooks(List<Book> favoriteBooks) {
+        this.favoriteBooks = favoriteBooks;
     }
 }

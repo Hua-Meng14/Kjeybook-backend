@@ -3,6 +3,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "_book")
 @ApiModel(description = "User details")
@@ -24,6 +26,9 @@ public class Book {
     private String description;
     @ApiModelProperty(notes = "Book maximum request duration")
     private Long maximumRequestPeriod;
+    @ApiModelProperty(notes = "User favorite book mapping.")
+    @ManyToMany(mappedBy = "favoriteBooks")
+    private List<User> users;
 
     public Book() {
         // Default constructor
