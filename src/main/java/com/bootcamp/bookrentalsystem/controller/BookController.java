@@ -29,7 +29,7 @@ public class BookController {
         this.requestService = requestService;
     }
 
-    @GetMapping("/getBook/title={title}")
+    @GetMapping("/getBookByTitle={title}")
     public List<Book> getBooksByTitle(@RequestParam("title") String keyword){
         return bookService.getBooksByTitle(keyword);
     }
