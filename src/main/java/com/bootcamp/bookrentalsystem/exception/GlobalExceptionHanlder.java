@@ -29,4 +29,14 @@ public class GlobalExceptionHanlder {
         errors.setStatus(HttpStatus.BAD_REQUEST.value());
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(ForeignKeyConstraintException.class)
+    public ResponseEntity<CustomErrorResponse> globalForeignKeyConstraintExceptionHanlder (Exception e, WebRequest req) {
+        CustomErrorResponse errors = new CustomErrorResponse();
+        errors.setTimestamp(LocalDateTime.now());
+        errors.setError(e.getMessage());
+        errors.setStatus(HttpStatus.FORBIDDEN.value());
+        return new ResponseEntity<>(errors, HttpStatus.FORBIDDEN);
+    }
+
 }
