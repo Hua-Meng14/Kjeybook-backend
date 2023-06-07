@@ -10,10 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 @Service
@@ -24,7 +21,7 @@ public class RequestService {
 
     @Autowired
     public RequestService(@Qualifier("request") RequestRepository requestReporitoy, UserService userService, BookService bookService) {
-        this.requestRepository= requestReporitoy;
+        this.requestRepository = requestReporitoy;
         this.bookService = bookService;
         this.userService = userService;
 
@@ -40,7 +37,7 @@ public class RequestService {
         Request request = new Request();
         request.setBorrower(borrower);
         request.setBook(book);
-        request.setStatus("Pending");
+        request.setStatus("PENDING");
         request.setRequestDuration(requestDuration);
         request.setDateOfAccepted(null);
         request.setDateOfReturn(null);
@@ -80,5 +77,29 @@ public class RequestService {
         User existingUser = userService.findUserById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
         return requestRepository.findByBorrowerUserId(userId);
+    }
+
+    public Request acceptRequest(Long requestId) {
+        Request request = requestRepository.findById(requestId)
+                .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
+
+        // Set the dateOfAccepted as the current date
+        Date currentDate = new Date();
+        request.setDateOfAccepted(currentDate);
+
+        // Set the dateOfReturn based on the request duration
+        Long requestDuration = request.getRequestDuration();
+        if (requestDuration != null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(currentDate);
+            calendar.add(Calendar.DAY_OF_MONTH, requestDuration.intValue());
+            Date dateOfReturn = calendar.getTime();
+            request.setDateOfReturn(dateOfReturn);
+        }
+
+        // Set the request status to "ACCEPTED"
+        request.setStatus("ACCEPTED");
+
+        return requestRepository.save(request);
     }
 }
