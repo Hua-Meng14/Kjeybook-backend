@@ -46,7 +46,7 @@ public class RequestController {
         Map<String, Boolean> response = requestService.deleteRequestById(requestId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-    @GetMapping("/user/{userId}")
+    @GetMapping("/{userId}")
     public ResponseEntity<List<Request>> getRequestsByUserId(@PathVariable Long userId) {
         List<Request> requests = requestService.getRequestsByUserId(userId);
         return new ResponseEntity<>(requests, HttpStatus.OK);
@@ -57,5 +57,11 @@ public class RequestController {
         Request acceptedRequest = requestService.acceptRequest(requestId);
         return new ResponseEntity<>(acceptedRequest, HttpStatus.OK);
     }
+
+//    @PostMapping("/requests/{requestId}/notify")
+//    public ResponseEntity<String> notifyUserRequestAccepted(@PathVariable Long requestId) {
+//        userService.notifyUserRequestAccepted(requestId);
+//        return ResponseEntity.ok("User notification sent successfully.");
+//    }
 
 }

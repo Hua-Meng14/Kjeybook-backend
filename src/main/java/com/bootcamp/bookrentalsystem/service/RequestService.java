@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Component
@@ -41,6 +44,12 @@ public class RequestService {
         request.setRequestDuration(requestDuration);
         request.setDateOfAccepted(null);
         request.setDateOfReturn(null);
+
+        // Set the dateOfRequest as the current date
+        LocalDate currentDate = LocalDate.now();
+        request.setDateOfRequest(currentDate);
+
+
 
         return requestRepository.save(request);
     }
@@ -83,22 +92,24 @@ public class RequestService {
         Request request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
 
-        // Set the dateOfAccepted as the current date
-        Date currentDate = new Date();
+
+        // Set the dateOfRequest as the current date
+        LocalDate currentDate = LocalDate.now();
         request.setDateOfAccepted(currentDate);
 
         // Set the dateOfReturn based on the request duration
         Long requestDuration = request.getRequestDuration();
         if (requestDuration != null) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(currentDate);
-            calendar.add(Calendar.DAY_OF_MONTH, requestDuration.intValue());
-            Date dateOfReturn = calendar.getTime();
-            request.setDateOfReturn(dateOfReturn);
+            LocalDate dateOfReturn = currentDate.plusDays(requestDuration);
+            java.sql.Date dateOfReturnWithoutTime = java.sql.Date.valueOf(dateOfReturn);
+            request.setDateOfReturn(dateOfReturnWithoutTime);
         }
 
         // Set the request status to "ACCEPTED"
         request.setStatus("ACCEPTED");
+
+        // Send email to notify the borrower
+        userService.notifyUserRequestAccepted(requestId);
 
         return requestRepository.save(request);
     }
