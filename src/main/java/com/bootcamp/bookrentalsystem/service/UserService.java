@@ -112,4 +112,14 @@ public class UserService {
         emailService.sendRequestAcceptedEmail(acceptedRequest);
 
     }
+
+    public void notifyUserRequestRejected(Long requestId) {
+        Request rejectedRequest = requestRepository.findById(requestId)
+                .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
+
+        // Send the email notification
+        emailService.sendRequestRejectedEmail(rejectedRequest);
+
+    }
+
 }
