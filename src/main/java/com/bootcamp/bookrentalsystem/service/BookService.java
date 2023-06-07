@@ -11,9 +11,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 @Service
@@ -79,6 +77,17 @@ public class BookService {
         System.out.println("get all requests relating to the book"+ book.getRequests());
         System.out.println("get request related to the book--------------------"+book.getRequests().isEmpty());
         return !book.getRequests().isEmpty();
+    }
+
+    public List<Book> getBooksByTitle(String keyword){
+        List<Book> result = new ArrayList<>();
+
+        for (Book book : bookRepository.findAll()) {
+            if (book.getTitle().contains(keyword)) {
+                result.add(book);
+            }
+        }
+        return result;
     }
 
 }
