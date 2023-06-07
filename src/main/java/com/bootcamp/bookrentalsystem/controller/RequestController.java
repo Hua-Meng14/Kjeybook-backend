@@ -1,6 +1,7 @@
 package com.bootcamp.bookrentalsystem.controller;
 
 import com.bootcamp.bookrentalsystem.model.Request;
+import com.bootcamp.bookrentalsystem.model.User;
 import com.bootcamp.bookrentalsystem.service.BookService;
 import com.bootcamp.bookrentalsystem.service.RequestService;
 import com.bootcamp.bookrentalsystem.service.UserService;
@@ -29,5 +30,11 @@ public class RequestController {
                                                  @RequestParam("requestDuration") Long requestDuration) {
         Request createdRequest = requestService.createRequest(userId, bookId, requestDuration);
         return new ResponseEntity<>(createdRequest, HttpStatus.CREATED);
+    }
+
+    @PatchMapping("/{requestId}")
+    public ResponseEntity<Request> updateRequest(@PathVariable Long requestId, @RequestBody Request updatedRequest) {
+        Request request = this.requestService.updateRequestById(requestId, updatedRequest);
+        return new ResponseEntity<>(request, HttpStatus.OK);
     }
 }
