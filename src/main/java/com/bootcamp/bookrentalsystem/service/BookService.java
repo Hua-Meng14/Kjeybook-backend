@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Component
@@ -43,5 +45,16 @@ public class BookService {
                 .ifPresent(existingBook::setMaximumRequestPeriod);
 
         return bookRepository.save(existingBook);
+    }
+
+    public Map<String, Boolean> deletBookById(Long bookId) {
+        Book existingBook = bookRepository.findById(bookId)
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
+
+        bookRepository.deleteById(bookId);
+
+        Map<String,Boolean> response = new HashMap<>();
+        response.put("deleted", Boolean.TRUE);
+        return response;
     }
 }
