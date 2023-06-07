@@ -1,10 +1,19 @@
 package com.bootcamp.bookrentalsystem.controller;
 
+import com.bootcamp.bookrentalsystem.exception.ResourceNotFoundException;
+import com.bootcamp.bookrentalsystem.model.Book;
 import com.bootcamp.bookrentalsystem.service.BookService;
 import com.bootcamp.bookrentalsystem.service.RequestService;
 import com.bootcamp.bookrentalsystem.service.UserService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/book")
@@ -20,16 +29,21 @@ public class BookController {
         this.requestService = requestService;
     }
 
-
-    @GetMapping
-    public String get() {return "GET:: book controller";}
-
     @PostMapping
-    public String create() {return "POST:: book controller";}
+    public Book createBook(@RequestBody Book book) {
+        return this.bookService.createBook(book);
+    }
 
-    @PatchMapping
-    public String update() {return "UPDATE:: book controller";}
+    @PatchMapping("/{bookId}")
+    public ResponseEntity<Book> updateBook(@PathVariable Long bookId, @RequestBody Book updatedBook) {
+        Book book = this.bookService.updateBookById(bookId, updatedBook);
+        return new ResponseEntity<>(book, HttpStatus.OK);
+    }
 
-    @DeleteMapping
-    public String delete() {return "DELETE:: book controller";}
+    @DeleteMapping("/{bookId}")
+    public ResponseEntity<Map<String, Boolean>> deleteBookB(@PathVariable Long bookId) {
+        Map<String, Boolean> response = bookService.deletBookById(bookId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 }
