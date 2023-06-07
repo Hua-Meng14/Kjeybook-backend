@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Component
@@ -60,5 +63,22 @@ public class RequestService {
                 .ifPresent(existingRequst::setDateOfReturn);
 
         return requestRepository.save(existingRequst);
+    }
+
+    public Map<String, Boolean> deleteRequestById(Long requestId) {
+        Request existingRequest = requestRepository.findById(requestId)
+                .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
+
+        requestRepository.deleteById(requestId);
+
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("deleted", Boolean.TRUE);
+        return response;
+    }
+
+    public List<Request> getRequestsByUserId(Long userId) {
+        User existingUser = userService.findUserById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+        return requestRepository.findByBorrowerUserId(userId);
     }
 }
