@@ -1,10 +1,13 @@
 package com.bootcamp.bookrentalsystem.controller;
 
+import com.bootcamp.bookrentalsystem.model.User;
 import com.bootcamp.bookrentalsystem.service.BookService;
 import com.bootcamp.bookrentalsystem.service.RequestService;
 import com.bootcamp.bookrentalsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -33,4 +36,9 @@ public class UserController {
 
     @DeleteMapping
     public String delete() {return "DELETE:: user controller";}
+
+    @GetMapping("/getAllUsers")
+    public List<User> getAllUsers(){
+        return userService.getAllUsers();
+    }
 }
