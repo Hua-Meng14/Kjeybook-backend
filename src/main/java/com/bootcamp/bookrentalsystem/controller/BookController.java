@@ -29,6 +29,11 @@ public class BookController {
         this.requestService = requestService;
     }
 
+    @GetMapping("/getAllBooks")
+    public List<Book> getAllBooks(){
+        return bookService.getAllBook();
+    }
+
     @PostMapping
     public Book createBook(@RequestBody Book book) {
         return this.bookService.createBook(book);

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -29,6 +30,10 @@ public class BookService {
 
     public Book createBook(Book book) {
         return bookRepository.save(book);
+    }
+
+    public List<Book> getAllBook(){
+        return bookRepository.findAll();
     }
 
     public Book updateBookById(Long bookId, Book updatedBook) {
