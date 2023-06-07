@@ -84,4 +84,16 @@ public class UserService {
         user.getFavoriteBooks().add(book);
         userRepository.save(user);
     }
+
+    public void removeBookFromFavorites(Long userId, Long bookId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
+
+        // Remove the book from the user's favorite list
+        user.getFavoriteBooks().remove(book);
+        userRepository.save(user);
+    }
 }
