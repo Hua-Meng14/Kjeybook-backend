@@ -104,8 +104,6 @@ public class UserService {
             throw new IllegalStateException("Cannot remove book from an empty favorite list.");
         }
 
-        System.out.println("Book in favorite list---------------------"+favoriteBooks.stream().anyMatch(book -> book.getId().equals(bookId)));
-
         if (!favoriteBooks.stream().anyMatch(book -> book.getId().equals(bookId))) {
             throw new ResourceNotFoundException("Book not found in user's favorite with book id: " + bookId);
         }
