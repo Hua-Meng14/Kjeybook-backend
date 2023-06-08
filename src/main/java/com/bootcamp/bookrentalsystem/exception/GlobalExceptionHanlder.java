@@ -57,4 +57,22 @@ public class GlobalExceptionHanlder {
         return new ResponseEntity<>(errors, HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<CustomErrorResponse> globalForbiddenExceptionHanlder (Exception e, WebRequest req) {
+        CustomErrorResponse errors = new CustomErrorResponse();
+        errors.setTimestamp(LocalDateTime.now());
+        errors.setError(e.getMessage());
+        errors.setStatus(HttpStatus.FORBIDDEN.value());
+        return new ResponseEntity<>(errors, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(InternalServerErrorException.class)
+    public ResponseEntity<CustomErrorResponse> globalInternalServerErrorExceptionHanlder (Exception e, WebRequest req) {
+        CustomErrorResponse errors = new CustomErrorResponse();
+        errors.setTimestamp(LocalDateTime.now());
+        errors.setError(e.getMessage());
+        errors.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        return new ResponseEntity<>(errors, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 }
