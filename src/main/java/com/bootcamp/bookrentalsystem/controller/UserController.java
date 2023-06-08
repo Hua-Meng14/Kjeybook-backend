@@ -1,7 +1,6 @@
 package com.bootcamp.bookrentalsystem.controller;
 
 import com.bootcamp.bookrentalsystem.model.Book;
-import com.bootcamp.bookrentalsystem.model.EmailRequest;
 import com.bootcamp.bookrentalsystem.model.User;
 import com.bootcamp.bookrentalsystem.service.BookService;
 import com.bootcamp.bookrentalsystem.service.EmailService;
