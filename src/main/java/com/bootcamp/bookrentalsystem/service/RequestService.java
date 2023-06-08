@@ -6,6 +6,7 @@ import com.bootcamp.bookrentalsystem.model.Book;
 import com.bootcamp.bookrentalsystem.model.Request;
 import com.bootcamp.bookrentalsystem.model.User;
 import com.bootcamp.bookrentalsystem.repository.RequestRepository;
+import com.bootcamp.bookrentalsystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -18,19 +19,22 @@ import java.util.*;
 @Service
 public class RequestService {
     private final RequestRepository requestRepository;
+    private final UserRepository userRepository;
     private final BookService bookService;
     private final UserService userService;
 
     @Autowired
-    public RequestService(@Qualifier("request") RequestRepository requestReporitoy, UserService userService, BookService bookService) {
-        this.requestRepository = requestReporitoy;
+    public RequestService(@Qualifier("request") RequestRepository requestRepository, UserService userService, BookService bookService, UserRepository userRepository) {
+        this.requestRepository = requestRepository;
+        this.userRepository = userRepository;
         this.bookService = bookService;
         this.userService = userService;
+
 
     }
 
     public Request createRequest(Long userId, Long bookId, Long requestDuration) {
-        User borrower = userService.findUserById(userId)
+        User borrower = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
         Book book = (Book) bookService.findBookById(bookId)
@@ -64,19 +68,19 @@ public class RequestService {
 
     public Request updateRequestById(Long requestId, Request updatedRequest) {
 
-        Request existingRequst = requestRepository.findById(requestId)
+        Request existingRequest = requestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
 
         Optional.ofNullable(updatedRequest.getRequestDuration())
-                .ifPresent(existingRequst::setRequestDuration);
+                .ifPresent(existingRequest::setRequestDuration);
         Optional.ofNullable(updatedRequest.getStatus())
-                .ifPresent(existingRequst::setStatus);
+                .ifPresent(existingRequest::setStatus);
         Optional.ofNullable(updatedRequest.getDateOfAccepted())
-                .ifPresent(existingRequst::setDateOfAccepted);
+                .ifPresent(existingRequest::setDateOfAccepted);
         Optional.ofNullable(updatedRequest.getDateOfReturn())
-                .ifPresent(existingRequst::setDateOfReturn);
+                .ifPresent(existingRequest::setDateOfReturn);
 
-        return requestRepository.save(existingRequst);
+        return requestRepository.save(existingRequest);
     }
 
     public Map<String, Boolean> deleteRequestById(Long requestId) {
@@ -91,7 +95,7 @@ public class RequestService {
     }
 
     public List<Request> getRequestsByUserId(Long userId) {
-        User existingUser = userService.findUserById(userId)
+        User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
         return requestRepository.findByBorrowerUserId(userId);
     }
