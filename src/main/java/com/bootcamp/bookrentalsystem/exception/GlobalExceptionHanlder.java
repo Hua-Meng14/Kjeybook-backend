@@ -48,4 +48,13 @@ public class GlobalExceptionHanlder {
         return new ResponseEntity<>(errors, HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<CustomErrorResponse> globalUnauthorizedExceptionHanlder (Exception e, WebRequest req) {
+        CustomErrorResponse errors = new CustomErrorResponse();
+        errors.setTimestamp(LocalDateTime.now());
+        errors.setError(e.getMessage());
+        errors.setStatus(HttpStatus.UNAUTHORIZED.value());
+        return new ResponseEntity<>(errors, HttpStatus.UNAUTHORIZED);
+    }
+
 }
