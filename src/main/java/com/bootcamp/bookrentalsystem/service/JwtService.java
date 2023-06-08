@@ -1,12 +1,12 @@
 package com.bootcamp.bookrentalsystem.service;
 
+import com.bootcamp.bookrentalsystem.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -41,23 +41,30 @@ public class JwtService {
 
     public String generateToken(
             Map<String, Object> extraClaims,
-            UserDetails userDetails
+            User userDetails
     ) {
         return buildToken(extraClaims, userDetails, Long.parseLong(jwtExpiration));
     }
 
-    public String generateRefreshToken(User userDetails) {
-        return buildToken(new HashMap<>(), (UserDetails) userDetails, Long.parseLong(refreshExpiration));
+    public String generateRefreshToken(com.bootcamp.bookrentalsystem.model.User userDetails) {
+        return buildToken(new HashMap<>(), userDetails, Long.parseLong(refreshExpiration));
     }
 
     public String buildToken(
             Map<String, Object> extraClaims,
-            UserDetails userDetails,
+            User userDetails,
             long expiration
     ) {
-        return Jwts
-                .builder()
-                .setClaims(extraClaims)
+        Claims claims = Jwts.claims();
+        claims.put("role", userDetails.getRole());
+        claims.put("email", userDetails.getEmail());
+
+        if (extraClaims != null) {
+            claims.putAll(extraClaims);
+        }
+
+        return Jwts.builder()
+                .setClaims(claims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
