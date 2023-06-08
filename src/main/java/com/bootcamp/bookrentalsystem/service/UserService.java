@@ -1,13 +1,14 @@
 package com.bootcamp.bookrentalsystem.service;
 
+import com.bootcamp.bookrentalsystem.exception.*;
 import com.bootcamp.bookrentalsystem.exception.IllegalStateException;
-import com.bootcamp.bookrentalsystem.exception.ResourceNotFoundException;
 import com.bootcamp.bookrentalsystem.model.Book;
 import com.bootcamp.bookrentalsystem.model.Request;
 import com.bootcamp.bookrentalsystem.model.User;
 import com.bootcamp.bookrentalsystem.repository.BookRepository;
 import com.bootcamp.bookrentalsystem.repository.RequestRepository;
 import com.bootcamp.bookrentalsystem.repository.UserRepository;
+import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -26,24 +27,45 @@ public class UserService {
     private BookRepository bookRepository;
     private RequestRepository requestRepository;
     private EmailService emailService;
+    private JwtService jwtService;
 
 
     @Autowired
-    public UserService(@Qualifier("user") UserRepository userRepository, BookRepository bookRepository, RequestRepository requestRepository, EmailService emailService) {
+    public UserService(@Qualifier("user") UserRepository userRepository, BookRepository bookRepository, RequestRepository requestRepository, EmailService emailService, JwtService jwtService) {
         this.userRepository = userRepository;
         this.bookRepository = bookRepository;
         this.requestRepository = requestRepository;
         this.emailService = emailService;
+        this.jwtService = jwtService;
     }
 
     public User createUser(User user) {
         return userRepository.save(user);
     }
 
-    public Optional<User> findUserById(Long userId) {
-        return Optional.ofNullable(userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId)
-                ));
+    public Optional<User> findUserById(Long userId, String token) {
+        if (token.isEmpty()) {
+            throw new UnauthorizedException("Token required");
+        }
+        if (!token.startsWith("Bearer ")) {
+            throw new UnauthorizedException("Invalid token format");
+        }
+        String jwtToken = token.substring(7);
+
+        // Validate and decode the JWT token
+        System.out.println("--------- IS TOKEN ROLE ADMIN: " + jwtService.isAdminToken(token));
+        if (!jwtService.isAdminToken(jwtToken)) {
+            throw new ForbiddenException("Access Denied!!");
+        }
+
+        System.out.println("--------- IS TOKEN EXPIRED: " + jwtService.isTokenExpired(token));
+        if (jwtService.isTokenExpired(jwtToken)) {
+            throw new BadRequestException("Invalid Token!!");
+        }
+
+        return userRepository.findById(userId)
+                .map(Optional::of)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
     }
 
 
