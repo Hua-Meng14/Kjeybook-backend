@@ -126,31 +126,31 @@ public class AuthenticationService {
     }
 
 
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        final String refreshToken;
-        final String username;
-        if (StringUtils.isEmpty(authHeader) || !authHeader.startsWith("Bearer ")) {
-            return;
-        }
-        refreshToken = authHeader.substring(7);
-        username = jwtService.extractUsername(refreshToken);
-        if (username != null) {
-            UserDetails userDetails = (UserDetails) userRepository.findByUsername(username)
-                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-            if (jwtService.isTokenValid(refreshToken, userDetails)) {
-                User user = (User) userDetails; // Assuming the UserDetails is a User instance
-                String accessToken = jwtService.generateToken(user);
-                revokeAllUserTokens(user);
-                savedUserToken(user, accessToken);
-
-                AuthenticationResponse authResponse = AuthenticationResponse.builder()
-                        .accessToken(accessToken)
-                        .refreshToken(refreshToken)
-                        .build();
-                new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
-            }
-        }
-    }
+//    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+//        final String refreshToken;
+//        final String username;
+//        if (StringUtils.isEmpty(authHeader) || !authHeader.startsWith("Bearer ")) {
+//            return;
+//        }
+//        refreshToken = authHeader.substring(7);
+//        username = jwtService.extractUsername(refreshToken);
+//        if (username != null) {
+//            UserDetails userDetails = (UserDetails) userRepository.findByUsername(username)
+//                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+//            if (jwtService.isTokenValid(refreshToken)) {
+//                User user = (User) userDetails; // Assuming the UserDetails is a User instance
+//                String accessToken = jwtService.generateToken(user);
+//                revokeAllUserTokens(user);
+//                savedUserToken(user, accessToken);
+//
+//                AuthenticationResponse authResponse = AuthenticationResponse.builder()
+//                        .accessToken(accessToken)
+//                        .refreshToken(refreshToken)
+//                        .build();
+//                new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
+//            }
+//        }
+//    }
 
 }
