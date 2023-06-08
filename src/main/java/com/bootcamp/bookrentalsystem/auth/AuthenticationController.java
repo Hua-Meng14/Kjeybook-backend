@@ -1,8 +1,9 @@
 package com.bootcamp.bookrentalsystem.auth;
 
+import com.bootcamp.bookrentalsystem.model.RegisterUser;
+import com.bootcamp.bookrentalsystem.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,9 +17,9 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register (
-            @RequestBody User registerUser
-            ) {
+    public ResponseEntity<AuthenticationResponse> register(
+            @RequestBody RegisterUser registerUser
+    ) {
         return ResponseEntity.ok(authenticationService.register(registerUser));
     }
 
