@@ -81,4 +81,8 @@ public class BookService {
         return !book.getRequests().isEmpty();
     }
 
+    public Book getBookById(Long bookId) {
+        Optional<Book> optionalBook = bookRepository.findById(bookId);
+        return optionalBook.orElse(null);
+    }
 }
