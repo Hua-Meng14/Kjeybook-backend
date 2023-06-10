@@ -8,13 +8,11 @@ import com.bootcamp.bookrentalsystem.repository.BookRepository;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 @Service
@@ -26,6 +24,10 @@ public class BookService {
     public BookService(@Qualifier("book") BookRepository bookRepository, EntityManager entityManager) {
         this.bookRepository = bookRepository;
         this.entityManager = entityManager;
+    }
+
+    public List<Book> getBooksByTitle(String title) {
+        return bookRepository.findByTitle(title);
     }
 
     public Book createBook(Book book) {
