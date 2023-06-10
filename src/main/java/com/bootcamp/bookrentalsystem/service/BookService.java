@@ -34,7 +34,7 @@ public class BookService {
         return bookRepository.save(book);
     }
 
-    public List<Book> getAllBook(){
+    public List<Book> getAllBook() {
         return bookRepository.findAll();
     }
 
@@ -61,7 +61,7 @@ public class BookService {
     public Map<String, Boolean> deletBookById(Long bookId) {
         Book existingBook = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
-        System.out.println("-----------------------------------"+hasAssociatedRequests(bookId));
+        System.out.println("-----------------------------------" + hasAssociatedRequests(bookId));
 
 //         Check if the book has any associated requests
         if (!hasAssociatedRequests(bookId)) {
@@ -83,8 +83,8 @@ public class BookService {
 
     public boolean hasAssociatedRequests(Long bookId) {
         Book book = entityManager.find(Book.class, bookId);
-        System.out.println("get all requests relating to the book"+ book.getRequests());
-        System.out.println("get request related to the book--------------------"+book.getRequests().isEmpty());
+        System.out.println("get all requests relating to the book" + book.getRequests());
+        System.out.println("get request related to the book--------------------" + book.getRequests().isEmpty());
         return !book.getRequests().isEmpty();
     }
 
@@ -99,4 +99,8 @@ public class BookService {
         return result;
     }
 
+    public Book getBookById(Long bookId) {
+        Optional<Book> optionalBook = bookRepository.findById(bookId);
+        return optionalBook.orElse(null);
+    }
 }
