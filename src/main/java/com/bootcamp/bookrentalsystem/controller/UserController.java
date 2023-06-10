@@ -60,9 +60,6 @@ public class UserController {
         return userService.getFavoriteBooks(userId);
     }
 
-    @DeleteMapping
-    public String delete() {return "DELETE:: user controller";}
-
     @GetMapping
     public List<User> getAllUsers() {
         return userService.getAllUsers();
