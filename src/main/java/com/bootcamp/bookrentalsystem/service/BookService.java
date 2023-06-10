@@ -12,14 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-<<<<<<< HEAD
 import java.util.*;
-=======
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
->>>>>>> f66eadec7973ea5f6b7942b6a0bc53cf5978e1b5
 
 @Component
 @Service
