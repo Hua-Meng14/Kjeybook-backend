@@ -29,9 +29,9 @@ public class BookController {
         this.requestService = requestService;
     }
 
-    @GetMapping("/getBookByTitle={title}")
-    public List<Book> getBooksByTitle(@RequestParam("title") String keyword){
-        return bookService.getBooksByTitle(keyword);
+    @GetMapping("/{title}")
+    public List<Book> getBooksByTitle(@RequestParam("title") String title){
+        return bookService.getBooksByTitle(title);
     }
 
     @PostMapping

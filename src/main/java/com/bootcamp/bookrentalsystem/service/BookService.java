@@ -8,6 +8,7 @@ import com.bootcamp.bookrentalsystem.repository.BookRepository;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,10 @@ public class BookService {
     public BookService(@Qualifier("book") BookRepository bookRepository, EntityManager entityManager) {
         this.bookRepository = bookRepository;
         this.entityManager = entityManager;
+    }
+
+    public List<Book> getBooksByTitle(String title) {
+        return bookRepository.findByTitle(title);
     }
 
     public Book createBook(Book book) {
@@ -77,17 +82,6 @@ public class BookService {
         System.out.println("get all requests relating to the book"+ book.getRequests());
         System.out.println("get request related to the book--------------------"+book.getRequests().isEmpty());
         return !book.getRequests().isEmpty();
-    }
-
-    public List<Book> getBooksByTitle(String keyword){
-        List<Book> result = new ArrayList<>();
-
-        for (Book book : bookRepository.findAll()) {
-            if (book.getTitle().contains(keyword)) {
-                result.add(book);
-            }
-        }
-        return result;
     }
 
 }
