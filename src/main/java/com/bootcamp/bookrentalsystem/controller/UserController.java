@@ -63,9 +63,10 @@ public class UserController {
     @DeleteMapping
     public String delete() {return "DELETE:: user controller";}
 
-    @GetMapping("/getAllUsers")
-    public List<User> getAllUsers(){
+    @GetMapping
+    public List<User> getAllUsers() {
         return userService.getAllUsers();
+    }
 
     @PostMapping("/{userId}/favorites/{bookId}")
     public ResponseEntity<String> addBookToUserFavorites(@PathVariable Long userId, @PathVariable Long bookId) {
