@@ -88,4 +88,15 @@ public class BookService {
         return !book.getRequests().isEmpty();
     }
 
+    public List<Book> getBooksByAuthor(String author) {
+        List<Book> result = new ArrayList<>();
+
+        for (Book book : bookRepository.findAll()) {
+            if (book.getAuthor().contains(author)) {
+                result.add(book);
+            }
+        }
+        return result;
+    }
+
 }
