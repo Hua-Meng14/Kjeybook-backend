@@ -25,6 +25,8 @@ public class Request {
     private Book book;
     @ApiModelProperty(notes = "Request acceptance status")
     private String status;
+    @ApiModelProperty(notes = "Request isAccepted status")
+    private Boolean isAccepted;
     @ApiModelProperty(notes = "Date of request submitted")
     private LocalDate dateOfRequest;
     @ApiModelProperty(notes = "Request duration")
@@ -40,7 +42,7 @@ public class Request {
         // Default constructor
     }
 
-    public Request(Long requestId, User borrower, Book book, String status, Long requestDuration, LocalDate dateOfAccepted, Date dateOfReturn, LocalDate dateOfRequest, LocalDate dateOfRejected) {
+    public Request(Long requestId, User borrower, Book book, String status, Long requestDuration, LocalDate dateOfAccepted, Date dateOfReturn, LocalDate dateOfRequest, LocalDate dateOfRejected, Boolean isAccepted) {
         this.requestId = requestId;
         this.borrower = borrower;
         this.book = book;
@@ -50,6 +52,7 @@ public class Request {
         this.dateOfReturn = dateOfReturn;
         this.dateOfRequest = dateOfRequest;
         this.dateOfRejected = dateOfRejected;
+        this.isAccepted = isAccepted;
     }
 
     public Long getRequestId() {
@@ -122,5 +125,13 @@ public class Request {
 
     public void setDateOfRejected(LocalDate dateOfRejected) {
         this.dateOfRejected = dateOfRejected;
+    }
+
+    public Boolean getAccepted() {
+        return isAccepted;
+    }
+
+    public void setAccepted(Boolean accepted) {
+        isAccepted = accepted;
     }
 }
