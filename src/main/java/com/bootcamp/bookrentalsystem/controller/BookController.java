@@ -29,7 +29,7 @@ public class BookController {
         this.requestService = requestService;
     }
 
-    @GetMapping("/getAllBooks")
+    @GetMapping
     public List<Book> getAllBooks(){
         return bookService.getAllBook();
     }
