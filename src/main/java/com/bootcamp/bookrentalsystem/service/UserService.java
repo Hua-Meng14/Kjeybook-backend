@@ -93,8 +93,15 @@ public class UserService {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
 
+        List<Book> favoriteBooks = user.getFavoriteBooks();
+
+        // Check if the book is already in the user's favorite list
+        if (favoriteBooks.contains(book)) {
+            throw new IllegalStateException("Book is already added to the user's favorites.");
+        }
+
         // Add the book to the user's favorite list
-        user.getFavoriteBooks().add(book);
+        favoriteBooks.add(book);
         userRepository.save(user);
     }
 
