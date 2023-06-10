@@ -50,11 +50,7 @@ public class RequestService {
         Request request = new Request();
         request.setBorrower(borrower);
         request.setBook(book);
-        request.setStatus("PENDING");
         request.setRequestDuration(requestDuration);
-        request.setDateOfAccepted(null);
-        request.setDateOfReturn(null);
-
         // Set the dateOfRequest as the current date
         LocalDate currentDate = LocalDate.now();
         request.setDateOfRequest(currentDate);
@@ -64,19 +60,19 @@ public class RequestService {
 
     public Request updateRequestById(Long requestId, Request updatedRequest) {
 
-        Request existingRequst = requestRepository.findById(requestId)
+        Request existingRequest = requestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
 
         Optional.ofNullable(updatedRequest.getRequestDuration())
-                .ifPresent(existingRequst::setRequestDuration);
+                .ifPresent(existingRequest::setRequestDuration);
         Optional.ofNullable(updatedRequest.getStatus())
-                .ifPresent(existingRequst::setStatus);
+                .ifPresent(existingRequest::setStatus);
         Optional.ofNullable(updatedRequest.getDateOfAccepted())
-                .ifPresent(existingRequst::setDateOfAccepted);
+                .ifPresent(existingRequest::setDateOfAccepted);
         Optional.ofNullable(updatedRequest.getDateOfReturn())
-                .ifPresent(existingRequst::setDateOfReturn);
+                .ifPresent(existingRequest::setDateOfReturn);
 
-        return requestRepository.save(existingRequst);
+        return requestRepository.save(existingRequest);
     }
 
     public Map<String, Boolean> deleteRequestById(Long requestId) {
