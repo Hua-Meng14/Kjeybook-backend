@@ -60,6 +60,14 @@ public class UserController {
         return userService.getFavoriteBooks(userId);
     }
 
+    @DeleteMapping
+    public String delete() {return "DELETE:: user controller";}
+
+    @GetMapping
+    public List<User> getAllUsers() {
+        return userService.getAllUsers();
+    }
+
     @PostMapping("/{userId}/favorites/{bookId}")
     public ResponseEntity<String> addBookToUserFavorites(@PathVariable Long userId, @PathVariable Long bookId) {
         userService.addBookToUserFavorites(userId, bookId);

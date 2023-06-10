@@ -1,5 +1,6 @@
 package com.bootcamp.bookrentalsystem.service;
 
+import com.bootcamp.bookrentalsystem.model.User;
 import com.bootcamp.bookrentalsystem.exception.IllegalStateException;
 import com.bootcamp.bookrentalsystem.exception.ResourceNotFoundException;
 import com.bootcamp.bookrentalsystem.model.Book;
@@ -13,11 +14,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
 
 @Component
 @Service
@@ -73,6 +74,10 @@ public class UserService {
         Map<String, Boolean> response = new HashMap<>();
         response.put("deleted", Boolean.TRUE);
         return response;
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
     public List<Book> getFavoriteBooks(Long userId) {
