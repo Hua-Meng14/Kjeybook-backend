@@ -105,8 +105,8 @@ public class RequestService {
         Long requestDuration = request.getRequestDuration();
         if (requestDuration != null) {
             LocalDate dateOfReturn = currentDate.plusDays(requestDuration + 1);
-            java.sql.Date dateOfReturnWithoutTime = java.sql.Date.valueOf(dateOfReturn);
-            request.setDateOfReturn(dateOfReturnWithoutTime);
+//            java.sql.Date dateOfReturnWithoutTime = java.sql.Date.valueOf(dateOfReturn);
+            request.setDateOfReturn(dateOfReturn);
         }
 
         // Set the request status to "ACCEPTED"
@@ -131,10 +131,12 @@ public class RequestService {
 
         // Set the rejected date as the current date
         LocalDate currentDate = LocalDate.now();
-        request.setDateOfArchived(currentDate);
+        request.setDateOfRejected(currentDate);
 
         // Set the request status to "REJECTED"
         request.setStatus("ARCHIVED");
+        // Set the request isApproved to true
+        request.setIsApproved(false);
 
         // Send email to notify the borrower
         userService.notifyUserRequestRejected(requestId);
@@ -144,5 +146,27 @@ public class RequestService {
 
     public List<Request> getAllRequests() {
         return requestRepository.findAll();
+    }
+
+    public Request returnBook(Long requestId) {
+        // Retrieve the request by ID
+        Request request = requestRepository.findById(requestId)
+                .orElseThrow(() -> new ResourceNotFoundException("Request not found with ID: " + requestId));
+
+        // Update the request status to "ARCHIVED"
+        request.setStatus("ARCHIVED");
+
+        // Set the dateOfReceived as the current date
+        LocalDate currentDate = LocalDate.now();
+        request.setDateOfReceived(currentDate);
+
+        // Update the book isRented to false
+        Long requestBookId = request.getBook().getId();
+        Book book = bookService.getBookById(requestBookId);
+        book.setRented(false);
+
+        // Save the updated request
+        requestRepository.save(request);
+        return request;
     }
 }
