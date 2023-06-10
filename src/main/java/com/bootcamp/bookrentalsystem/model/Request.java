@@ -24,19 +24,19 @@ public class Request {
     @JoinColumn(name = "book_id")
     private Book book;
     @ApiModelProperty(notes = "Request acceptance status")
-    private String status;
+    private String status = "PENDING";
     @ApiModelProperty(notes = "Request isAccepted status")
-    private Boolean isAccepted;
+    private Boolean isAccepted = false;
     @ApiModelProperty(notes = "Date of request submitted")
     private LocalDate dateOfRequest;
     @ApiModelProperty(notes = "Request duration")
     private Long requestDuration;
     @ApiModelProperty(notes = "Date of request got accepted")
-    private LocalDate dateOfAccepted;
+    private LocalDate dateOfAccepted = null;
     @ApiModelProperty(notes = "Date of request got rejected")
-    private LocalDate dateOfRejected;
+    private LocalDate dateOfRejected = null;
     @ApiModelProperty(notes = "Date of book to be returned")
-    private Date dateOfReturn;
+    private Date dateOfReturn = null;
 
     public Request() {
         // Default constructor
