@@ -30,8 +30,12 @@ public class BookController {
     }
 
     @GetMapping("/{title}")
-    public List<Book> getBooksByTitle(@RequestParam("title") String title){
+    public List<Book> getBooksByTitle(@RequestParam("title") String title) {
         return bookService.getBooksByTitle(title);
+    }
+    @GetMapping
+    public List<Book> getAllBooks(){
+        return bookService.getAllBook();
     }
 
     @PostMapping
