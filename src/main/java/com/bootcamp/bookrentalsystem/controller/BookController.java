@@ -29,6 +29,16 @@ public class BookController {
         this.requestService = requestService;
     }
 
+    @GetMapping("/title")
+    public List<Book> getBooksByTitle(@RequestParam("title") String title) {
+        return bookService.getBooksByTitle(title);
+    }
+
+    @GetMapping
+    public List<Book> getAllBooks() {
+        return bookService.getAllBook();
+    }
+
     @PostMapping
     public Book createBook(@RequestBody Book book) {
         return this.bookService.createBook(book);
@@ -44,6 +54,22 @@ public class BookController {
     public ResponseEntity<Map<String, Boolean>> deleteBookB(@PathVariable Long bookId) {
         Map<String, Boolean> response = bookService.deletBookById(bookId);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/author")
+    public List<Book> getBooksByAuthor(@RequestParam("author") String author) {
+        return bookService.getBooksByAuthor(author);
+    }
+
+    @GetMapping("/{bookId}")
+    public ResponseEntity<?> getBookById(@PathVariable Long bookId) {
+        Book book = bookService.getBookById(bookId);
+
+        if (book != null) {
+            return ResponseEntity.ok(book);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book not found");
+        }
     }
 
 }

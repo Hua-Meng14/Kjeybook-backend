@@ -1,6 +1,5 @@
 package com.bootcamp.bookrentalsystem.service;
 
-import com.bootcamp.bookrentalsystem.exception.*;
 import com.bootcamp.bookrentalsystem.exception.IllegalStateException;
 import com.bootcamp.bookrentalsystem.model.Book;
 import com.bootcamp.bookrentalsystem.model.Request;
@@ -14,11 +13,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
 
 @Component
 @Service
@@ -97,6 +96,10 @@ public class UserService {
         return response;
     }
 
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
     public List<Book> getFavoriteBooks(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
@@ -110,8 +113,15 @@ public class UserService {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
 
+        List<Book> favoriteBooks = user.getFavoriteBooks();
+
+        // Check if the book is already in the user's favorite list
+        if (favoriteBooks.contains(book)) {
+            throw new IllegalStateException("Book is already added to the user's favorites.");
+        }
+
         // Add the book to the user's favorite list
-        user.getFavoriteBooks().add(book);
+        favoriteBooks.add(book);
         userRepository.save(user);
     }
 
@@ -121,18 +131,21 @@ public class UserService {
 
         List<Book> favoriteBooks = user.getFavoriteBooks();
 
-        // Check if the user's favorite list is empty
-        if (favoriteBooks.isEmpty()) {
-            throw new IllegalStateException("Cannot remove book from an empty favorite list.");
+        // Check if the book exists in the user's favorite list
+        boolean bookExists = favoriteBooks.stream()
+                .anyMatch(book -> book.getId().equals(bookId));
+
+        if (!bookExists) {
+            throw new ResourceNotFoundException("Book not found in the user's favorites with book id: " + bookId);
         }
 
-        if (!favoriteBooks.stream().anyMatch(book -> book.getId().equals(bookId))) {
-            throw new ResourceNotFoundException("Book not found in user's favorite with book id: " + bookId);
-        }
+        System.out.println("---------------BEFORE DELETE: "+ user.getFavoriteBooks());
 
-        Optional<Book> book = bookRepository.findById(bookId);
         // Remove the book from the user's favorite list
-        user.getFavoriteBooks().remove(book);
+        favoriteBooks.removeIf(book -> book.getId().equals(bookId));
+
+        System.out.println("---------------AFTER DELETE: "+ user.getFavoriteBooks());
+
         userRepository.save(user);
     }
 

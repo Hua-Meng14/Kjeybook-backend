@@ -35,6 +35,12 @@ public class RequestController {
         return new ResponseEntity<>(createdRequest, HttpStatus.CREATED);
     }
 
+    @GetMapping
+    public ResponseEntity<List<Request>> getAllRequests() {
+        List<Request> requests = requestService.getAllRequests();
+        return ResponseEntity.ok(requests);
+    }
+
     @PatchMapping("/{requestId}")
     public ResponseEntity<Request> updateRequest(@PathVariable Long requestId, @RequestBody Request updatedRequest) {
         Request request = this.requestService.updateRequestById(requestId, updatedRequest);
@@ -52,22 +58,22 @@ public class RequestController {
         return new ResponseEntity<>(requests, HttpStatus.OK);
     }
 
-    @PostMapping("/{requestId}/accept")
+    @PatchMapping("/{requestId}/accept")
     public ResponseEntity<Request> acceptRequest(@PathVariable Long requestId) {
         Request acceptedRequest = requestService.acceptRequest(requestId);
         return new ResponseEntity<>(acceptedRequest, HttpStatus.OK);
     }
 
-    @PostMapping("/{requestId}/reject")
+    @PatchMapping("/{requestId}/reject")
     public ResponseEntity<Request> rejectRequest(@PathVariable Long requestId) {
         Request rejectedRequest = requestService.rejectRequest(requestId);
         return new ResponseEntity<>(rejectedRequest, HttpStatus.OK);
     }
 
-//    @PostMapping("/requests/{requestId}/notify")
-//    public ResponseEntity<String> notifyUserRequestAccepted(@PathVariable Long requestId) {
-//        userService.notifyUserRequestAccepted(requestId);
-//        return ResponseEntity.ok("User notification sent successfully.");
-//    }
+    @PatchMapping("/{requestId}/return")
+    public ResponseEntity<String> returnBook(@PathVariable Long requestId) {
+        Request archivedRequest = requestService.returnBook(requestId);
+        return ResponseEntity.ok("Book returned successfully.");
+    }
 
 }

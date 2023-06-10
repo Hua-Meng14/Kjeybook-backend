@@ -8,12 +8,11 @@ import com.bootcamp.bookrentalsystem.repository.BookRepository;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 @Service
@@ -27,8 +26,16 @@ public class BookService {
         this.entityManager = entityManager;
     }
 
+    public List<Book> getBooksByTitle(String title) {
+        return bookRepository.findByTitle(title);
+    }
+
     public Book createBook(Book book) {
         return bookRepository.save(book);
+    }
+
+    public List<Book> getAllBook() {
+        return bookRepository.findAll();
     }
 
     public Book updateBookById(Long bookId, Book updatedBook) {
@@ -54,12 +61,11 @@ public class BookService {
     public Map<String, Boolean> deletBookById(Long bookId) {
         Book existingBook = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
-        System.out.println("-----------------------------------"+hasAssociatedRequests(bookId));
 
 //         Check if the book has any associated requests
-        if (!hasAssociatedRequests(bookId)) {
-            throw new ForeignKeyConstraintException("Cannot delete the book because it has associated requests.");
-        }
+//        if (!hasAssociatedRequests(bookId)) {
+//            throw new ForeignKeyConstraintException("Cannot delete the book because it has associated requests.");
+//        }
 
         bookRepository.deleteById(bookId);
 
@@ -74,11 +80,26 @@ public class BookService {
                 ));
     }
 
-    public boolean hasAssociatedRequests(Long bookId) {
-        Book book = entityManager.find(Book.class, bookId);
-        System.out.println("get all requests relating to the book"+ book.getRequests());
-        System.out.println("get request related to the book--------------------"+book.getRequests().isEmpty());
-        return !book.getRequests().isEmpty();
+//    public boolean hasAssociatedRequests(Long bookId) {
+//        Book book = entityManager.find(Book.class, bookId);
+//        System.out.println("get all requests relating to the book" + book.getRequests());
+//        System.out.println("get request related to the book--------------------" + book.getRequests().isEmpty());
+//        return !book.getRequests().isEmpty();
+//    }
+
+    public List<Book> getBooksByAuthor(String author) {
+        List<Book> result = new ArrayList<>();
+
+        for (Book book : bookRepository.findAll()) {
+            if (book.getAuthor().contains(author)) {
+                result.add(book);
+            }
+        }
+        return result;
     }
 
+    public Book getBookById(Long bookId) {
+        Optional<Book> optionalBook = bookRepository.findById(bookId);
+        return optionalBook.orElse(null);
+    }
 }
