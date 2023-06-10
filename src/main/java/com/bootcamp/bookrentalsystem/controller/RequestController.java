@@ -35,6 +35,12 @@ public class RequestController {
         return new ResponseEntity<>(createdRequest, HttpStatus.CREATED);
     }
 
+    @GetMapping
+    public ResponseEntity<List<Request>> getAllRequests() {
+        List<Request> requests = requestService.getAllRequests();
+        return ResponseEntity.ok(requests);
+    }
+
     @PatchMapping("/{requestId}")
     public ResponseEntity<Request> updateRequest(@PathVariable Long requestId, @RequestBody Request updatedRequest) {
         Request request = this.requestService.updateRequestById(requestId, updatedRequest);
