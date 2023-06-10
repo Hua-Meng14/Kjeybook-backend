@@ -35,7 +35,7 @@ public class RequestController {
         return new ResponseEntity<>(createdRequest, HttpStatus.CREATED);
     }
 
-    @GetMapping("/getAllRequests")
+    @GetMapping
     public ResponseEntity<List<Request>> getAllRequests() {
         List<Request> requests = requestService.getAllRequests();
         return ResponseEntity.ok(requests);
