@@ -111,6 +111,8 @@ public class RequestService {
 
         // Set the request status to "ACCEPTED"
         request.setStatus("ACCEPTED");
+        // Set the request isApproved to true
+        request.setIsApproved(true);
 
         // Set book isRented to "TRUE"
         Optional<Object> requestBook = bookService.findBookById(request.getBook().getId());
@@ -129,10 +131,10 @@ public class RequestService {
 
         // Set the rejected date as the current date
         LocalDate currentDate = LocalDate.now();
-        request.setDateOfRejected(currentDate);
+        request.setDateOfArchived(currentDate);
 
         // Set the request status to "REJECTED"
-        request.setStatus("REJECTED");
+        request.setStatus("ARCHIVED");
 
         // Send email to notify the borrower
         userService.notifyUserRequestRejected(requestId);
