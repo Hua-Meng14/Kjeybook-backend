@@ -33,7 +33,7 @@ public class EmailService {
         String bookTitle = request.getBook().getTitle();
         String author = request.getBook().getAuthor();
         LocalDate requestDate = request.getDateOfRequest();
-        Date returnDate = request.getDateOfReturn();
+        LocalDate returnDate = request.getDateOfReturn();
         LocalDate acceptedDate = request.getDateOfAccepted();
 
         // build email
