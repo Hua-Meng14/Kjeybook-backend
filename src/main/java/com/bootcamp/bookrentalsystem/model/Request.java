@@ -24,23 +24,25 @@ public class Request {
     @JoinColumn(name = "book_id")
     private Book book;
     @ApiModelProperty(notes = "Request acceptance status")
-    private String status;
+    private String status = "PENDING";
+    @ApiModelProperty(notes = "Request isApproved status")
+    private Boolean isApproved = false;
     @ApiModelProperty(notes = "Date of request submitted")
     private LocalDate dateOfRequest;
     @ApiModelProperty(notes = "Request duration")
     private Long requestDuration;
     @ApiModelProperty(notes = "Date of request got accepted")
-    private LocalDate dateOfAccepted;
+    private LocalDate dateOfAccepted = null;
     @ApiModelProperty(notes = "Date of request got rejected")
-    private LocalDate dateOfRejected;
+    private LocalDate dateOfArchived = null;
     @ApiModelProperty(notes = "Date of book to be returned")
-    private Date dateOfReturn;
+    private Date dateOfReturn = null;
 
     public Request() {
         // Default constructor
     }
 
-    public Request(Long requestId, User borrower, Book book, String status, Long requestDuration, LocalDate dateOfAccepted, Date dateOfReturn, LocalDate dateOfRequest, LocalDate dateOfRejected) {
+    public Request(Long requestId, User borrower, Book book, String status, Long requestDuration, LocalDate dateOfAccepted, Date dateOfReturn, LocalDate dateOfRequest, LocalDate dateOfArchived, Boolean isApproved) {
         this.requestId = requestId;
         this.borrower = borrower;
         this.book = book;
@@ -49,7 +51,8 @@ public class Request {
         this.dateOfAccepted = dateOfAccepted;
         this.dateOfReturn = dateOfReturn;
         this.dateOfRequest = dateOfRequest;
-        this.dateOfRejected = dateOfRejected;
+        this.dateOfArchived = dateOfArchived;
+        this.isApproved = isApproved;
     }
 
     public Long getRequestId() {
@@ -116,11 +119,19 @@ public class Request {
         this.dateOfRequest = dateOfRequest;
     }
 
-    public LocalDate getDateOfRejected() {
-        return dateOfRejected;
+    public LocalDate getDateOfArchived() {
+        return dateOfArchived;
     }
 
-    public void setDateOfRejected(LocalDate dateOfRejected) {
-        this.dateOfRejected = dateOfRejected;
+    public void setDateOfArchived(LocalDate dateOfArchived) {
+        this.dateOfArchived = dateOfArchived;
+    }
+
+    public Boolean getIsApproved() {
+        return isApproved;
+    }
+
+    public void setIsApproved(Boolean accepted) {
+        isApproved = accepted;
     }
 }

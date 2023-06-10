@@ -34,17 +34,20 @@ public class EmailService {
         String author = request.getBook().getAuthor();
         LocalDate requestDate = request.getDateOfRequest();
         Date returnDate = request.getDateOfReturn();
+        LocalDate acceptedDate = request.getDateOfAccepted();
 
         // build email
         // send message
-        String message = "Dear "+ borrower +",\n" +
+        String message = "Dear " + borrower + ",\n" +
                 "\n" +
                 "We are pleased to inform you that your book rental request has been approved. Here are the details:\n" +
                 "\n" +
-                "Book Title: "+ bookTitle +"\n" +
-                "Author: "+ author +"\n" +
-                "Request Date: "+ requestDate +"\n" +
-                "Due Date: "+ returnDate +"\n" +
+                "Book Title: " + bookTitle + "\n" +
+                "Author: " + author + "\n" +
+                "Request Date: " + requestDate + "\n" +
+                "Due Date: " + returnDate + "\n" +
+                "\n" +
+                "You can come to get your book starting from " + acceptedDate + " or " + acceptedDate.plusDays(1) + ".\n" +
                 "\n" +
                 "Please make sure to return the book by the due date to avoid any late fees or penalties.\n" +
                 "\n" +
@@ -53,9 +56,7 @@ public class EmailService {
                 "Thank you for choosing our book rental service!\n" +
                 "\n" +
                 "Best regards,\n" +
-                "The Book Rental Team" +
-                "" +
-                "";
+                "The Book Rental Team";
         String from = "no-reply@bookrentalsystem.com.kh";
         send(sendTo, from, message, subject);
     }
@@ -72,13 +73,13 @@ public class EmailService {
 
         // build email
         // send message
-        String message = "Dear "+ borrower +",\n" +
+        String message = "Dear " + borrower + ",\n" +
                 "\n" +
                 "We regret to inform you that your book rental request has been rejected. We appreciate your interest, but unfortunately, we are unable to fulfill your request at this time. Here are the details:\n" +
                 "\n" +
-                "Book Title: "+ bookTitle +"\n" +
-                "Author: "+ author +"\n" +
-                "Request Date: "+ requestDate +"\n" +
+                "Book Title: " + bookTitle + "\n" +
+                "Author: " + author + "\n" +
+                "Request Date: " + requestDate + "\n" +
                 "\n" +
                 "We apologize for any inconvenience caused. If you have any further questions or concerns, please don't hesitate to reach out to our support team.\n" +
                 "\n" +

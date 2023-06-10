@@ -50,11 +50,7 @@ public class RequestService {
         Request request = new Request();
         request.setBorrower(borrower);
         request.setBook(book);
-        request.setStatus("PENDING");
         request.setRequestDuration(requestDuration);
-        request.setDateOfAccepted(null);
-        request.setDateOfReturn(null);
-
         // Set the dateOfRequest as the current date
         LocalDate currentDate = LocalDate.now();
         request.setDateOfRequest(currentDate);
@@ -64,19 +60,19 @@ public class RequestService {
 
     public Request updateRequestById(Long requestId, Request updatedRequest) {
 
-        Request existingRequst = requestRepository.findById(requestId)
+        Request existingRequest = requestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
 
         Optional.ofNullable(updatedRequest.getRequestDuration())
-                .ifPresent(existingRequst::setRequestDuration);
+                .ifPresent(existingRequest::setRequestDuration);
         Optional.ofNullable(updatedRequest.getStatus())
-                .ifPresent(existingRequst::setStatus);
+                .ifPresent(existingRequest::setStatus);
         Optional.ofNullable(updatedRequest.getDateOfAccepted())
-                .ifPresent(existingRequst::setDateOfAccepted);
+                .ifPresent(existingRequest::setDateOfAccepted);
         Optional.ofNullable(updatedRequest.getDateOfReturn())
-                .ifPresent(existingRequst::setDateOfReturn);
+                .ifPresent(existingRequest::setDateOfReturn);
 
-        return requestRepository.save(existingRequst);
+        return requestRepository.save(existingRequest);
     }
 
     public Map<String, Boolean> deleteRequestById(Long requestId) {
@@ -108,13 +104,15 @@ public class RequestService {
         // Set the dateOfReturn based on the request duration
         Long requestDuration = request.getRequestDuration();
         if (requestDuration != null) {
-            LocalDate dateOfReturn = currentDate.plusDays(requestDuration);
+            LocalDate dateOfReturn = currentDate.plusDays(requestDuration + 1);
             java.sql.Date dateOfReturnWithoutTime = java.sql.Date.valueOf(dateOfReturn);
             request.setDateOfReturn(dateOfReturnWithoutTime);
         }
 
         // Set the request status to "ACCEPTED"
         request.setStatus("ACCEPTED");
+        // Set the request isApproved to true
+        request.setIsApproved(true);
 
         // Set book isRented to "TRUE"
         Optional<Object> requestBook = bookService.findBookById(request.getBook().getId());
@@ -133,10 +131,10 @@ public class RequestService {
 
         // Set the rejected date as the current date
         LocalDate currentDate = LocalDate.now();
-        request.setDateOfRejected(currentDate);
+        request.setDateOfArchived(currentDate);
 
         // Set the request status to "REJECTED"
-        request.setStatus("REJECTED");
+        request.setStatus("ARCHIVED");
 
         // Send email to notify the borrower
         userService.notifyUserRequestRejected(requestId);

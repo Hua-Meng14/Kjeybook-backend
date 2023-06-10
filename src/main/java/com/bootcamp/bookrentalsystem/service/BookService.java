@@ -61,12 +61,11 @@ public class BookService {
     public Map<String, Boolean> deletBookById(Long bookId) {
         Book existingBook = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
-        System.out.println("-----------------------------------" + hasAssociatedRequests(bookId));
 
 //         Check if the book has any associated requests
-        if (!hasAssociatedRequests(bookId)) {
-            throw new ForeignKeyConstraintException("Cannot delete the book because it has associated requests.");
-        }
+//        if (!hasAssociatedRequests(bookId)) {
+//            throw new ForeignKeyConstraintException("Cannot delete the book because it has associated requests.");
+//        }
 
         bookRepository.deleteById(bookId);
 
@@ -81,12 +80,12 @@ public class BookService {
                 ));
     }
 
-    public boolean hasAssociatedRequests(Long bookId) {
-        Book book = entityManager.find(Book.class, bookId);
-        System.out.println("get all requests relating to the book" + book.getRequests());
-        System.out.println("get request related to the book--------------------" + book.getRequests().isEmpty());
-        return !book.getRequests().isEmpty();
-    }
+//    public boolean hasAssociatedRequests(Long bookId) {
+//        Book book = entityManager.find(Book.class, bookId);
+//        System.out.println("get all requests relating to the book" + book.getRequests());
+//        System.out.println("get request related to the book--------------------" + book.getRequests().isEmpty());
+//        return !book.getRequests().isEmpty();
+//    }
 
     public List<Book> getBooksByAuthor(String author) {
         List<Book> result = new ArrayList<>();
