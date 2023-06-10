@@ -104,7 +104,7 @@ public class RequestService {
         // Set the dateOfReturn based on the request duration
         Long requestDuration = request.getRequestDuration();
         if (requestDuration != null) {
-            LocalDate dateOfReturn = currentDate.plusDays(requestDuration);
+            LocalDate dateOfReturn = currentDate.plusDays(requestDuration + 1);
             java.sql.Date dateOfReturnWithoutTime = java.sql.Date.valueOf(dateOfReturn);
             request.setDateOfReturn(dateOfReturnWithoutTime);
         }
