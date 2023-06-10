@@ -32,9 +32,9 @@ public class Book {
     @ApiModelProperty(notes = "User favorite book mapping.")
     @ManyToMany(mappedBy = "favoriteBooks")
     private List<User> users;
-    @ApiModelProperty(notes = "Requests book mapping.")
-    @OneToMany(mappedBy = "book")
-    private List<Request> requests;
+//    @ApiModelProperty(notes = "Requests book mapping.")
+//    @OneToMany(mappedBy = "book")
+//    private List<Request> requests;
 
     public Book() {
         // Default constructor
@@ -115,11 +115,11 @@ public class Book {
         isRented = rented;
     }
 
-    public List<Request> getRequests() {
-        return requests;
-    }
-
-    public void setRequests(List<Request> requests) {
-        this.requests = requests;
-    }
+//    public List<Request> getRequests() {
+//        return requests;
+//    }
+//
+//    public void setRequests(List<Request> requests) {
+//        this.requests = requests;
+//    }
 }
