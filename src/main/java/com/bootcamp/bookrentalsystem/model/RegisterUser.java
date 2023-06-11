@@ -22,16 +22,19 @@ public class RegisterUser {
     private String email;
     @ApiModelProperty(notes = "User's role")
     private String role;
+    @ApiModelProperty(notes = "User's phone number")
+    private String phoneNumber;
     public RegisterUser() {
         // Default constructor for Jackson deserialization
     }
 
-    public RegisterUser(String username, String email, String encodedPassword, String role) {
+    public RegisterUser(String username, String email, String encodedPassword, String role, String phoneNumber) {
         // Constructor for convenience
         this.username = username;
         this.email = email;
         this.password = encodedPassword;
         this.role = role;
+        this.phoneNumber = phoneNumber;
     }
 
     public Long getUserId() {
@@ -72,5 +75,13 @@ public class RegisterUser {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }
