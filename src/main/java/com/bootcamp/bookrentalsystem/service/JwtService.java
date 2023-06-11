@@ -93,11 +93,7 @@ public class JwtService {
 
         String jwtToken = token.substring(7);
 
-//        System.out.println("--------------BEARER AUTH TOKEN: " + jwtToken);
-
         Claims claims = decodeToken(jwtToken);
-
-//        System.out.println("----------------TOKEN CLAIMS: " + claims);
 
         String role = claims.get("role", String.class);
         // Perform authorization logic based on the extracted information
@@ -140,8 +136,6 @@ public class JwtService {
             String jwtToken = token.substring(7);
 
             Claims claims = decodeToken(jwtToken);
-
-//            System.out.println("--------------------- TOKEN CLAIMS: "+ claims);
 
             String tokenEmail = claims.get("email", String.class);
 
