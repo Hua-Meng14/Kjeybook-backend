@@ -28,24 +28,21 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticationService.authenticate(request));
     }
 
-//    @PostMapping("/refresh-token")
-//    public ResponseEntity refreshToken(@RequestParam("refreshToken") String refreshToken) {
-//
-//        if (refreshToken == null || refreshToken.isEmpty()) {
-//            throw new UnauthorizedException("Refresh token not provided");
-//        }
-//
-//        ResponseEntity<String> newAccessToken = authenticationService.refreshToken(refreshToken);
-//        if (newAccessToken != null) {
-//            return ResponseEntity.ok(newAccessToken);
-//        } else {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Failed to refresh token");
-//        }
-//    }
-
     @PostMapping("/validate-token/{userId}")
     public ResponseEntity validateToken(@RequestHeader("Authorization") String token, @PathVariable Long userId) {
         return ResponseEntity.ok(authenticationService.validateToken(token, userId));
     }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity refreshToken(@RequestHeader("Authorization") String refreshToken) {
+
+        ResponseEntity<String> newAccessToken = authenticationService.refreshToken(refreshToken);
+        if (newAccessToken != null) {
+            return ResponseEntity.ok(newAccessToken);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Failed to refresh token");
+        }
+    }
+
 
 }
