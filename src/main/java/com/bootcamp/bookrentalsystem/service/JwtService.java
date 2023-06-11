@@ -2,23 +2,17 @@ package com.bootcamp.bookrentalsystem.service;
 
 import com.bootcamp.bookrentalsystem.exception.BadRequestException;
 import com.bootcamp.bookrentalsystem.exception.ForbiddenException;
-import com.bootcamp.bookrentalsystem.exception.UnauthorizedException;
+import com.bootcamp.bookrentalsystem.exception.IllegalArgumentException;
 import com.bootcamp.bookrentalsystem.model.User;
-import com.bootcamp.bookrentalsystem.repository.BookRepository;
-import com.bootcamp.bookrentalsystem.repository.RequestRepository;
 import com.bootcamp.bookrentalsystem.repository.UserRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import javax.swing.text.html.Option;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Service
@@ -82,74 +76,6 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public boolean isAdminToken(String token) {
-        if (token == null || token.isEmpty()) {
-            throw new UnauthorizedException("Token required");
-        }
-
-        if (!token.startsWith("Bearer ")) {
-            throw new UnauthorizedException("Invalid token format");
-        }
-
-        String jwtToken = token.substring(7);
-
-        Claims claims = decodeToken(jwtToken);
-
-        String role = claims.get("role", String.class);
-        // Perform authorization logic based on the extracted information
-        return "ADMIN".equals(role);
-    }
-
-    public boolean isTokenExpired(String token) {
-        try {
-            if (token == null || token.isEmpty()) {
-                throw new UnauthorizedException("Token required");
-            }
-
-            if (!token.startsWith("Bearer ")) {
-                throw new UnauthorizedException("Invalid token format");
-            }
-
-            String jwtToken = token.substring(7);
-
-            Claims claims = decodeToken(jwtToken);
-
-            Date expiration = claims.getExpiration();
-
-            // Token expiration logic
-            return expiration.before(new Date());
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    public boolean isUserToken(String token, Long userId) {
-        try {
-            if (token == null || token.isEmpty()) {
-                throw new UnauthorizedException("Token required");
-            }
-
-            if (!token.startsWith("Bearer ")) {
-                throw new UnauthorizedException("Invalid token format");
-            }
-
-            String jwtToken = token.substring(7);
-
-            Claims claims = decodeToken(jwtToken);
-
-            String tokenEmail = claims.get("email", String.class);
-
-            Optional<User> existingUser = userRepository.findById(userId);
-//            System.out.println("---------------USER EMAIL: "+ existingUser.get().getEmail());
-//            System.out.println("---------------TOKEN EMAIL: "+ tokenEmail);
-//            System.out.println("---------------TOKEN IS MATCHED: "+ existingUser.get().getEmail().equals(tokenEmail));
-            return existingUser.map(user -> tokenEmail.equals(user.getEmail())).orElse(false);
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-
     public Claims decodeToken(String token) {
         try {
             return Jwts.parserBuilder()
@@ -161,4 +87,165 @@ public class JwtService {
             throw new ForbiddenException("Invalid Token!!");
         }
     }
+
+    private boolean isTokenNotExpired(Date expiration) {
+//        System.out.println("-----------EXPIRATION: " + expiration);
+        return expiration != null && expiration.after(new Date());
+
+    }
+
+    public boolean isValidAdminToken(String token) {
+
+        if (token == null || token.isEmpty()) {
+            throw new IllegalArgumentException("Token required");
+        }
+
+        if (!token.startsWith("Bearer ")) {
+            throw new BadRequestException("Invalid token format");
+        }
+
+        String jwtToken = token.substring(7);
+
+        Claims claims = decodeToken(jwtToken);
+
+        // Get token role
+        String role = claims.get("role", String.class);
+        // Get token expiration
+        Date expiration = claims.getExpiration();
+
+        // Check is token role is ADMIN type
+        boolean isAdminRole = "ADMIN".equals(role);
+        // Check token is NOT expired
+        boolean isNotExpired = isTokenNotExpired(expiration);
+
+        return isAdminRole && isNotExpired;
+    }
+
+    public boolean isValidUserToken(String token, Long userId) {
+
+        if (token == null || token.isEmpty()) {
+            throw new IllegalArgumentException("Token required");
+        }
+
+        if (!token.startsWith("Bearer ")) {
+            throw new BadRequestException("Invalid token format");
+        }
+
+        String jwtToken = token.substring(7);
+
+        Claims claims = decodeToken(jwtToken);
+
+        // Get token role
+        String tokenEmail = claims.get("email", String.class);
+        // Get token expiration
+        Date expiration = claims.getExpiration();
+
+        // Find existingUser with userId
+        Optional<User> existingUser = userRepository.findById(userId);
+        // Check if tokenEmail equals to existingUser's email
+        boolean emailMatched = existingUser.map(user -> tokenEmail.equals(user.getEmail())).orElse(false);
+        // Check token is NOT expired
+        boolean isNotExpired = isTokenNotExpired(expiration);
+
+//        System.out.println("----------------EMAIL MATCHED: " + emailMatched);
+//        System.out.println("----------------TOKEN IS NOT EXPIRED: " + isNotExpired);
+//        System.out.println("----------------EMAIL MATCHED AND TOKEN NOT EXPIRED: " + (emailMatched && isNotExpired));
+
+        return emailMatched && isNotExpired;
+    }
+
+
+//    public boolean isAdminToken(String token) {0
+//        if (token == null || token.isEmpty()) {
+//            throw new UnauthorizedException("Token required");
+//        }
+//
+//        if (!token.startsWith("Bearer ")) {
+//            throw new UnauthorizedException("Invalid token format");
+//        }
+//
+//        String jwtToken = token.substring(7);
+//
+//        Claims claims = decodeToken(jwtToken);
+//
+//        String role = claims.get("role", String.class);
+//        // Perform authorization logic based on the extracted information
+//        return "ADMIN".equals(role);
+//    }
+//
+//    public boolean isTokenExpired(String token) {
+//        try {
+//            if (token == null || token.isEmpty()) {
+//                throw new UnauthorizedException("Token required");
+//            }
+//
+//            if (!token.startsWith("Bearer ")) {
+//                throw new UnauthorizedException("Invalid token format");
+//            }
+//
+//            String jwtToken = token.substring(7);
+//
+//            Claims claims = decodeToken(jwtToken);
+//
+//            Date expiration = claims.getExpiration();
+//
+//            // Token expiration logic
+//            return expiration.before(new Date());
+//        } catch (Exception e) {
+//            return false;
+//        }
+//    }
+//
+//    public boolean isValidToken(String token) {
+//        try {
+//            if (token == null || token.isEmpty()) {
+//                throw new UnauthorizedException("Token required");
+//            }
+//
+//            System.out.println("-------------------TOKEN: " + token);
+//
+//            Claims claims = decodeToken(token);
+//            System.out.println("-------------------TOKEN CLAIMS: " + claims);
+//
+//            Date expiration = claims.getExpiration();
+//
+//            String tokenEmail = claims.get("email", String.class);
+//            Optional<User> existingUser = userRepository.findByEmail(tokenEmail);
+//
+//            System.out.println("------- IS IT BELONG TO A USER: " + existingUser.isPresent());
+//            System.out.println("------- IS IT EXPIRED: " + expiration.before(new Date()));
+//
+//            return existingUser.isPresent() && expiration.before(new Date());
+//        } catch (Exception e) {
+//            return false;
+//        }
+//    }
+//
+//    public boolean isUserToken(String token, Long userId) {
+//        try {
+//            if (token == null || token.isEmpty()) {
+//                throw new UnauthorizedException("Token required");
+//            }
+//
+//            if (!token.startsWith("Bearer ")) {
+//                throw new UnauthorizedException("Invalid token format");
+//            }
+//
+//            String jwtToken = token.substring(7);
+//
+//            Claims claims = decodeToken(jwtToken);
+//
+//            String tokenEmail = claims.get("email", String.class);
+//
+//            Optional<User> existingUser = userRepository.findById(userId);
+////            System.out.println("---------------USER EMAIL: "+ existingUser.get().getEmail());
+////            System.out.println("---------------TOKEN EMAIL: "+ tokenEmail);
+////            System.out.println("---------------TOKEN IS MATCHED: "+ existingUser.get().getEmail().equals(tokenEmail));
+//            return existingUser.map(user -> tokenEmail.equals(user.getEmail())).orElse(false);
+//        } catch (Exception e) {
+//            return false;
+//        }
+//    }
+
+
 }

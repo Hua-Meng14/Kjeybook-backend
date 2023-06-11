@@ -1,6 +1,7 @@
 package com.bootcamp.bookrentalsystem.auth;
 
 import com.bootcamp.bookrentalsystem.exception.BadRequestException;
+import com.bootcamp.bookrentalsystem.exception.ForbiddenException;
 import com.bootcamp.bookrentalsystem.exception.ResourceNotFoundException;
 import com.bootcamp.bookrentalsystem.exception.UnauthorizedException;
 import com.bootcamp.bookrentalsystem.model.RegisterUser;
@@ -11,8 +12,11 @@ import com.bootcamp.bookrentalsystem.repository.TokenRepository;
 import com.bootcamp.bookrentalsystem.repository.UserRepository;
 import com.bootcamp.bookrentalsystem.service.JwtService;
 import com.bootcamp.bookrentalsystem.service.UserService;
-import io.jsonwebtoken.Claims;
+import io.micrometer.common.util.StringUtils;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -93,7 +97,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    private void savedUserToken(com.bootcamp.bookrentalsystem.model.User user, String jwtToken) {
+    private void savedUserToken(User user, String jwtToken) {
         var token = Token.builder()
                 .user(user)
                 .token(jwtToken)
@@ -116,42 +120,40 @@ public class AuthenticationService {
         tokenRepository.saveAll(validUserTokens);
     }
 
-    public ResponseEntity<String> validateToken(String token) {
-        try {
+    public ResponseEntity<String> validateToken(String token, Long userId) {
 
-            Claims claims = jwtService.decodeToken(token);
-
-            return ResponseEntity.ok("Token is valid");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is not valid");
+        if (!jwtService.isValidUserToken(token, userId)) {
+            throw new UnauthorizedException("Invalid Token");
         }
+        return ResponseEntity.ok("Token is valid");
     }
 
-
-//    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-//        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-//        final String refreshToken;
-//        final String username;
-//        if (StringUtils.isEmpty(authHeader) || !authHeader.startsWith("Bearer ")) {
-//            return;
-//        }
-//        refreshToken = authHeader.substring(7);
-//        username = jwtService.extractUsername(refreshToken);
-//        if (username != null) {
-//            UserDetails userDetails = (UserDetails) userRepository.findByUsername(username)
+//    public ResponseEntity<String> refreshToken(String refreshToken) {
+//        // Perform token refresh logic here
+//        // Assuming the logic to generate a new access token based on the refresh token
+////        System.out.println("-------------------------IS TOKEN EXPIRED: " + jwtService.isTokenExpired(refreshToken));
+//        // Check if the refresh token is valid and not expired
+//        if (jwtService.isTokenExpired(refreshToken)) {
+//            // Get the necessary user details from the refresh token, such as user ID or email
+//            String email = jwtService.decodeToken(refreshToken).get("email", String.class);
+////            System.out.println("----------------TOKEN EMAIL: " + email);
+//            // Retrieve the user from the database based on the email
+//            User user = userRepository.findByEmail(email)
 //                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-//            if (jwtService.isTokenValid(refreshToken)) {
-//                User user = (User) userDetails; // Assuming the UserDetails is a User instance
-//                String accessToken = jwtService.generateToken(user);
-//                revokeAllUserTokens(user);
-//                savedUserToken(user, accessToken);
+////            System.out.println("----------------USER FOUND WITH EMAIL: " + user.getEmail());
 //
-//                AuthenticationResponse authResponse = AuthenticationResponse.builder()
-//                        .accessToken(accessToken)
-//                        .refreshToken(refreshToken)
-//                        .build();
-//                new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
-//            }
+//            // Generate a new access token for the user
+//            String newAccessToken = jwtService.generateToken(user);
+////            System.out.println("----------------NEW ACCESS TOKEN: " + newAccessToken);
+//
+//            // Perform any additional logic, such as revoking old tokens
+//            revokeAllUserTokens(user);
+//            savedUserToken(user, newAccessToken);
+//
+//            return ResponseEntity.ok(newAccessToken);
+//        } else {
+//            // Handle invalid or expired refresh token
+//            throw new UnauthorizedException("Invalid or expired refresh token");
 //        }
 //    }
 

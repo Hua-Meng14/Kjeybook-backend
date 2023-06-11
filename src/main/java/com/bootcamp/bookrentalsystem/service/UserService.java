@@ -45,11 +45,11 @@ public class UserService {
 
     public Optional<User> findUserById(Long userId, String jwtToken) {
 
-        // Validate and decode the JWT token
+//         Validate and decode the JWT token
 //        System.out.println("--------- IS TOKEN ROLE ADMIN: " + jwtService.isAdminToken(jwtToken));
-//        if (!jwtService.isAdminToken(jwtToken)) {
-//            throw new ForbiddenException("Access Denied!!");
-//        }
+        if (!jwtService.isValidAdminToken(jwtToken)) {
+            throw new ForbiddenException("Access Denied!!");
+        }
 
 //        if (!jwtService.isUserToken(jwtToken, userId)) {
 //            throw new UnauthorizedException("Unauthorized Access!!");

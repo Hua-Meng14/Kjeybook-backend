@@ -1,9 +1,9 @@
 package com.bootcamp.bookrentalsystem.auth;
 
+import com.bootcamp.bookrentalsystem.exception.UnauthorizedException;
 import com.bootcamp.bookrentalsystem.model.RegisterUser;
-import com.bootcamp.bookrentalsystem.model.User;
-import com.sun.net.httpserver.HttpsServer;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,13 +29,23 @@ public class AuthenticationController {
     }
 
 //    @PostMapping("/refresh-token")
-//    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-//        authenticationService.refreshToken(request, response);
+//    public ResponseEntity refreshToken(@RequestParam("refreshToken") String refreshToken) {
+//
+//        if (refreshToken == null || refreshToken.isEmpty()) {
+//            throw new UnauthorizedException("Refresh token not provided");
+//        }
+//
+//        ResponseEntity<String> newAccessToken = authenticationService.refreshToken(refreshToken);
+//        if (newAccessToken != null) {
+//            return ResponseEntity.ok(newAccessToken);
+//        } else {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Failed to refresh token");
+//        }
 //    }
 
-    @PostMapping("/validate-token")
-    public ResponseEntity validateToken(@RequestParam("token") String token) {
-        return ResponseEntity.ok(authenticationService.validateToken(token));
+    @PostMapping("/validate-token/{userId}")
+    public ResponseEntity validateToken(@RequestHeader("Authorization") String token, @PathVariable Long userId) {
+        return ResponseEntity.ok(authenticationService.validateToken(token, userId));
     }
 
 }
