@@ -43,25 +43,22 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Optional<User> findUserById(Long userId, String token) {
-        if (token.isEmpty()) {
-            throw new UnauthorizedException("Token required");
-        }
-        if (!token.startsWith("Bearer ")) {
-            throw new UnauthorizedException("Invalid token format");
-        }
-        String jwtToken = token.substring(7);
+    public Optional<User> findUserById(Long userId, String jwtToken) {
 
         // Validate and decode the JWT token
-        System.out.println("--------- IS TOKEN ROLE ADMIN: " + jwtService.isAdminToken(token));
-        if (!jwtService.isAdminToken(jwtToken)) {
-            throw new ForbiddenException("Access Denied!!");
-        }
+//        System.out.println("--------- IS TOKEN ROLE ADMIN: " + jwtService.isAdminToken(jwtToken));
+//        if (!jwtService.isAdminToken(jwtToken)) {
+//            throw new ForbiddenException("Access Denied!!");
+//        }
 
-        System.out.println("--------- IS TOKEN EXPIRED: " + jwtService.isTokenExpired(token));
-        if (jwtService.isTokenExpired(jwtToken)) {
-            throw new BadRequestException("Invalid Token!!");
-        }
+//        if (!jwtService.isUserToken(jwtToken, userId)) {
+//            throw new UnauthorizedException("Unauthorized Access!!");
+//        }
+
+//        System.out.println("--------- IS TOKEN EXPIRED: " + jwtService.isTokenExpired(jwtToken));
+//        if (jwtService.isTokenExpired(jwtToken)) {
+//            throw new BadRequestException("Invalid Token!!");
+//        }
 
         return userRepository.findById(userId)
                 .map(Optional::of)
@@ -140,12 +137,12 @@ public class UserService {
             throw new ResourceNotFoundException("Book not found in the user's favorites with book id: " + bookId);
         }
 
-        System.out.println("---------------BEFORE DELETE: "+ user.getFavoriteBooks());
+//        System.out.println("---------------BEFORE DELETE: "+ user.getFavoriteBooks());
 
         // Remove the book from the user's favorite list
         favoriteBooks.removeIf(book -> book.getId().equals(bookId));
 
-        System.out.println("---------------AFTER DELETE: "+ user.getFavoriteBooks());
+//        System.out.println("---------------AFTER DELETE: "+ user.getFavoriteBooks());
 
         userRepository.save(user);
     }

@@ -2,15 +2,13 @@ package com.bootcamp.bookrentalsystem.service;
 
 import com.bootcamp.bookrentalsystem.exception.BadRequestException;
 import com.bootcamp.bookrentalsystem.exception.ForbiddenException;
+import com.bootcamp.bookrentalsystem.exception.UnauthorizedException;
 import com.bootcamp.bookrentalsystem.model.User;
 import com.bootcamp.bookrentalsystem.repository.BookRepository;
 import com.bootcamp.bookrentalsystem.repository.RequestRepository;
 import com.bootcamp.bookrentalsystem.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,37 +83,40 @@ public class JwtService {
     }
 
     public boolean isAdminToken(String token) {
-        String jwtTokenWithoutInvalidChars = token.replaceAll("[^A-Za-z0-9+/=]", "");
-        byte[] tokenBytes = Base64.getUrlDecoder().decode(jwtTokenWithoutInvalidChars);
-        String decodedToken = new String(tokenBytes, StandardCharsets.UTF_8);
-        byte[] secretBytes = Decoders.BASE64.decode(decodedToken);
+        if (token == null || token.isEmpty()) {
+            throw new UnauthorizedException("Token required");
+        }
 
-        Jws<Claims> claimsJws = Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secretBytes))
-                .build()
-                .parseClaimsJws(token);
+        if (!token.startsWith("Bearer ")) {
+            throw new UnauthorizedException("Invalid token format");
+        }
 
-        Claims claims = claimsJws.getBody();
+        String jwtToken = token.substring(7);
+
+//        System.out.println("--------------BEARER AUTH TOKEN: " + jwtToken);
+
+        Claims claims = decodeToken(jwtToken);
+
+//        System.out.println("----------------TOKEN CLAIMS: " + claims);
 
         String role = claims.get("role", String.class);
-
         // Perform authorization logic based on the extracted information
         return "ADMIN".equals(role);
     }
 
     public boolean isTokenExpired(String token) {
         try {
-            String jwtTokenWithoutInvalidChars = token.replaceAll("[^A-Za-z0-9+/=]", "");
-            byte[] tokenBytes = Base64.getUrlDecoder().decode(jwtTokenWithoutInvalidChars);
-            String decodedToken = new String(tokenBytes, StandardCharsets.UTF_8);
-            byte[] secretBytes = Decoders.BASE64.decode(decodedToken);
+            if (token == null || token.isEmpty()) {
+                throw new UnauthorizedException("Token required");
+            }
 
-            Jws<Claims> claimsJws = Jwts.parserBuilder()
-                    .setSigningKey(Keys.hmacShaKeyFor(secretBytes))
-                    .build()
-                    .parseClaimsJws(token);
+            if (!token.startsWith("Bearer ")) {
+                throw new UnauthorizedException("Invalid token format");
+            }
 
-            Claims claims = claimsJws.getBody();
+            String jwtToken = token.substring(7);
+
+            Claims claims = decodeToken(jwtToken);
 
             Date expiration = claims.getExpiration();
 
@@ -128,30 +129,42 @@ public class JwtService {
 
     public boolean isUserToken(String token, Long userId) {
         try {
-            String jwtTokenWithoutInvalidChars = token.replaceAll("[^A-Za-z0-9+/=]", "");
-            byte[] tokenBytes = Base64.getUrlDecoder().decode(jwtTokenWithoutInvalidChars);
-            String decodedToken = new String(tokenBytes, StandardCharsets.UTF_8);
-            byte[] secretBytes = Decoders.BASE64.decode(decodedToken);
+            if (token == null || token.isEmpty()) {
+                throw new UnauthorizedException("Token required");
+            }
 
-            Jws<Claims> claimsJws = Jwts.parserBuilder()
-                    .setSigningKey(Keys.hmacShaKeyFor(secretBytes))
-                    .build()
-                    .parseClaimsJws(token);
+            if (!token.startsWith("Bearer ")) {
+                throw new UnauthorizedException("Invalid token format");
+            }
 
-            Claims claims = claimsJws.getBody();
+            String jwtToken = token.substring(7);
 
-            // Extract the necessary information from the token, such as user ID or email
+            Claims claims = decodeToken(jwtToken);
+
+//            System.out.println("--------------------- TOKEN CLAIMS: "+ claims);
+
             String tokenEmail = claims.get("email", String.class);
 
             Optional<User> existingUser = userRepository.findById(userId);
-            if (existingUser.isPresent()) {
-                User user = existingUser.get();
-                // Perform authorization logic based on email
-                return tokenEmail.equals(user.getEmail());
-            }
-            return false;
+//            System.out.println("---------------USER EMAIL: "+ existingUser.get().getEmail());
+//            System.out.println("---------------TOKEN EMAIL: "+ tokenEmail);
+//            System.out.println("---------------TOKEN IS MATCHED: "+ existingUser.get().getEmail().equals(tokenEmail));
+            return existingUser.map(user -> tokenEmail.equals(user.getEmail())).orElse(false);
         } catch (Exception e) {
             return false;
+        }
+    }
+
+
+    public Claims decodeToken(String token) {
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(getSignInKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (Exception e) {
+            throw new ForbiddenException("Invalid Token!!");
         }
     }
 }
