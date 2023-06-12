@@ -3,6 +3,7 @@ package com.bootcamp.bookrentalsystem.service;
 import com.bootcamp.bookrentalsystem.exception.*;
 import com.bootcamp.bookrentalsystem.exception.IllegalStateException;
 import com.bootcamp.bookrentalsystem.model.Book;
+import com.bootcamp.bookrentalsystem.model.ChangePasswordRequest;
 import com.bootcamp.bookrentalsystem.model.Request;
 import com.bootcamp.bookrentalsystem.model.User;
 import com.bootcamp.bookrentalsystem.repository.BookRepository;
@@ -11,6 +12,7 @@ import com.bootcamp.bookrentalsystem.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -28,15 +30,17 @@ public class UserService {
     private RequestRepository requestRepository;
     private EmailService emailService;
     private JwtService jwtService;
+    private PasswordEncoder passwordEncoder;
 
 
     @Autowired
-    public UserService(@Qualifier("user") UserRepository userRepository, BookRepository bookRepository, RequestRepository requestRepository, EmailService emailService, JwtService jwtService) {
+    public UserService(@Qualifier("user") UserRepository userRepository, BookRepository bookRepository, RequestRepository requestRepository, EmailService emailService, JwtService jwtService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.bookRepository = bookRepository;
         this.requestRepository = requestRepository;
         this.emailService = emailService;
         this.jwtService = jwtService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User createUser(User user) {
@@ -165,4 +169,22 @@ public class UserService {
 
     }
 
+    public String changePassword(Long userId, ChangePasswordRequest request) {
+
+        // Retrieve the user by userId
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: "+userId));
+
+        // Validate the old password
+        if (!passwordEncoder.matches(request.getOldPassword(), existingUser.getPassword())) {
+            throw new BadRequestException("Incorrect Password!!");
+        }
+
+        // Update the password with the new password
+        existingUser.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(existingUser);
+
+        // Return a success message
+        return "Password changed successfully!";
+    }
 }

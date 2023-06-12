@@ -3,6 +3,7 @@ package com.bootcamp.bookrentalsystem.controller;
 import com.bootcamp.bookrentalsystem.exception.ForbiddenException;
 import com.bootcamp.bookrentalsystem.exception.UnauthorizedException;
 import com.bootcamp.bookrentalsystem.model.Book;
+import com.bootcamp.bookrentalsystem.model.ChangePasswordRequest;
 import com.bootcamp.bookrentalsystem.model.User;
 import com.bootcamp.bookrentalsystem.service.*;
 import io.jsonwebtoken.Claims;
@@ -75,5 +76,10 @@ public class UserController {
     public ResponseEntity<String> removeBookFromUserFavorites(@PathVariable Long userId, @PathVariable Long bookId) {
         userService.removeBookFromFavorites(userId, bookId);
         return ResponseEntity.ok("Book removed from user's favorite list.");
+    }
+
+    @PatchMapping("/{userId}/password")
+    public ResponseEntity<String> changePassword(@PathVariable Long userId, @RequestBody ChangePasswordRequest request) {
+        return ResponseEntity.ok(userService.changePassword(userId, request));
     }
 }
