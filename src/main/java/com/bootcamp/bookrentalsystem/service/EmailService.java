@@ -1,13 +1,20 @@
 package com.bootcamp.bookrentalsystem.service;
 
+import com.bootcamp.bookrentalsystem.exception.ResourceNotFoundException;
 import com.bootcamp.bookrentalsystem.model.Request;
+import com.bootcamp.bookrentalsystem.model.User;
+import com.bootcamp.bookrentalsystem.repository.BookRepository;
+import com.bootcamp.bookrentalsystem.repository.RequestRepository;
+import com.bootcamp.bookrentalsystem.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +31,12 @@ public class EmailService {
 
     @Autowired
     private JavaMailSender javaMailSender;
+    private UserRepository userRepository;
+
+    @Autowired
+    public EmailService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public void sendRequestAcceptedEmail(Request request) {
         String subject = "Book Rental Request Approved";
@@ -89,6 +102,28 @@ public class EmailService {
                 "The Book Rental Team" +
                 "" +
                 "";
+        String from = "no-reply@bookrentalsystem.com.kh";
+        send(sendTo, from, message, subject);
+    }
+
+    public void sendResetPasswordEmail(String email) {
+
+        User existingUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: "+email));
+
+        String subject = "Password Reset Request";
+        String sendTo = existingUser.getEmail();
+
+        // build email
+        // send message
+        String message = "Hello " + existingUser.getUsername() + ",\n\n" +
+                "We have received a request to reset your password for your account. If you did not initiate this request, please ignore this email.\n\n" +
+                "To reset your password, click on the following link:\n" +
+                "[Password Reset Link]\n\n" +
+//                "Please note that this link will expire in [Expiration Time]. If you do not reset your password within this timeframe, you will need to submit another password reset request.\n\n" +
+                "If you have any questions or need further assistance, please contact our support team at bookrentalsystem.kit@gmail.com.\n\n" +
+                "Thank you,\n" +
+                "The Book Rental Team";
         String from = "no-reply@bookrentalsystem.com.kh";
         send(sendTo, from, message, subject);
     }

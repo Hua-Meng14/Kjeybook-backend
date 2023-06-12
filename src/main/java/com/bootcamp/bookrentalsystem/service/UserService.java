@@ -2,10 +2,7 @@ package com.bootcamp.bookrentalsystem.service;
 
 import com.bootcamp.bookrentalsystem.exception.*;
 import com.bootcamp.bookrentalsystem.exception.IllegalStateException;
-import com.bootcamp.bookrentalsystem.model.Book;
-import com.bootcamp.bookrentalsystem.model.ChangePasswordRequest;
-import com.bootcamp.bookrentalsystem.model.Request;
-import com.bootcamp.bookrentalsystem.model.User;
+import com.bootcamp.bookrentalsystem.model.*;
 import com.bootcamp.bookrentalsystem.repository.BookRepository;
 import com.bootcamp.bookrentalsystem.repository.RequestRepository;
 import com.bootcamp.bookrentalsystem.repository.UserRepository;
@@ -173,7 +170,7 @@ public class UserService {
 
         // Retrieve the user by userId
         User existingUser = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: "+userId));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
         // Validate the old password
         if (!passwordEncoder.matches(request.getOldPassword(), existingUser.getPassword())) {
@@ -186,5 +183,20 @@ public class UserService {
 
         // Return a success message
         return "Password changed successfully!";
+    }
+
+    public String resetPassword(ResetPasswordRequest request) {
+        // Retrieve the user by email
+        User existingUser = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + request.getEmail()));
+
+        // Set the new password for the user
+        existingUser.setPassword(passwordEncoder.encode(request.getNewPassword()));
+
+        // Save the updated user entity
+        userRepository.save(existingUser);
+
+        return "Password Reset Successfully";
+
     }
 }

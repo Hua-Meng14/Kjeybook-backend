@@ -1,12 +1,15 @@
 package com.bootcamp.bookrentalsystem.controller;
 
+import com.bootcamp.bookrentalsystem.exception.BadRequestException;
 import com.bootcamp.bookrentalsystem.exception.ForbiddenException;
 import com.bootcamp.bookrentalsystem.exception.UnauthorizedException;
 import com.bootcamp.bookrentalsystem.model.Book;
 import com.bootcamp.bookrentalsystem.model.ChangePasswordRequest;
+import com.bootcamp.bookrentalsystem.model.ResetPasswordRequest;
 import com.bootcamp.bookrentalsystem.model.User;
 import com.bootcamp.bookrentalsystem.service.*;
 import io.jsonwebtoken.Claims;
+import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -81,5 +85,22 @@ public class UserController {
     @PatchMapping("/{userId}/password")
     public ResponseEntity<String> changePassword(@PathVariable Long userId, @RequestBody ChangePasswordRequest request) {
         return ResponseEntity.ok(userService.changePassword(userId, request));
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestParam("email") String email) {
+        // Validate the request
+        if (StringUtils.isBlank(email)) {
+            throw new BadRequestException("Email address is required");
+        }
+
+        emailService.sendResetPasswordEmail(email);
+        return ResponseEntity.ok("Reset instructions sent successfully");
+
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {
+        return ResponseEntity.ok(userService.resetPassword(request));
     }
 }
