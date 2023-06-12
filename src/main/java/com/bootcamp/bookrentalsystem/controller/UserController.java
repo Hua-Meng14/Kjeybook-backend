@@ -1,18 +1,19 @@
 package com.bootcamp.bookrentalsystem.controller;
 
+import com.bootcamp.bookrentalsystem.exception.ForbiddenException;
+import com.bootcamp.bookrentalsystem.exception.UnauthorizedException;
 import com.bootcamp.bookrentalsystem.model.Book;
-import com.bootcamp.bookrentalsystem.model.EmailRequest;
+import com.bootcamp.bookrentalsystem.model.ChangePasswordRequest;
 import com.bootcamp.bookrentalsystem.model.User;
-import com.bootcamp.bookrentalsystem.service.BookService;
-import com.bootcamp.bookrentalsystem.service.EmailService;
-import com.bootcamp.bookrentalsystem.service.RequestService;
-import com.bootcamp.bookrentalsystem.service.UserService;
+import com.bootcamp.bookrentalsystem.service.*;
+import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -37,8 +38,8 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<User> getUserById(@PathVariable Long userId) {
-        return this.userService.findUserById(userId)
+    public ResponseEntity<User> getUserById(@RequestHeader("Authorization") String token, @PathVariable Long userId) {
+        return this.userService.findUserById(userId, token)
                 .map(book -> new ResponseEntity<>(book, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
@@ -75,5 +76,10 @@ public class UserController {
     public ResponseEntity<String> removeBookFromUserFavorites(@PathVariable Long userId, @PathVariable Long bookId) {
         userService.removeBookFromFavorites(userId, bookId);
         return ResponseEntity.ok("Book removed from user's favorite list.");
+    }
+
+    @PatchMapping("/{userId}/password")
+    public ResponseEntity<String> changePassword(@PathVariable Long userId, @RequestBody ChangePasswordRequest request) {
+        return ResponseEntity.ok(userService.changePassword(userId, request));
     }
 }

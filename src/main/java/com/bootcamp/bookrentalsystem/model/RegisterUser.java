@@ -8,8 +8,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "_user")
-@ApiModel(description = "User details")
-public class User {
+@ApiModel(description = "Register User details")
+public class RegisterUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty(notes = "User ID")
@@ -20,31 +20,21 @@ public class User {
     private String password;
     @ApiModelProperty(notes = "User's email address")
     private String email;
-    @ApiModelProperty(notes = "User's phone number")
-    private String phoneNumber;
-    @ApiModelProperty(notes = "User's profile image url")
-    private String profileImg;
     @ApiModelProperty(notes = "User's role")
     private String role;
-    @ManyToMany
-    @JoinTable(
-            name = "user_favorite_books",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "book_id")
-    )
-    @ApiModelProperty(notes = "User's favorite books list")
-    private List<Book> favoriteBooks;
-
-    public User() {
+    @ApiModelProperty(notes = "User's phone number")
+    private String phoneNumber;
+    public RegisterUser() {
         // Default constructor for Jackson deserialization
     }
 
-    public User(String username, String email, String encodedPassword, String role) {
+    public RegisterUser(String username, String email, String encodedPassword, String role, String phoneNumber) {
         // Constructor for convenience
         this.username = username;
         this.email = email;
         this.password = encodedPassword;
         this.role = role;
+        this.phoneNumber = phoneNumber;
     }
 
     public Long getUserId() {
@@ -79,22 +69,6 @@ public class User {
         this.email = email;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getProfileImg() {
-        return profileImg;
-    }
-
-    public void setProfileImg(String profileImg) {
-        this.profileImg = profileImg;
-    }
-
     public String getRole() {
         return role;
     }
@@ -103,11 +77,11 @@ public class User {
         this.role = role;
     }
 
-    public List<Book> getFavoriteBooks() {
-        return favoriteBooks;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public void setFavoriteBooks(List<Book> favoriteBooks) {
-        this.favoriteBooks = favoriteBooks;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }
