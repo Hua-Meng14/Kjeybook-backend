@@ -2,6 +2,7 @@ package com.bootcamp.bookrentalsystem.controller;
 
 import com.bootcamp.bookrentalsystem.exception.ForbiddenException;
 import com.bootcamp.bookrentalsystem.exception.UnauthorizedException;
+import com.bootcamp.bookrentalsystem.model.Book;
 import com.bootcamp.bookrentalsystem.model.Request;
 import com.bootcamp.bookrentalsystem.model.User;
 import com.bootcamp.bookrentalsystem.service.BookService;
@@ -50,6 +51,11 @@ public class RequestController {
     public ResponseEntity<List<Request>> getAllRequests() {
         List<Request> requests = requestService.getAllRequests();
         return ResponseEntity.ok(requests);
+    }
+
+    @GetMapping("/status")
+    public List<Request> getRequestsByStatus(@RequestParam("status") String status) {
+        return requestService.getRequestsByStatus(status);
     }
 
     @PatchMapping("/{requestId}")
