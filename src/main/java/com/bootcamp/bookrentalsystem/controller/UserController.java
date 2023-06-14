@@ -52,7 +52,7 @@ public class UserController {
     @PatchMapping("/{userId}")
     public ResponseEntity<User> updateUserById(@RequestHeader("Authorization") String token, @PathVariable Long userId, @RequestBody User updatedUser) {
         // Validate User token access
-        if(jwtService.isValidUserToken(token,userId)) {
+        if(!jwtService.isValidUserToken(token,userId)) {
             throw new UnauthorizedException("Unauthorized Access");
         }
 
@@ -63,7 +63,7 @@ public class UserController {
     @DeleteMapping("/{userId}")
     public ResponseEntity<User> deleteUserById(@RequestHeader("Authorization") String token, @PathVariable Long userId) {
         // Validate User token access
-        if(jwtService.isValidUserToken(token,userId)) {
+        if(!jwtService.isValidUserToken(token,userId)) {
             throw new UnauthorizedException("Unauthorized Access");
         }
 
@@ -74,7 +74,7 @@ public class UserController {
     @GetMapping("/{userId}/favorites")
     public List<Book> getUserFavoriteList(@RequestHeader("Authorization") String token, @PathVariable Long userId) {
         // Validate User token access
-        if(jwtService.isValidUserToken(token,userId)) {
+        if(!jwtService.isValidUserToken(token,userId)) {
             throw new UnauthorizedException("Unauthorized Access");
         }
 
@@ -89,7 +89,7 @@ public class UserController {
     @PatchMapping("/{userId}/favorites/{bookId}")
     public ResponseEntity<String> addBookToUserFavorites(@RequestHeader("Authorization") String token, @PathVariable Long userId, @PathVariable Long bookId) {
         // Validate User token access
-        if(jwtService.isValidUserToken(token,userId)) {
+        if(!jwtService.isValidUserToken(token,userId)) {
             throw new UnauthorizedException("Unauthorized Access");
         }
 
@@ -100,7 +100,7 @@ public class UserController {
     @DeleteMapping("/{userId}/favorites/{bookId}")
     public ResponseEntity<String> removeBookFromUserFavorites(@RequestHeader("Authorization") String token, @PathVariable Long userId, @PathVariable Long bookId) {
         // Validate User token access
-        if(jwtService.isValidUserToken(token,userId)) {
+        if(!jwtService.isValidUserToken(token,userId)) {
             throw new UnauthorizedException("Unauthorized Access");
         }
 
@@ -111,7 +111,7 @@ public class UserController {
     @PatchMapping("/{userId}/password")
     public ResponseEntity<String> changePassword(@RequestHeader("Authorization") String token, @PathVariable Long userId, @RequestBody ChangePasswordRequest request) {
         // Validate User token access
-        if(jwtService.isValidUserToken(token,userId)) {
+        if(!jwtService.isValidUserToken(token,userId)) {
             throw new UnauthorizedException("Unauthorized Access");
         }
 
