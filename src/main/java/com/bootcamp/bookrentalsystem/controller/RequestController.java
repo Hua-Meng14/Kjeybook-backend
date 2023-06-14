@@ -58,6 +58,12 @@ public class RequestController {
         return requestService.getRequestsByStatus(status);
     }
 
+    @GetMapping("/book")
+    public List<Request> getRequestsByStatus(@RequestParam("bookId") Long bookId) {
+        return requestService.getRequestsByBook(bookId);
+    }
+
+
     @PatchMapping("/{requestId}")
     public ResponseEntity<Request> updateRequest(@RequestHeader("Authorization") String token, @PathVariable Long requestId, @RequestBody Request updatedRequest) {
         // Validate and decode the JWT token
@@ -79,8 +85,8 @@ public class RequestController {
         Map<String, Boolean> response = requestService.deleteRequestById(requestId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-    @GetMapping("/{userId}")
-    public ResponseEntity<List<Request>> getRequestsByUserId(@RequestHeader("Authorization") String token, @PathVariable Long userId) {
+    @GetMapping("/user")
+    public ResponseEntity<List<Request>> getRequestsByUserId(@RequestHeader("Authorization") String token, @RequestParam("bookId") Long userId) {
         // Validate User token access
         if(!jwtService.isValidUserToken(token,userId)) {
             throw new UnauthorizedException("Unauthorized Access");
