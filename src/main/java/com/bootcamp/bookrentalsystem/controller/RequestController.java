@@ -59,7 +59,7 @@ public class RequestController {
     }
 
     @GetMapping("/book")
-    public List<Request> getRequestsByStatus(@RequestParam("bookId") Long bookId) {
+    public List<Request> getRequestsByBook(@RequestParam("bookId") Long bookId) {
         return requestService.getRequestsByBook(bookId);
     }
 
@@ -86,7 +86,7 @@ public class RequestController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @GetMapping("/user")
-    public ResponseEntity<List<Request>> getRequestsByUserId(@RequestHeader("Authorization") String token, @RequestParam("bookId") Long userId) {
+    public ResponseEntity<List<Request>> getRequestsByUserId(@RequestHeader("Authorization") String token, @RequestParam("userId") Long userId) {
         // Validate User token access
         if(!jwtService.isValidUserToken(token,userId)) {
             throw new UnauthorizedException("Unauthorized Access");
