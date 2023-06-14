@@ -1,6 +1,7 @@
 package com.bootcamp.bookrentalsystem.controller;
 
 import com.bootcamp.bookrentalsystem.exception.ForbiddenException;
+import com.bootcamp.bookrentalsystem.exception.UnauthorizedException;
 import com.bootcamp.bookrentalsystem.model.Request;
 import com.bootcamp.bookrentalsystem.model.User;
 import com.bootcamp.bookrentalsystem.service.BookService;
@@ -34,7 +35,13 @@ public class RequestController {
     @PostMapping()
     public ResponseEntity<Request> createRequest(@RequestParam("userId") Long userId,
                                                  @RequestParam("bookId") Long bookId,
-                                                 @RequestParam("requestDuration") Long requestDuration) {
+                                                 @RequestParam("requestDuration") Long requestDuration,
+                                                 @RequestHeader("Authorization") String token) {
+        // Validate User token access
+        if(!jwtService.isValidUserToken(token,userId)) {
+            throw new UnauthorizedException("Unauthorized Access");
+        }
+
         Request createdRequest = requestService.createRequest(userId, bookId, requestDuration);
         return new ResponseEntity<>(createdRequest, HttpStatus.CREATED);
     }
@@ -67,7 +74,12 @@ public class RequestController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @GetMapping("/{userId}")
-    public ResponseEntity<List<Request>> getRequestsByUserId(@PathVariable Long userId) {
+    public ResponseEntity<List<Request>> getRequestsByUserId(@RequestHeader("Authorization") String token, @PathVariable Long userId) {
+        // Validate User token access
+        if(!jwtService.isValidUserToken(token,userId)) {
+            throw new UnauthorizedException("Unauthorized Access");
+        }
+
         List<Request> requests = requestService.getRequestsByUserId(userId);
         return new ResponseEntity<>(requests, HttpStatus.OK);
     }
