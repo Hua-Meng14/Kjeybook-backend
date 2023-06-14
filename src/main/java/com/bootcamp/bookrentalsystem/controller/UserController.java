@@ -9,6 +9,7 @@ import com.bootcamp.bookrentalsystem.model.ResetPasswordRequest;
 import com.bootcamp.bookrentalsystem.model.User;
 import com.bootcamp.bookrentalsystem.service.*;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwt;
 import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,14 +27,16 @@ public class UserController {
     private final UserService userService;
     private final RequestService requestService;
     private final EmailService emailService;
+    private final JwtService jwtService;
 
     @Autowired
 
-    public UserController(BookService bookService, UserService userService, RequestService requestService, EmailService emailService) {
+    public UserController(BookService bookService, UserService userService, RequestService requestService, EmailService emailService, JwtService jwtService) {
         this.emailService = emailService;
         this.bookService = bookService;
         this.userService = userService;
         this.requestService = requestService;
+        this.jwtService = jwtService;
     }
 
     @PostMapping
@@ -43,9 +46,11 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<User> getUserById(@RequestHeader("Authorization") String token, @PathVariable Long userId) {
-        return this.userService.findUserById(userId, token)
-                .map(book -> new ResponseEntity<>(book, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        // Validate and decode the JWT token
+        if (!jwtService.isValidAdminToken(token)) {
+            throw new ForbiddenException("Access Denied!!");
+        }
+        return this.userService.findUserById(userId).map(book -> new ResponseEntity<>(book, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PatchMapping("/{userId}")
