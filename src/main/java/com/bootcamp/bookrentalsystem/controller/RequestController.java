@@ -3,6 +3,7 @@ package com.bootcamp.bookrentalsystem.controller;
 import com.bootcamp.bookrentalsystem.exception.ForbiddenException;
 import com.bootcamp.bookrentalsystem.exception.UnauthorizedException;
 import com.bootcamp.bookrentalsystem.model.Book;
+import com.bootcamp.bookrentalsystem.model.RejectRequest;
 import com.bootcamp.bookrentalsystem.model.Request;
 import com.bootcamp.bookrentalsystem.model.User;
 import com.bootcamp.bookrentalsystem.service.BookService;
@@ -108,13 +109,13 @@ public class RequestController {
     }
 
     @PatchMapping("/{requestId}/reject")
-    public ResponseEntity<Request> rejectRequest(@RequestHeader("Authorization") String token, @PathVariable Long requestId) {
+    public ResponseEntity<Request> rejectRequest(@RequestHeader("Authorization") String token, @PathVariable Long requestId, @RequestBody RejectRequest rejectRequest) {
         // Validate and decode the JWT token
         if (!jwtService.isValidAdminToken(token)) {
             throw new ForbiddenException("Access Denied!!");
         }
 
-        Request rejectedRequest = requestService.rejectRequest(requestId);
+        Request rejectedRequest = requestService.rejectRequest(requestId, rejectRequest.getReason());
         return new ResponseEntity<>(rejectedRequest, HttpStatus.OK);
     }
 

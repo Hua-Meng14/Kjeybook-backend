@@ -130,7 +130,7 @@ public class RequestService {
         return requestRepository.save(request);
     }
 
-    public Request rejectRequest(Long requestId) {
+    public Request rejectRequest(Long requestId, String reason) {
         Request request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
 
@@ -142,6 +142,8 @@ public class RequestService {
         request.setStatus("ARCHIVED");
         // Set the request isApproved to true
         request.setIsApproved(false);
+        // Set the rejectedReason
+        request.setRejectedReason(reason);
 
         // Send email to notify the borrower
         userService.notifyUserRequestRejected(requestId);
