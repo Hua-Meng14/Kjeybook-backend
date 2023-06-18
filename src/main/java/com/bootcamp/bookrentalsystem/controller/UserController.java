@@ -119,19 +119,13 @@ public class UserController {
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<String> forgotPassword(@RequestParam("email") String email) {
-        // Validate the request
-        if (StringUtils.isBlank(email)) {
-            throw new BadRequestException("Email address is required");
-        }
-
-        emailService.sendResetPasswordEmail(email);
-        return ResponseEntity.ok("Reset instructions sent successfully");
+    public ResponseEntity<String> forgotPassword(@RequestParam String email) {
+        return userService.forgotPassword(email);
 
     }
 
-    @PostMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {
-        return ResponseEntity.ok(userService.resetPassword(request));
+    @PostMapping("/forgot-password/update")
+    public ResponseEntity<String> resetNewPassword(@RequestBody ResetPasswordRequest request) {
+        return userService.resetPassword(request);
     }
 }
