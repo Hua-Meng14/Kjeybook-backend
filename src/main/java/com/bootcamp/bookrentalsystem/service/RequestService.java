@@ -5,7 +5,9 @@ import com.bootcamp.bookrentalsystem.exception.ResourceNotFoundException;
 import com.bootcamp.bookrentalsystem.model.Book;
 import com.bootcamp.bookrentalsystem.model.Request;
 import com.bootcamp.bookrentalsystem.model.User;
+import com.bootcamp.bookrentalsystem.repository.BookRepository;
 import com.bootcamp.bookrentalsystem.repository.RequestRepository;
+import com.bootcamp.bookrentalsystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -18,19 +20,22 @@ import java.util.*;
 @Service
 public class RequestService {
     private final RequestRepository requestRepository;
+    private final UserRepository userRepository;
     private final BookService bookService;
     private final UserService userService;
+    private final BookRepository bookRepository;
 
     @Autowired
-    public RequestService(@Qualifier("request") RequestRepository requestReporitoy, UserService userService, BookService bookService) {
-        this.requestRepository = requestReporitoy;
+    public RequestService(@Qualifier("request") RequestRepository requestRepository, UserService userService, BookService bookService, UserRepository userRepository, BookRepository bookRepository) {
+        this.requestRepository = requestRepository;
+        this.userRepository = userRepository;
         this.bookService = bookService;
         this.userService = userService;
-
+        this.bookRepository = bookRepository;
     }
 
     public Request createRequest(Long userId, Long bookId, Long requestDuration) {
-        User borrower = userService.findUserById(userId)
+        User borrower = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
         Book book = (Book) bookService.findBookById(bookId)
@@ -87,7 +92,7 @@ public class RequestService {
     }
 
     public List<Request> getRequestsByUserId(Long userId) {
-        User existingUser = userService.findUserById(userId)
+        User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
         return requestRepository.findByBorrowerUserId(userId);
     }
@@ -125,7 +130,7 @@ public class RequestService {
         return requestRepository.save(request);
     }
 
-    public Request rejectRequest(Long requestId) {
+    public Request rejectRequest(Long requestId, String reason) {
         Request request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
 
@@ -137,6 +142,8 @@ public class RequestService {
         request.setStatus("ARCHIVED");
         // Set the request isApproved to true
         request.setIsApproved(false);
+        // Set the rejectedReason
+        request.setRejectedReason(reason);
 
         // Send email to notify the borrower
         userService.notifyUserRequestRejected(requestId);
@@ -169,10 +176,20 @@ public class RequestService {
         requestRepository.save(request);
         return request;
     }
-
-    public Request getRequestByRequestId(long requestId){
+    public Request getRequestByRequestId(long requestId) {
         Request request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
         return request;
+    }
+
+    public List<Request> getRequestsByStatus(String status) {
+        return requestRepository.findByStatus(status);
+    }
+
+    public List<Request> getRequestsByBook(Long bookId) {
+        Book existingBook = bookRepository.findById(bookId)
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: "+bookId));
+
+        return requestRepository.findByBookId(bookId);
     }
 }

@@ -4,16 +4,15 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Table(name = "_user")
-
 @ApiModel(description = "User details")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     @ApiModelProperty(notes = "User ID")
     private Long userId;
     @ApiModelProperty(notes = "User's username")
@@ -37,20 +36,25 @@ public class User {
     @ApiModelProperty(notes = "User's favorite books list")
     private List<Book> favoriteBooks;
 
+    @ApiModelProperty(notes = "User's reset password token")
+    private String resetPwdToken;
+
+    @ApiModelProperty(notes = "User's reset password token expiration time")
+    private LocalDateTime resetPwdExpirationTime;
+
+
 
     public User() {
-        // Default constructor
+        // Default constructor for Jackson deserialization
     }
 
-    public User(Long userId, String username, String password, String email, String phoneNumber, String profileImg, String role, List<Book> favoriteBooks) {
-        this.userId = userId;
+    public User(String username, String email, String encodedPassword, String role, String phoneNumber) {
+        // Constructor for convenience
         this.username = username;
-        this.password = password;
         this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.profileImg = profileImg;
+        this.password = encodedPassword;
         this.role = role;
-        this.favoriteBooks = favoriteBooks;
+        this.phoneNumber = phoneNumber;
     }
 
     public Long getUserId() {
@@ -115,5 +119,21 @@ public class User {
 
     public void setFavoriteBooks(List<Book> favoriteBooks) {
         this.favoriteBooks = favoriteBooks;
+    }
+
+    public String getResetPwdToken() {
+        return resetPwdToken;
+    }
+
+    public void setResetPwdToken(String resetPwdToken) {
+        this.resetPwdToken = resetPwdToken;
+    }
+
+    public LocalDateTime getResetPwdExpirationTime() {
+        return resetPwdExpirationTime;
+    }
+
+    public void setResetPwdExpirationTime(LocalDateTime resetPwdExpirationTime) {
+        this.resetPwdExpirationTime = resetPwdExpirationTime;
     }
 }
