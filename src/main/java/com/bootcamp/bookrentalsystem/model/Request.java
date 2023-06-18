@@ -27,6 +27,8 @@ public class Request {
     private String status = "PENDING";
     @ApiModelProperty(notes = "Request isApproved status")
     private Boolean isApproved = false;
+    @ApiModelProperty(notes = "Reason for rejecting request")
+    private String rejectedReason;
     @ApiModelProperty(notes = "Date of request submitted")
     private LocalDate dateOfRequest;
     @ApiModelProperty(notes = "Request duration")
@@ -44,7 +46,7 @@ public class Request {
         // Default constructor
     }
 
-    public Request(Long requestId, User borrower, Book book, String status, Long requestDuration, LocalDate dateOfAccepted, LocalDate dateOfReturn, LocalDate dateOfRequest, LocalDate dateOfRejected, Boolean isApproved, LocalDate dateOfReceived) {
+    public Request(Long requestId, User borrower, Book book, String status, Long requestDuration, LocalDate dateOfAccepted, LocalDate dateOfReturn, LocalDate dateOfRequest, LocalDate dateOfRejected, Boolean isApproved, LocalDate dateOfReceived, String rejectedReason) {
         this.requestId = requestId;
         this.borrower = borrower;
         this.book = book;
@@ -56,6 +58,7 @@ public class Request {
         this.dateOfRejected = dateOfRejected;
         this.isApproved = isApproved;
         this.dateOfReceived = dateOfReceived;
+        this.rejectedReason = rejectedReason;
     }
 
     public Long getRequestId() {
@@ -144,5 +147,13 @@ public class Request {
 
     public void setDateOfReceived(LocalDate dateOfReceived) {
         this.dateOfReceived = dateOfReceived;
+    }
+
+    public String getRejectedReason() {
+        return rejectedReason;
+    }
+
+    public void setRejectedReason(String rejectedReason) {
+        this.rejectedReason = rejectedReason;
     }
 }

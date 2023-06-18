@@ -83,6 +83,7 @@ public class EmailService {
         String bookTitle = request.getBook().getTitle();
         String author = request.getBook().getAuthor();
         LocalDate requestDate = request.getDateOfRequest();
+        String rejectedReason = request.getRejectedReason();
 
         // build email
         // send message
@@ -93,6 +94,7 @@ public class EmailService {
                 "Book Title: " + bookTitle + "\n" +
                 "Author: " + author + "\n" +
                 "Request Date: " + requestDate + "\n" +
+                "Reason: " + rejectedReason + "\n" +
                 "\n" +
                 "We apologize for any inconvenience caused. If you have any further questions or concerns, please don't hesitate to reach out to our support team.\n" +
                 "\n" +
@@ -109,7 +111,7 @@ public class EmailService {
     public void sendResetPasswordEmail(String email) {
 
         User existingUser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: "+email));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
 
         String subject = "Password Reset Request";
         String sendTo = existingUser.getEmail();

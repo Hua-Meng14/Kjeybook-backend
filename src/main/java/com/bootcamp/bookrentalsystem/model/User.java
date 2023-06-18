@@ -39,12 +39,13 @@ public class User {
         // Default constructor for Jackson deserialization
     }
 
-    public User(String username, String email, String encodedPassword, String role) {
+    public User(String username, String email, String encodedPassword, String role, String phoneNumber) {
         // Constructor for convenience
         this.username = username;
         this.email = email;
         this.password = encodedPassword;
         this.role = role;
+        this.phoneNumber = phoneNumber;
     }
 
     public Long getUserId() {
