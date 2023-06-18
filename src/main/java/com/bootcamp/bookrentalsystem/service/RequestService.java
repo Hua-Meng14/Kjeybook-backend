@@ -176,6 +176,11 @@ public class RequestService {
         requestRepository.save(request);
         return request;
     }
+    public Request getRequestByRequestId(long requestId) {
+        Request request = requestRepository.findById(requestId)
+                .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
+        return request;
+    }
 
     public List<Request> getRequestsByStatus(String status) {
         return requestRepository.findByStatus(status);
