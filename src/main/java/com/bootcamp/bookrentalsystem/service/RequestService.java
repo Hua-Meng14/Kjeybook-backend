@@ -173,4 +173,8 @@ public class RequestService {
         requestRepository.save(request);
         return request;
     }
+
+    public List<Request> getRequestsByStatus(String status) {
+        return requestRepository.findByStatus(status);
+    }
 }

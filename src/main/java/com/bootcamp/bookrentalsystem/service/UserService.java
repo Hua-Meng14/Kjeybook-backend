@@ -44,13 +44,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Optional<User> findUserById(Long userId, String jwtToken) {
-
-//         Validate and decode the JWT token
-//        System.out.println("--------- IS TOKEN ROLE ADMIN: " + jwtService.isAdminToken(jwtToken));
-        if (!jwtService.isValidAdminToken(jwtToken)) {
-            throw new ForbiddenException("Access Denied!!");
-        }
+    public Optional<User> findUserById(Long userId) {
 
 //        if (!jwtService.isUserToken(jwtToken, userId)) {
 //            throw new UnauthorizedException("Unauthorized Access!!");
