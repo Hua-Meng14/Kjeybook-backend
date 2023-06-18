@@ -1,7 +1,6 @@
 package com.bootcamp.bookrentalsystem.controller;
 
 import com.bootcamp.bookrentalsystem.model.Request;
-import com.bootcamp.bookrentalsystem.model.User;
 import com.bootcamp.bookrentalsystem.service.BookService;
 import com.bootcamp.bookrentalsystem.service.RequestService;
 import com.bootcamp.bookrentalsystem.service.UserService;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/request")
@@ -75,5 +75,12 @@ public class RequestController {
         Request archivedRequest = requestService.returnBook(requestId);
         return ResponseEntity.ok("Book returned successfully.");
     }
+
+    @GetMapping("/{requestId}")
+    public ResponseEntity<Request> getRequestByRequestId(@PathVariable Long requestId){
+        Request request = requestService.getRequestByRequestId(requestId);
+        return new ResponseEntity<>(request, HttpStatus.OK);
+    }
+
 
 }
