@@ -1,7 +1,6 @@
 package com.bootcamp.bookrentalsystem.auth;
 
 import com.bootcamp.bookrentalsystem.exception.BadRequestException;
-import com.bootcamp.bookrentalsystem.exception.ForbiddenException;
 import com.bootcamp.bookrentalsystem.exception.IllegalArgumentException;
 import com.bootcamp.bookrentalsystem.exception.ResourceNotFoundException;
 import com.bootcamp.bookrentalsystem.exception.UnauthorizedException;
@@ -12,16 +11,9 @@ import com.bootcamp.bookrentalsystem.model.User;
 import com.bootcamp.bookrentalsystem.repository.TokenRepository;
 import com.bootcamp.bookrentalsystem.repository.UserRepository;
 import com.bootcamp.bookrentalsystem.service.JwtService;
-import com.bootcamp.bookrentalsystem.service.UserService;
 import io.jsonwebtoken.Claims;
-import io.micrometer.common.util.StringUtils;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -35,26 +27,27 @@ public class AuthenticationService {
     private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    private final UserService userService;
-    private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterUser registerUser) {
         String username = registerUser.getUsername();
         String email = registerUser.getEmail();
         String password = registerUser.getPassword();
-        String role = registerUser.getRole();
+        String phoneNumber = registerUser.getPhoneNumber();
+//        String role = registerUser.getRole();
 
         // Check if the username or email already exists in the database
-        if (userRepository.findByUsername(username).isPresent()) {
+        if (userRepository.findByUsername(registerUser.getUsername()).isPresent()) {
             throw new BadRequestException("Username already exists");
         }
 
-        if (userRepository.findByEmail(email).isPresent()) {
+        if (userRepository.findByEmail(registerUser.getEmail()).isPresent()) {
             throw new BadRequestException("Email already exists");
         }
 
         // Create a new user entity
-        User newUser = new User(username, email, passwordEncoder.encode(password), role);
+        User newUser = new User(username, email, passwordEncoder.encode(password), "USER", phoneNumber);
+
+        System.out.println("-------------NEW USER-------------: "+newUser);
 
         // Save the user entity in the database
         User savedUser = userRepository.save(newUser);
@@ -66,7 +59,7 @@ public class AuthenticationService {
         // Store the refresh token in the database (if necessary)
         savedUserToken(savedUser, accessToken);
 
-        System.out.println("--------------------saved tokens");
+//        System.out.println("--------------------saved tokens");
 
         // Build the authentication response
         AuthenticationResponse response = AuthenticationResponse.builder()

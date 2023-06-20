@@ -6,18 +6,17 @@ import com.bootcamp.bookrentalsystem.model.*;
 import com.bootcamp.bookrentalsystem.repository.BookRepository;
 import com.bootcamp.bookrentalsystem.repository.RequestRepository;
 import com.bootcamp.bookrentalsystem.repository.UserRepository;
-import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.List;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Component
 @Service
@@ -179,18 +178,78 @@ public class UserService {
         return "Password changed successfully!";
     }
 
-    public String resetPassword(ResetPasswordRequest request) {
-        // Retrieve the user by email
-        User existingUser = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + request.getEmail()));
+    // Utility method to generate a password reset token (you can customize this as needed)
+    private String generateResetToken() {
+        // Implement your logic to generate a unique token
+        // You can use UUID or any other secure random generator
+        return UUID.randomUUID().toString();
+    }
 
-        // Set the new password for the user
-        existingUser.setPassword(passwordEncoder.encode(request.getNewPassword()));
+    public void saveResetPwdToken(User user, String resetPwdToken, LocalDateTime expirationTime) {
+        // Set the reset token and expiration time for the user
+        user.setResetPwdToken(resetPwdToken);
+        user.setResetPwdExpirationTime(expirationTime);
+        userRepository.save(user);
+    }
 
-        // Save the updated user entity
-        userRepository.save(existingUser);
+    public ResponseEntity<String> forgotPassword(String email) {
 
-        return "Password Reset Successfully";
+        // Validate the request payload
+        if (email.isEmpty()) {
+            return new ResponseEntity<String>("Email is required.", HttpStatus.BAD_REQUEST);
+        }
 
+        // Check if user exists
+        User existingUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+
+        // Generate a password reset token (you can use a library or custom implementation)
+        String resetPwdToken = generateResetToken();
+
+        // Set the expiration time (e.g., 1 hour from the current time)
+        LocalDateTime expirationTime = LocalDateTime.now().plusHours(1);
+
+        // Save the reset token for the user (in your database or cache)
+        saveResetPwdToken(existingUser, resetPwdToken, expirationTime);
+
+        // Send the password reset email
+        emailService.sendResetPasswordEmail(existingUser.getEmail(), resetPwdToken, expirationTime);
+
+        return ResponseEntity.ok("Password reset instructions sent to your email.");
+
+    }
+
+    public ResponseEntity<String> resetPassword(ResetPasswordRequest request) {
+        String resetPwdToken = request.getResetPwdToken();
+        String email = request.getEmail();
+        String newPassword = request.getNewPassword();
+
+        // Validate the request payload
+        if (resetPwdToken == null || resetPwdToken.isEmpty()) {
+            throw new BadRequestException("Reset token is required.");
+        }
+        if (newPassword == null || newPassword.isEmpty()) {
+            throw new BadRequestException("New password is required.");
+        }
+
+        // Check if the reset token is valid and retrieve the associated user
+        User user = userRepository.findByResetPwdToken(resetPwdToken)
+                .orElseThrow(() -> new UnauthorizedException("Unauthorized Access"));
+
+        // Check if the reset token has expired
+        if (user.getResetPwdExpirationTime() == null || user.getResetPwdExpirationTime().isBefore(LocalDateTime.now())) {
+            throw new BadRequestException("Invalid Token");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setResetPwdToken(null);
+        user.setResetPwdExpirationTime(null);
+
+        // Save new password
+        userRepository.save(user);
+        // Send confirmation for new password to user
+        emailService.sendResetPasswordSuccessEmail(user);
+
+        return ResponseEntity.ok("Password Reset Succesfully");
     }
 }

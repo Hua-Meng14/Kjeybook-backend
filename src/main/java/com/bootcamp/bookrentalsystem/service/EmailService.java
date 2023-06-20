@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import static org.hibernate.sql.ast.SqlTreeCreationLogger.LOGGER;
@@ -83,6 +84,7 @@ public class EmailService {
         String bookTitle = request.getBook().getTitle();
         String author = request.getBook().getAuthor();
         LocalDate requestDate = request.getDateOfRequest();
+        String rejectedReason = request.getRejectedReason();
 
         // build email
         // send message
@@ -93,6 +95,7 @@ public class EmailService {
                 "Book Title: " + bookTitle + "\n" +
                 "Author: " + author + "\n" +
                 "Request Date: " + requestDate + "\n" +
+                "Reason: " + rejectedReason + "\n" +
                 "\n" +
                 "We apologize for any inconvenience caused. If you have any further questions or concerns, please don't hesitate to reach out to our support team.\n" +
                 "\n" +
@@ -106,21 +109,39 @@ public class EmailService {
         send(sendTo, from, message, subject);
     }
 
-    public void sendResetPasswordEmail(String email) {
+    public void sendResetPasswordEmail(String email, String resetPwdToken, LocalDateTime expirationTime) {
 
         User existingUser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: "+email));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
 
         String subject = "Password Reset Request";
         String sendTo = existingUser.getEmail();
+        String resetLink = "https://example.com/reset-password?email=" + existingUser.getEmail() + "&token=" + resetPwdToken;
 
         // build email
         // send message
         String message = "Hello " + existingUser.getUsername() + ",\n\n" +
                 "We have received a request to reset your password for your account. If you did not initiate this request, please ignore this email.\n\n" +
                 "To reset your password, click on the following link:\n" +
-                "[Password Reset Link]\n\n" +
-//                "Please note that this link will expire in [Expiration Time]. If you do not reset your password within this timeframe, you will need to submit another password reset request.\n\n" +
+                resetLink + "\n\n" +
+                "Please note that this link will expire in " + expirationTime + ". If you do not reset your password within this timeframe, you will need to submit another password reset request.\n\n" +
+                "If you have any questions or need further assistance, please contact our support team at bookrentalsystem.kit@gmail.com.\n\n" +
+                "Thank you,\n" +
+                "The Book Rental Team";
+        String from = "no-reply@bookrentalsystem.com.kh";
+        send(sendTo, from, message, subject);
+    }
+
+    public void sendResetPasswordSuccessEmail(User user) {
+        String subject = "Password Reset Success";
+        String sendTo = user.getEmail();
+        String loginLink = "https://example.com/login";
+
+// Build email
+        String message = "Hello " + user.getUsername() + ",\n\n" +
+                "Your password has been successfully reset. You can now log in using your new password.\n\n" +
+                "To log in, click on the following link:\n" +
+                loginLink + "\n\n" +
                 "If you have any questions or need further assistance, please contact our support team at bookrentalsystem.kit@gmail.com.\n\n" +
                 "Thank you,\n" +
                 "The Book Rental Team";
@@ -144,4 +165,6 @@ public class EmailService {
             throw new IllegalStateException("failed to send email");
         }
     }
+
+
 }

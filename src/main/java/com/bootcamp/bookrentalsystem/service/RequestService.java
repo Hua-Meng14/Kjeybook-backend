@@ -5,6 +5,7 @@ import com.bootcamp.bookrentalsystem.exception.ResourceNotFoundException;
 import com.bootcamp.bookrentalsystem.model.Book;
 import com.bootcamp.bookrentalsystem.model.Request;
 import com.bootcamp.bookrentalsystem.model.User;
+import com.bootcamp.bookrentalsystem.repository.BookRepository;
 import com.bootcamp.bookrentalsystem.repository.RequestRepository;
 import com.bootcamp.bookrentalsystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +23,15 @@ public class RequestService {
     private final UserRepository userRepository;
     private final BookService bookService;
     private final UserService userService;
+    private final BookRepository bookRepository;
 
     @Autowired
-    public RequestService(@Qualifier("request") RequestRepository requestRepository, UserService userService, BookService bookService, UserRepository userRepository) {
+    public RequestService(@Qualifier("request") RequestRepository requestRepository, UserService userService, BookService bookService, UserRepository userRepository, BookRepository bookRepository) {
         this.requestRepository = requestRepository;
         this.userRepository = userRepository;
         this.bookService = bookService;
         this.userService = userService;
-
-
+        this.bookRepository = bookRepository;
     }
 
     public Request createRequest(Long userId, Long bookId, Long requestDuration) {
@@ -129,7 +130,7 @@ public class RequestService {
         return requestRepository.save(request);
     }
 
-    public Request rejectRequest(Long requestId) {
+    public Request rejectRequest(Long requestId, String reason) {
         Request request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
 
@@ -141,6 +142,8 @@ public class RequestService {
         request.setStatus("ARCHIVED");
         // Set the request isApproved to true
         request.setIsApproved(false);
+        // Set the rejectedReason
+        request.setRejectedReason(reason);
 
         // Send email to notify the borrower
         userService.notifyUserRequestRejected(requestId);
@@ -173,8 +176,20 @@ public class RequestService {
         requestRepository.save(request);
         return request;
     }
+    public Request getRequestByRequestId(long requestId) {
+        Request request = requestRepository.findById(requestId)
+                .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
+        return request;
+    }
 
     public List<Request> getRequestsByStatusAndDateOfRequest(String status, LocalDate date) {
         return requestRepository.findByStatusAndDateOfRequest(status, date);
+    }
+
+    public List<Request> getRequestsByBook(Long bookId) {
+        Book existingBook = bookRepository.findById(bookId)
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: "+bookId));
+
+        return requestRepository.findByBookId(bookId);
     }
 }
