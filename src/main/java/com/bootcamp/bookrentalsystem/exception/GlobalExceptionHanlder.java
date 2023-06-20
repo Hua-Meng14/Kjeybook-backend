@@ -35,8 +35,8 @@ public class GlobalExceptionHanlder {
         CustomErrorResponse errors = new CustomErrorResponse();
         errors.setTimestamp(LocalDateTime.now());
         errors.setError(e.getMessage());
-        errors.setStatus(HttpStatus.FORBIDDEN.value());
-        return new ResponseEntity<>(errors, HttpStatus.FORBIDDEN);
+        errors.setStatus(HttpStatus.CONFLICT.value());
+        return new ResponseEntity<>(errors, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(IllegalStateException.class)
@@ -44,8 +44,8 @@ public class GlobalExceptionHanlder {
         CustomErrorResponse errors = new CustomErrorResponse();
         errors.setTimestamp(LocalDateTime.now());
         errors.setError(e.getMessage());
-        errors.setStatus(HttpStatus.FORBIDDEN.value());
-        return new ResponseEntity<>(errors, HttpStatus.FORBIDDEN);
+        errors.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        return new ResponseEntity<>(errors, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -53,8 +53,8 @@ public class GlobalExceptionHanlder {
         CustomErrorResponse errors = new CustomErrorResponse();
         errors.setTimestamp(LocalDateTime.now());
         errors.setError(e.getMessage());
-        errors.setStatus(HttpStatus.FORBIDDEN.value());
-        return new ResponseEntity<>(errors, HttpStatus.FORBIDDEN);
+        errors.setStatus(HttpStatus.BAD_REQUEST.value());
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(UnauthorizedException.class)
