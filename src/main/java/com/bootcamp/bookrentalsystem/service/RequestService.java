@@ -185,6 +185,9 @@ public class RequestService {
     public List<Request> getRequestsByStatusAndDateOfRequest(String status, LocalDate date) {
         return requestRepository.findByStatusAndDateOfRequest(status, date);
     }
+    public List<Request> getRequestsByStatus(String status) {
+        return requestRepository.findByStatus(status);
+    }
 
     public List<Request> getRequestsByBook(Long bookId) {
         Book existingBook = bookRepository.findById(bookId)

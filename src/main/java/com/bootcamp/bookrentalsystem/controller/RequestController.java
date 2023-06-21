@@ -57,8 +57,12 @@ public class RequestController {
     }
 
     @GetMapping("/status")
-    public List<Request> getRequestsByStatus(@RequestParam("status") String status, @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return requestService.getRequestsByStatusAndDateOfRequest(status, date);
+    public List<Request> getRequestsByStatus(@RequestParam("status") String status, @RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        if (date == null) {
+            return requestService.getRequestsByStatus(status);
+        } else {
+            return requestService.getRequestsByStatusAndDateOfRequest(status, date);
+        }
     }
 
     @GetMapping("/book")
