@@ -2,13 +2,10 @@ package com.bootcamp.bookrentalsystem.controller;
 
 import com.bootcamp.bookrentalsystem.exception.ForbiddenException;
 import com.bootcamp.bookrentalsystem.exception.UnauthorizedException;
-import com.bootcamp.bookrentalsystem.model.Book;
 import com.bootcamp.bookrentalsystem.model.RejectRequest;
 import com.bootcamp.bookrentalsystem.model.Request;
-import com.bootcamp.bookrentalsystem.service.BookService;
 import com.bootcamp.bookrentalsystem.service.JwtService;
 import com.bootcamp.bookrentalsystem.service.RequestService;
-import com.bootcamp.bookrentalsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -18,31 +15,26 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/request")
 public class RequestController {
-    private final BookService bookService;
-    private final UserService userService;
     private final RequestService requestService;
     private final JwtService jwtService;
 
     @Autowired
-    public RequestController(BookService bookService, UserService userService, RequestService requestService, JwtService jwtService) {
-        this.bookService = bookService;
-        this.userService = userService;
+    public RequestController(RequestService requestService, JwtService jwtService) {
         this.requestService = requestService;
         this.jwtService = jwtService;
     }
 
     @PostMapping()
     public ResponseEntity<Request> createRequest(@RequestParam("userId") Long userId,
-                                                 @RequestParam("bookId") Long bookId,
-                                                 @RequestParam("requestDuration") Long requestDuration,
-                                                 @RequestHeader("Authorization") String token) {
+            @RequestParam("bookId") Long bookId,
+            @RequestParam("requestDuration") Long requestDuration,
+            @RequestHeader("Authorization") String token) {
         // Validate User token access
-        if(!jwtService.isValidUserToken(token,userId)) {
+        if (!jwtService.isValidUserToken(token, userId)) {
             throw new UnauthorizedException("Unauthorized Access");
         }
 
@@ -51,13 +43,19 @@ public class RequestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Request>> getAllRequests() {
+    public ResponseEntity<List<Request>> getAllRequests(@RequestHeader("Authorization") String token) {
+        // Validate and decode the JWT token
+        if (!jwtService.isValidAdminToken(token)) {
+            throw new ForbiddenException("Access Denied!!");
+        }
+
         List<Request> requests = requestService.getAllRequests();
         return ResponseEntity.ok(requests);
     }
 
     @GetMapping("/status")
-    public List<Request> getRequestsByStatus(@RequestParam("status") String status, @RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+    public List<Request> getRequestsByStatus(@RequestParam("status") String status,
+            @RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         if (date == null) {
             return requestService.getRequestsByStatus(status);
         } else {
@@ -70,9 +68,9 @@ public class RequestController {
         return requestService.getRequestsByBook(bookId);
     }
 
-
     @PatchMapping("/{requestId}")
-    public ResponseEntity<Request> updateRequest(@RequestHeader("Authorization") String token, @PathVariable Long requestId, @RequestBody Request updatedRequest) {
+    public ResponseEntity<Request> updateRequest(@RequestHeader("Authorization") String token,
+            @PathVariable Long requestId, @RequestBody Request updatedRequest) {
         // Validate and decode the JWT token
         if (!jwtService.isValidAdminToken(token)) {
             throw new ForbiddenException("Access Denied!!");
@@ -83,7 +81,8 @@ public class RequestController {
     }
 
     @DeleteMapping("/{requestId}")
-    public ResponseEntity<Map<String, Boolean>> deleteRequestById(@RequestHeader("Authorization") String token, @PathVariable Long requestId) {
+    public ResponseEntity<Map<String, Boolean>> deleteRequestById(@RequestHeader("Authorization") String token,
+            @PathVariable Long requestId) {
         // Validate and decode the JWT token
         if (!jwtService.isValidAdminToken(token)) {
             throw new ForbiddenException("Access Denied!!");
@@ -92,10 +91,12 @@ public class RequestController {
         Map<String, Boolean> response = requestService.deleteRequestById(requestId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
     @GetMapping("/user")
-    public ResponseEntity<List<Request>> getRequestsByUserId(@RequestHeader("Authorization") String token, @RequestParam("userId") Long userId) {
+    public ResponseEntity<List<Request>> getRequestsByUserId(@RequestHeader("Authorization") String token,
+            @RequestParam("userId") Long userId) {
         // Validate User token access
-        if(!jwtService.isValidUserToken(token,userId)) {
+        if (!jwtService.isValidUserToken(token, userId)) {
             throw new UnauthorizedException("Unauthorized Access");
         }
 
@@ -104,7 +105,8 @@ public class RequestController {
     }
 
     @PatchMapping("/{requestId}/accept")
-    public ResponseEntity<Request> acceptRequest(@RequestHeader("Authorization") String token, @PathVariable Long requestId) {
+    public ResponseEntity<Request> acceptRequest(@RequestHeader("Authorization") String token,
+            @PathVariable Long requestId) {
         // Validate and decode the JWT token
         if (!jwtService.isValidAdminToken(token)) {
             throw new ForbiddenException("Access Denied!!");
@@ -115,7 +117,8 @@ public class RequestController {
     }
 
     @PatchMapping("/{requestId}/reject")
-    public ResponseEntity<Request> rejectRequest(@RequestHeader("Authorization") String token, @PathVariable Long requestId, @RequestBody RejectRequest rejectRequest) {
+    public ResponseEntity<Request> rejectRequest(@RequestHeader("Authorization") String token,
+            @PathVariable Long requestId, @RequestBody RejectRequest rejectRequest) {
         // Validate and decode the JWT token
         if (!jwtService.isValidAdminToken(token)) {
             throw new ForbiddenException("Access Denied!!");
@@ -126,21 +129,21 @@ public class RequestController {
     }
 
     @PatchMapping("/{requestId}/return")
-    public ResponseEntity<String> returnBook(@RequestHeader("Authorization") String token, @PathVariable Long requestId) {
+    public ResponseEntity<String> returnBook(@RequestHeader("Authorization") String token,
+            @PathVariable Long requestId) {
         // Validate and decode the JWT token
         if (!jwtService.isValidAdminToken(token)) {
             throw new ForbiddenException("Access Denied!!");
         }
 
-        Request archivedRequest = requestService.returnBook(requestId);
+        requestService.returnBook(requestId);
         return ResponseEntity.ok("Book returned successfully.");
     }
 
     @GetMapping("/{requestId}")
-    public ResponseEntity<Request> getRequestByRequestId(@PathVariable Long requestId){
+    public ResponseEntity<Request> getRequestByRequestId(@PathVariable Long requestId) {
         Request request = requestService.getRequestByRequestId(requestId);
         return new ResponseEntity<>(request, HttpStatus.OK);
     }
-
 
 }

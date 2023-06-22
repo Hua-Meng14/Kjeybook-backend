@@ -4,7 +4,6 @@ import io.swagger.annotations.ApiModelProperty;
 import jakarta.persistence.*;
 
 import java.util.List;
-import java.util.Map;
 
 @Entity
 @Table(name = "_book")

@@ -5,7 +5,6 @@ import io.swagger.annotations.ApiModelProperty;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Entity
 @Table(name = "_request")

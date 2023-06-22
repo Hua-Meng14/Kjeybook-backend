@@ -81,7 +81,7 @@ public class RequestService {
     }
 
     public Map<String, Boolean> deleteRequestById(Long requestId) {
-        Request existingRequest = requestRepository.findById(requestId)
+        requestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
 
         requestRepository.deleteById(requestId);
@@ -92,7 +92,7 @@ public class RequestService {
     }
 
     public List<Request> getRequestsByUserId(Long userId) {
-        User existingUser = userRepository.findById(userId)
+        userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
         return requestRepository.findByBorrowerUserId(userId);
     }
@@ -190,7 +190,7 @@ public class RequestService {
     }
 
     public List<Request> getRequestsByBook(Long bookId) {
-        Book existingBook = bookRepository.findById(bookId)
+        bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: "+bookId));
 
         return requestRepository.findByBookId(bookId);
