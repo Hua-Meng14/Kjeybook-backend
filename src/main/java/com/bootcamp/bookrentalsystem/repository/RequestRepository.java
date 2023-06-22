@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Component
@@ -13,4 +14,8 @@ import java.util.List;
 @Repository
 public interface RequestRepository extends JpaRepository<Request, Long> {
     List<Request> findByBorrowerUserId(Long userId);
+
+    List<Request> findByStatusAndDateOfRequest(String status, LocalDate date);
+    List<Request> findByStatus(String status);
+    List<Request> findByBookId(Long bookId);
 }
