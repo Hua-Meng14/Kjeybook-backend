@@ -1,14 +1,11 @@
 package com.bootcamp.bookrentalsystem.service;
 
 
-import com.bootcamp.bookrentalsystem.exception.ForeignKeyConstraintException;
 import com.bootcamp.bookrentalsystem.exception.ResourceNotFoundException;
 import com.bootcamp.bookrentalsystem.model.Book;
 import com.bootcamp.bookrentalsystem.repository.BookRepository;
-import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -18,12 +15,10 @@ import java.util.*;
 @Service
 public class BookService {
     private final BookRepository bookRepository;
-    private final EntityManager entityManager;
 
     @Autowired
-    public BookService(@Qualifier("book") BookRepository bookRepository, EntityManager entityManager) {
+    public BookService(@Qualifier("book") BookRepository bookRepository) {
         this.bookRepository = bookRepository;
-        this.entityManager = entityManager;
     }
 
     public List<Book> getBooksByTitle(String title) {
@@ -59,7 +54,8 @@ public class BookService {
     }
 
     public Map<String, Boolean> deletBookById(Long bookId) {
-        Book existingBook = bookRepository.findById(bookId)
+        
+        bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
 
 //         Check if the book has any associated requests
