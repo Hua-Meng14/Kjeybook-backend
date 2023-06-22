@@ -78,14 +78,14 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> getAllUsers(@RequestHeader("Authorization") String token) {
+   public List<User> getAllUsers(@RequestHeader("Authorization") String token) {
 
-        // Validate and decode the JWT token
-        if (!jwtService.isValidAdminToken(token)) {
-            throw new ForbiddenException("Access Denied!!");
-        }
-        return userService.getAllUsers();
-    }
+       // Validate and decode the JWT token
+       if (!jwtService.isValidAdminToken(token)) {
+           throw new ForbiddenException("Access Denied!!");
+       }
+       return userService.getAllUsers();
+   }
 
     @PatchMapping("/{userId}/favorites/{bookId}")
     public ResponseEntity<String> addBookToUserFavorites(@RequestHeader("Authorization") String token,
