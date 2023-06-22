@@ -1,6 +1,5 @@
 package com.bootcamp.bookrentalsystem.controller;
 
-import com.bootcamp.bookrentalsystem.exception.BadRequestException;
 import com.bootcamp.bookrentalsystem.exception.ForbiddenException;
 import com.bootcamp.bookrentalsystem.exception.UnauthorizedException;
 import com.bootcamp.bookrentalsystem.model.Book;
@@ -8,35 +7,23 @@ import com.bootcamp.bookrentalsystem.model.ChangePasswordRequest;
 import com.bootcamp.bookrentalsystem.model.ResetPasswordRequest;
 import com.bootcamp.bookrentalsystem.model.User;
 import com.bootcamp.bookrentalsystem.service.*;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwt;
-import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/user")
 public class UserController {
-    private final BookService bookService;
     private final UserService userService;
-    private final RequestService requestService;
-    private final EmailService emailService;
     private final JwtService jwtService;
 
     @Autowired
 
-    public UserController(BookService bookService, UserService userService, RequestService requestService,
-            EmailService emailService, JwtService jwtService) {
-        this.emailService = emailService;
-        this.bookService = bookService;
+    public UserController(UserService userService, JwtService jwtService) {
         this.userService = userService;
-        this.requestService = requestService;
         this.jwtService = jwtService;
     }
 
