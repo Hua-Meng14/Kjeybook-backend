@@ -2,13 +2,10 @@ package com.bootcamp.bookrentalsystem.controller;
 
 import com.bootcamp.bookrentalsystem.exception.ForbiddenException;
 import com.bootcamp.bookrentalsystem.exception.UnauthorizedException;
-import com.bootcamp.bookrentalsystem.model.Book;
 import com.bootcamp.bookrentalsystem.model.RejectRequest;
 import com.bootcamp.bookrentalsystem.model.Request;
-import com.bootcamp.bookrentalsystem.service.BookService;
 import com.bootcamp.bookrentalsystem.service.JwtService;
 import com.bootcamp.bookrentalsystem.service.RequestService;
-import com.bootcamp.bookrentalsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -18,21 +15,15 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/request")
 public class RequestController {
-    private final BookService bookService;
-    private final UserService userService;
     private final RequestService requestService;
     private final JwtService jwtService;
 
     @Autowired
-    public RequestController(BookService bookService, UserService userService, RequestService requestService,
-            JwtService jwtService) {
-        this.bookService = bookService;
-        this.userService = userService;
+    public RequestController(RequestService requestService, JwtService jwtService) {
         this.requestService = requestService;
         this.jwtService = jwtService;
     }
@@ -145,7 +136,7 @@ public class RequestController {
             throw new ForbiddenException("Access Denied!!");
         }
 
-        Request archivedRequest = requestService.returnBook(requestId);
+        requestService.returnBook(requestId);
         return ResponseEntity.ok("Book returned successfully.");
     }
 
