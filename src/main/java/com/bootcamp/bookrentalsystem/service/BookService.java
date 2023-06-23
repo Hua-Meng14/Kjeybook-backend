@@ -47,8 +47,8 @@ public class BookService {
                 .ifPresent(existingBook::setDescription);
         Optional.ofNullable(updatedBook.getBookImg())
                 .ifPresent(existingBook::setBookImg);
-        Optional.ofNullable(updatedBook.getMaximumRequestPeriod())
-                .ifPresent(existingBook::setMaximumRequestPeriod);
+        // Optional.ofNullable(updatedBook.getMaximumRequestPeriod())
+        //         .ifPresent(existingBook::setMaximumRequestPeriod);
 
         return bookRepository.save(existingBook);
     }

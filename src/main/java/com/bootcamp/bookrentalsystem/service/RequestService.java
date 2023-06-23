@@ -47,9 +47,9 @@ public class RequestService {
         }
 
         // Check request duration and maximum request duration for the requested book
-        if (requestDuration > book.getMaximumRequestPeriod()) {
-            throw new BadRequestException("Request Period has exceed maximum request duration for book with id: " + bookId);
-        }
+        // if (requestDuration > book.getMaximumRequestPeriod()) {
+        //     throw new BadRequestException("Request Period has exceed maximum request duration for book with id: " + bookId);
+        // }
 
 
         Request request = new Request();
