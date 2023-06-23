@@ -26,7 +26,8 @@ public class RequestService {
     private final BookRepository bookRepository;
 
     @Autowired
-    public RequestService(@Qualifier("request") RequestRepository requestRepository, UserService userService, BookService bookService, UserRepository userRepository, BookRepository bookRepository) {
+    public RequestService(@Qualifier("request") RequestRepository requestRepository, UserService userService,
+            BookService bookService, UserRepository userRepository, BookRepository bookRepository) {
         this.requestRepository = requestRepository;
         this.userRepository = userRepository;
         this.bookService = bookService;
@@ -48,9 +49,9 @@ public class RequestService {
 
         // Check request duration and maximum request duration for the requested book
         // if (requestDuration > book.getMaximumRequestPeriod()) {
-        //     throw new BadRequestException("Request Period has exceed maximum request duration for book with id: " + bookId);
+        // throw new BadRequestException("Request Period has exceed maximum request
+        // duration for book with id: " + bookId);
         // }
-
 
         Request request = new Request();
         request.setBorrower(borrower);
@@ -101,54 +102,71 @@ public class RequestService {
         Request request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
 
+        // Check the request status
+        switch (request.getStatus()) {
+            case "ACCEPTED":
+                throw new BadRequestException("Request has already been accepted.");
+            case "ARCHIVED":
+                throw new BadRequestException("Request has already been archived.");
+            default:
+                // Set the accepted date as the current date
+                LocalDate currentDate = LocalDate.now();
+                request.setDateOfAccepted(currentDate);
 
-        // Set the accepted date as the current date
-        LocalDate currentDate = LocalDate.now();
-        request.setDateOfAccepted(currentDate);
+                // Set the dateOfReturn based on the request duration
+                Long requestDuration = request.getRequestDuration();
+                if (requestDuration != null) {
+                    LocalDate dateOfReturn = currentDate.plusDays(requestDuration + 1);
+                    request.setDateOfReturn(dateOfReturn);
+                }
 
-        // Set the dateOfReturn based on the request duration
-        Long requestDuration = request.getRequestDuration();
-        if (requestDuration != null) {
-            LocalDate dateOfReturn = currentDate.plusDays(requestDuration + 1);
-//            java.sql.Date dateOfReturnWithoutTime = java.sql.Date.valueOf(dateOfReturn);
-            request.setDateOfReturn(dateOfReturn);
+                // Set the request status to "ACCEPTED"
+                request.setStatus("ACCEPTED");
+                // Set the request isApproved to true
+                request.setIsApproved(true);
+
+                // Set book isRented to "TRUE"
+                Optional<Book> optionalBook = bookService.findBookById(request.getBook().getId());
+                if (optionalBook.isPresent()) {
+                    Book book = optionalBook.get();
+                    book.setRented(true);
+                }
+
+                // Send email to notify the borrower
+                userService.notifyUserRequestAccepted(requestId);
+
+                return requestRepository.save(request);
         }
 
-        // Set the request status to "ACCEPTED"
-        request.setStatus("ACCEPTED");
-        // Set the request isApproved to true
-        request.setIsApproved(true);
-
-        // Set book isRented to "TRUE"
-        Optional<Object> requestBook = bookService.findBookById(request.getBook().getId());
-        Book book = (Book) requestBook.get();
-        book.setRented(true);
-
-        // Send email to notify the borrower
-        userService.notifyUserRequestAccepted(requestId);
-
-        return requestRepository.save(request);
     }
 
     public Request rejectRequest(Long requestId, String reason) {
         Request request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
 
-        // Set the rejected date as the current date
-        LocalDate currentDate = LocalDate.now();
-        request.setDateOfRejected(currentDate);
+        // Check the request status
+        switch (request.getStatus()) {
+            case "ACCEPTED":
+                throw new BadRequestException("Request has already been accepted.");
+            case "ARCHIVED":
+                throw new BadRequestException("Request has already been archived.");
+            default:
+                // Set the rejected date as the current date
+                LocalDate currentDate = LocalDate.now();
+                request.setDateOfRejected(currentDate);
 
-        // Set the request status to "REJECTED"
-        request.setStatus("ARCHIVED");
-        // Set the request isApproved to true
-        request.setIsApproved(false);
-        // Set the rejectedReason
-        request.setRejectedReason(reason);
+                // Set the request status to "REJECTED"
+                request.setStatus("ARCHIVED");
+                // Set the request isApproved to true
+                request.setIsApproved(false);
+                // Set the rejectedReason
+                request.setRejectedReason(reason);
 
-        // Send email to notify the borrower
-        userService.notifyUserRequestRejected(requestId);
+                // Send email to notify the borrower
+                userService.notifyUserRequestRejected(requestId);
 
-        return requestRepository.save(request);
+                return requestRepository.save(request);
+        }
     }
 
     public List<Request> getAllRequests() {
@@ -176,6 +194,7 @@ public class RequestService {
         requestRepository.save(request);
         return request;
     }
+
     public Request getRequestByRequestId(long requestId) {
         Request request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
@@ -185,13 +204,14 @@ public class RequestService {
     public List<Request> getRequestsByStatusAndDateOfRequest(String status, LocalDate date) {
         return requestRepository.findByStatusAndDateOfRequest(status, date);
     }
+
     public List<Request> getRequestsByStatus(String status) {
         return requestRepository.findByStatus(status);
     }
 
     public List<Request> getRequestsByBook(Long bookId) {
         bookRepository.findById(bookId)
-                .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: "+bookId));
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
 
         return requestRepository.findByBookId(bookId);
     }
