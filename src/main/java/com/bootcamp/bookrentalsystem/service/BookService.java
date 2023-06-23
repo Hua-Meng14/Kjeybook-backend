@@ -70,7 +70,7 @@ public class BookService {
         return response;
     }
 
-    public Optional<Object> findBookById(Long bookId) {
+    public Optional<Book> findBookById(Long bookId) {
         return Optional.ofNullable(bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId)
                 ));
