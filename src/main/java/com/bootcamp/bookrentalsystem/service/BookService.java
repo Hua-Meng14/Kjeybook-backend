@@ -47,8 +47,8 @@ public class BookService {
                 .ifPresent(existingBook::setDescription);
         Optional.ofNullable(updatedBook.getBookImg())
                 .ifPresent(existingBook::setBookImg);
-        Optional.ofNullable(updatedBook.getMaximumRequestPeriod())
-                .ifPresent(existingBook::setMaximumRequestPeriod);
+        // Optional.ofNullable(updatedBook.getMaximumRequestPeriod())
+        //         .ifPresent(existingBook::setMaximumRequestPeriod);
 
         return bookRepository.save(existingBook);
     }
@@ -70,7 +70,7 @@ public class BookService {
         return response;
     }
 
-    public Optional<Object> findBookById(Long bookId) {
+    public Optional<Book> findBookById(Long bookId) {
         return Optional.ofNullable(bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId)
                 ));
