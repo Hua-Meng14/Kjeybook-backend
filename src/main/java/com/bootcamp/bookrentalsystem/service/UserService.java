@@ -25,17 +25,15 @@ public class UserService {
     private BookRepository bookRepository;
     private RequestRepository requestRepository;
     private EmailService emailService;
-    private JwtService jwtService;
     private PasswordEncoder passwordEncoder;
 
 
     @Autowired
-    public UserService(@Qualifier("user") UserRepository userRepository, BookRepository bookRepository, RequestRepository requestRepository, EmailService emailService, JwtService jwtService, PasswordEncoder passwordEncoder) {
+    public UserService(@Qualifier("user") UserRepository userRepository, BookRepository bookRepository, RequestRepository requestRepository, EmailService emailService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.bookRepository = bookRepository;
         this.requestRepository = requestRepository;
         this.emailService = emailService;
-        this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -78,7 +76,7 @@ public class UserService {
     }
 
     public Map<String, Boolean> deleteUser(Long userId) {
-        User existingUser = userRepository.findById(userId)
+        userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
         userRepository.deleteById(userId);

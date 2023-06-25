@@ -3,24 +3,19 @@ package com.bootcamp.bookrentalsystem.service;
 import com.bootcamp.bookrentalsystem.exception.ResourceNotFoundException;
 import com.bootcamp.bookrentalsystem.model.Request;
 import com.bootcamp.bookrentalsystem.model.User;
-import com.bootcamp.bookrentalsystem.repository.BookRepository;
-import com.bootcamp.bookrentalsystem.repository.RequestRepository;
 import com.bootcamp.bookrentalsystem.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 import static org.hibernate.sql.ast.SqlTreeCreationLogger.LOGGER;
 
