@@ -26,8 +26,8 @@ public class Book {
     private String description;
     @ApiModelProperty(notes = "Book Rental status")
     private Boolean isRented = false;
-    @ApiModelProperty(notes = "Book maximum request duration")
-    private Long maximumRequestPeriod;
+    // @ApiModelProperty(notes = "Book maximum request duration")
+    // private Long maximumRequestPeriod;
     @ApiModelProperty(notes = "User favorite book mapping.")
     @ManyToMany(mappedBy = "favoriteBooks")
     private List<User> users;
@@ -39,7 +39,7 @@ public class Book {
         // Default constructor
     }
 
-    public Book(Long bookId, String title, String author, String category, String bookImg,Boolean isRented, String description, Long maximumRequestPeriod) {
+    public Book(Long bookId, String title, String author, String category, String bookImg,Boolean isRented, String description) {
         this.bookId = bookId;
         this.title = title;
         this.author = author;
@@ -47,7 +47,7 @@ public class Book {
         this.bookImg = bookImg;
         this.isRented = isRented;
         this.description = description;
-        this.maximumRequestPeriod = maximumRequestPeriod;
+        // this.maximumRequestPeriod = maximumRequestPeriod;
     }
 
     public Long getId() {
@@ -98,13 +98,13 @@ public class Book {
         this.description = description;
     }
 
-    public Long getMaximumRequestPeriod() {
-        return maximumRequestPeriod;
-    }
+    // public Long getMaximumRequestPeriod() {
+    //     return maximumRequestPeriod;
+    // }
 
-    public void setMaximumRequestPeriod(Long maximumRequestPeriod) {
-        this.maximumRequestPeriod = maximumRequestPeriod;
-    }
+    // public void setMaximumRequestPeriod(Long maximumRequestPeriod) {
+    //     this.maximumRequestPeriod = maximumRequestPeriod;
+    // }
 
     public Boolean getRented() {
         return isRented;
