@@ -55,6 +55,7 @@ public class JwtService {
             long expiration
     ) {
         Claims claims = Jwts.claims();
+        claims.put("id", userDetails.getUserId());
         claims.put("role", userDetails.getRole());
         claims.put("email", userDetails.getEmail());
 
