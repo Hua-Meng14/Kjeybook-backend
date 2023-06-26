@@ -18,7 +18,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/request")
-@CrossOrigin(origins = {"http://localhost:3000", "https://kjeybook.vercel.app"})
 public class RequestController {
     private final RequestService requestService;
     private final JwtService jwtService;
