@@ -18,4 +18,5 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     List<Request> findByStatusAndDateOfRequest(String status, LocalDate date);
     List<Request> findByStatus(String status);
     List<Request> findByBookId(Long bookId);
+    List<Request> findByBorrowerUserIdAndBookId(Long bookId, Long userId);
 }
