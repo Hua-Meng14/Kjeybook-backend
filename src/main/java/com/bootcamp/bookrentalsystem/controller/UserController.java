@@ -97,7 +97,7 @@ public class UserController {
         }
 
         userService.addBookToUserFavorites(userId, bookId);
-        return ResponseEntity.ok("Book added to user's favorite list.");
+        return ResponseEntity.ok("Book is added to favorited list succesfully.");
     }
 
     @DeleteMapping("/{userId}/favorites/{bookId}")

@@ -106,7 +106,7 @@ public class UserService {
 
         // Check if the book is already in the user's favorite list
         if (favoriteBooks.contains(book)) {
-            throw new IllegalStateException("Book is already added to the user's favorites.");
+            throw new IllegalStateException("Book already in favorited list.");
         }
 
         // Add the book to the user's favorite list
