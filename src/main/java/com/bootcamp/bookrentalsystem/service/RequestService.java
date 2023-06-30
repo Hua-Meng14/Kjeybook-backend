@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -222,18 +223,31 @@ public class RequestService {
         return request;
     }
 
-    public List<Request> getRequestsByStatusAndDateOfRequest(String status, LocalDate date) {
-        return requestRepository.findByStatusAndDateOfRequest(status, date);
+    public List<Request> getRequestsByStatusAndDateOfRequest(String status, String date) {
+
+        Sort sort = Sort.by(Sort.Direction.DESC, "dateOfRequest");
+        List<Request> requests = requestRepository.findByStatus(status, sort);
+
+        // Filter requests based on date
+        List<Request> filteredRequests = new ArrayList<>();
+        for (Request request : requests) {
+            if (request.getDateOfRequest().contains(date)) {
+                filteredRequests.add(request);
+            }
+        }
+
+        return filteredRequests;
     }
 
     public List<Request> getRequestsByStatus(String status) {
-        return requestRepository.findByStatus(status);
+        Sort sort = Sort.by(Sort.Direction.DESC, "dateOfRequest");
+        return requestRepository.findByStatus(status, sort);
     }
 
     public List<Request> getRequestsByBook(Long bookId) {
         bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
-
-        return requestRepository.findByBookId(bookId);
+        Sort sort = Sort.by(Sort.Direction.DESC, "dateOfRequest");
+        return requestRepository.findByBookId(bookId, sort);
     }
 }
