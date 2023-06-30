@@ -35,7 +35,7 @@ public class RequestService {
         this.bookRepository = bookRepository;
     }
 
-    public Request createRequest(Long userId, Long bookId, Long requestDuration) {
+    public Request createRequest(UUID userId, Long bookId, Long requestDuration) {
         User borrower = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
@@ -98,7 +98,7 @@ public class RequestService {
         return response;
     }
 
-    public List<Request> getRequestsByUserId(Long userId) {
+    public List<Request> getRequestsByUserId(UUID userId) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
         return requestRepository.findByBorrowerUserId(userId);
