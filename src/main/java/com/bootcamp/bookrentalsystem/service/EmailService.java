@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.hibernate.sql.ast.SqlTreeCreationLogger.LOGGER;
 
@@ -41,9 +42,11 @@ public class EmailService {
         String borrower = request.getBorrower().getUsername();
         String bookTitle = request.getBook().getTitle();
         String author = request.getBook().getAuthor();
-        LocalDate requestDate = request.getDateOfRequest();
-        LocalDate returnDate = request.getDateOfReturn();
-        LocalDate acceptedDate = request.getDateOfAccepted();
+        String requestDate = request.getDateOfRequest();
+        String returnDate = request.getDateOfReturn();
+        // String acceptedDate = request.getDateOfAccepted();
+        LocalDate acceptedDate = LocalDate.parse(request.getDateOfAccepted(), DateTimeFormatter.ISO_DATE_TIME);
+        LocalDate nextDay = acceptedDate.plusDays(1);
 
         // build email
         // send message
@@ -56,7 +59,7 @@ public class EmailService {
                 "Request Date: " + requestDate + "\n" +
                 "Due Date: " + returnDate + "\n" +
                 "\n" +
-                "You can come to get your book starting from " + acceptedDate + " or " + acceptedDate.plusDays(1) + ".\n" +
+                "You can come to get your book starting from " + acceptedDate + " or " + nextDay + ".\n" +
                 "\n" +
                 "Please make sure to return the book by the due date to avoid any late fees or penalties.\n" +
                 "\n" +
@@ -78,7 +81,7 @@ public class EmailService {
         String borrower = request.getBorrower().getUsername();
         String bookTitle = request.getBook().getTitle();
         String author = request.getBook().getAuthor();
-        LocalDate requestDate = request.getDateOfRequest();
+        String requestDate = request.getDateOfRequest();
         String rejectedReason = request.getRejectedReason();
 
         // build email

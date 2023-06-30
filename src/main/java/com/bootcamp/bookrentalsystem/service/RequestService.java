@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -65,9 +66,9 @@ public class RequestService {
         request.setBook(book);
         request.setRequestDuration(requestDuration);
         // Set the dateOfRequest as the current date
-        LocalDate currentDate = LocalDate.now();
-        String currentDateStr = currentDate.format(DateTimeFormatter.ISO_DATE);
-        request.setDateOfRequest(currentDateStr);
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        String currentDateTimeStr = currentDateTime.format(DateTimeFormatter.ISO_DATE_TIME);
+        request.setDateOfRequest(currentDateTimeStr);
 
         return requestRepository.save(request);
     }
@@ -118,15 +119,16 @@ public class RequestService {
                 throw new BadRequestException("Request has already been archived.");
             default:
                 // Set the accepted date as the current date
-                LocalDate currentDate = LocalDate.now();
-                String currentDateStr = currentDate.format(DateTimeFormatter.ISO_DATE);
-                request.setDateOfAccepted(currentDateStr);
+                LocalDateTime currentDateTime = LocalDateTime.now();
+                String currentDateTimeStr = currentDateTime.format(DateTimeFormatter.ISO_DATE_TIME);
+                request.setDateOfAccepted(currentDateTimeStr);
 
                 // Set the dateOfReturn based on the request duration
                 Long requestDuration = request.getRequestDuration();
                 if (requestDuration != null) {
-                    LocalDate dateOfReturn = currentDate.plusDays(requestDuration + 1);
-                    String dateOfReturnStr = dateOfReturn.format(DateTimeFormatter.ISO_DATE);
+                    LocalDate dateOfReturn = currentDateTime.toLocalDate().plusDays(requestDuration + 1);
+                    LocalDateTime dateTimeOfReturn = dateOfReturn.atStartOfDay();
+                    String dateOfReturnStr = dateTimeOfReturn.format(DateTimeFormatter.ISO_DATE_TIME);
                     request.setDateOfReturn(dateOfReturnStr);
                 }
 
@@ -162,9 +164,9 @@ public class RequestService {
                 throw new BadRequestException("Request has already been archived.");
             default:
                 // Set the rejected date as the current date
-                LocalDate currentDate = LocalDate.now();
-                String currentDateStr = currentDate.format(DateTimeFormatter.ISO_DATE);
-                request.setDateOfRejected(currentDateStr);
+                LocalDateTime currentDateTime = LocalDateTime.now();
+                String currentDateTimeStr = currentDateTime.format(DateTimeFormatter.ISO_DATE_TIME);
+                request.setDateOfRejected(currentDateTimeStr);
 
                 // Set the request status to "REJECTED"
                 request.setStatus("ARCHIVED");
@@ -193,9 +195,9 @@ public class RequestService {
         request.setStatus("ARCHIVED");
 
         // Set the dateOfReceived as the current date
-        LocalDate currentDate = LocalDate.now();
-        String currentDateStr = currentDate.format(DateTimeFormatter.ISO_DATE);
-        request.setDateOfReceived(currentDateStr);
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        String currentDateTimeStr = currentDateTime.format(DateTimeFormatter.ISO_DATE_TIME);
+        request.setDateOfReceived(currentDateTimeStr);
 
         // Update the book isRented to false
         Long requestBookId = request.getBook().getId();
