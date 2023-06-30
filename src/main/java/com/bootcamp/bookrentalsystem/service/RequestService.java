@@ -42,16 +42,22 @@ public class RequestService {
         Book book = (Book) bookService.findBookById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
 
-        // Check book renting status
-        if (book.getRented()) {
-            throw new BadRequestException("Book with id of " + bookId + " is not available for rent!!");
-        }
-
         // Check request duration and maximum request duration for the requested book
         // if (requestDuration > book.getMaximumRequestPeriod()) {
         // throw new BadRequestException("Request Period has exceed maximum request
         // duration for book with id: " + bookId);
         // }
+
+        // Check if there is an existing request with the same userId and bookId
+        List<Request> existingRequests = requestRepository.findByBorrowerUserIdAndBookId(userId, bookId);
+        if (!existingRequests.isEmpty()) {
+            for (Request existingRequest : existingRequests) {
+                String existingStatus = existingRequest.getStatus();
+                if (existingStatus.equals("PENDING") || existingStatus.equals("ACCEPTED")) {
+                    throw new BadRequestException("Request already been created for book id: " + bookId);
+                }
+            }
+        }
 
         Request request = new Request();
         request.setBorrower(borrower);
