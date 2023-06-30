@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -249,5 +248,54 @@ public class RequestService {
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
         Sort sort = Sort.by(Sort.Direction.DESC, "dateOfRequest");
         return requestRepository.findByBookId(bookId, sort);
+    }
+
+    public Map<String, Map<String, Integer>> countRequestsByStatus() {
+
+        List<Request> requests = getAllRequests();
+
+        LocalDate today = LocalDate.now();
+        LocalDate yesterday = today.minusDays(1);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String todayString = today.format(formatter);
+        String yesterdayString = yesterday.format(formatter);
+
+        Map<String, Map<String, Integer>> data = new HashMap<>();
+
+        for (Request request : requests) {
+            String status = request.getStatus();
+            String dateOfRequest = request.getDateOfRequest();
+
+            int todayCount = dateOfRequest.contains(todayString) ? 1 : 0;
+            int yesterdayCount = dateOfRequest.contains(yesterdayString) ? 1 : 0;
+            int totalCount = 1;
+
+            Map<String, Integer> countMap = data.getOrDefault(status, new HashMap<>());
+            Map<String, Integer> renterMap = new HashMap<>();
+
+            int existingTodayCount = countMap.getOrDefault("today", 0);
+            int existingYesterdayCount = countMap.getOrDefault("yesterday", 0);
+            int existingTotalCount = countMap.getOrDefault("total", 0);
+
+            countMap.put("today", existingTodayCount + todayCount);
+            countMap.put("yesterday", existingYesterdayCount + yesterdayCount);
+            countMap.put("total", existingTotalCount + totalCount);
+
+            int todayRenterCount = (request.getIsApproved() && status.equals("ARCHIVED")
+                    && dateOfRequest.contains(todayString)) ? 1 : 0;
+            int yesterdayRenterCount = (request.getIsApproved() && status.equals("ARCHIVED")
+                    && dateOfRequest.contains(yesterdayString)) ? 1 : 0;
+            int totalRenterCount = (request.getIsApproved() && status.equals("ARCHIVED")) ? 1 : 0;
+
+            renterMap.put("today", todayRenterCount);
+            renterMap.put("yesterday", yesterdayRenterCount);
+            renterMap.put("total", totalRenterCount);
+
+            data.put(status, countMap);
+            data.put("RENTER", renterMap);
+        }
+
+        return data;
     }
 }

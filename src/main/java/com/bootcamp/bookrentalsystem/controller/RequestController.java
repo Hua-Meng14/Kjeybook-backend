@@ -158,4 +158,10 @@ public class RequestController {
         return new ResponseEntity<>(request, HttpStatus.OK);
     }
 
+    @GetMapping("/count")
+    public ResponseEntity<Map<String, Map<String, Integer>>> countRequestByStatus() {
+        Map<String, Map<String, Integer>> statusCounts = requestService.countRequestsByStatus();
+        return ResponseEntity.ok(statusCounts);
+    }
+
 }
