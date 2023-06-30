@@ -55,8 +55,14 @@ public class RequestController {
     }
 
     @GetMapping("/status")
-    public List<Request> getRequestsByStatus(@RequestParam("status") String status,
+    public List<Request> getRequestsByStatus(@RequestHeader("Authorization") String token,
+            @RequestParam("status") String status,
             @RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) String date) {
+
+        // Validate and decode the JWT token
+        if (!jwtService.isValidAdminToken(token)) {
+            throw new ForbiddenException("Access Denied!!");
+        }
         if (date == null) {
             return requestService.getRequestsByStatus(status);
         } else {
@@ -65,7 +71,12 @@ public class RequestController {
     }
 
     @GetMapping("/book")
-    public List<Request> getRequestsByBook(@RequestParam("bookId") Long bookId) {
+    public List<Request> getRequestsByBook(@RequestHeader("Authorization") String token,
+            @RequestParam("bookId") Long bookId) {
+        // Validate and decode the JWT token
+        if (!jwtService.isValidAdminToken(token)) {
+            throw new ForbiddenException("Access Denied!!");
+        }
         return requestService.getRequestsByBook(bookId);
     }
 
