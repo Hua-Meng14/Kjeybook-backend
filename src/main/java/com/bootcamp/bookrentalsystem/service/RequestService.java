@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Component
@@ -65,7 +66,8 @@ public class RequestService {
         request.setRequestDuration(requestDuration);
         // Set the dateOfRequest as the current date
         LocalDate currentDate = LocalDate.now();
-        request.setDateOfRequest(currentDate);
+        String currentDateStr = currentDate.format(DateTimeFormatter.ISO_DATE);
+        request.setDateOfRequest(currentDateStr);
 
         return requestRepository.save(request);
     }
@@ -117,13 +119,15 @@ public class RequestService {
             default:
                 // Set the accepted date as the current date
                 LocalDate currentDate = LocalDate.now();
-                request.setDateOfAccepted(currentDate);
+                String currentDateStr = currentDate.format(DateTimeFormatter.ISO_DATE);
+                request.setDateOfAccepted(currentDateStr);
 
                 // Set the dateOfReturn based on the request duration
                 Long requestDuration = request.getRequestDuration();
                 if (requestDuration != null) {
                     LocalDate dateOfReturn = currentDate.plusDays(requestDuration + 1);
-                    request.setDateOfReturn(dateOfReturn);
+                    String dateOfReturnStr = dateOfReturn.format(DateTimeFormatter.ISO_DATE);
+                    request.setDateOfReturn(dateOfReturnStr);
                 }
 
                 // Set the request status to "ACCEPTED"
@@ -159,7 +163,8 @@ public class RequestService {
             default:
                 // Set the rejected date as the current date
                 LocalDate currentDate = LocalDate.now();
-                request.setDateOfRejected(currentDate);
+                String currentDateStr = currentDate.format(DateTimeFormatter.ISO_DATE);
+                request.setDateOfRejected(currentDateStr);
 
                 // Set the request status to "REJECTED"
                 request.setStatus("ARCHIVED");
@@ -189,7 +194,8 @@ public class RequestService {
 
         // Set the dateOfReceived as the current date
         LocalDate currentDate = LocalDate.now();
-        request.setDateOfReceived(currentDate);
+        String currentDateStr = currentDate.format(DateTimeFormatter.ISO_DATE);
+        request.setDateOfReceived(currentDateStr);
 
         // Update the book isRented to false
         Long requestBookId = request.getBook().getId();
