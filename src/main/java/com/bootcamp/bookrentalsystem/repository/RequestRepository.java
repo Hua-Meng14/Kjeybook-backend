@@ -8,15 +8,16 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 @Qualifier("request")
 @Repository
 public interface RequestRepository extends JpaRepository<Request, Long> {
-    List<Request> findByBorrowerUserId(Long userId);
+    List<Request> findByBorrowerUserId(UUID userId);
 
     List<Request> findByStatusAndDateOfRequest(String status, LocalDate date);
     List<Request> findByStatus(String status);
     List<Request> findByBookId(Long bookId);
-    List<Request> findByBorrowerUserIdAndBookId(Long bookId, Long userId);
+    List<Request> findByBorrowerUserIdAndBookId(UUID userId, Long bookId);
 }
