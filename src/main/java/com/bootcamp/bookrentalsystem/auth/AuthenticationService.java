@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -107,7 +108,7 @@ public class AuthenticationService {
 
 
     private void revokeAllUserTokens(com.bootcamp.bookrentalsystem.model.User user) {
-        var validUserTokens = tokenRepository.findAllValidTokenByUser(Math.toIntExact(user.getUserId()));
+        var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getUserId());
         if (validUserTokens.isEmpty()) return;
         validUserTokens.forEach(token -> {
             token.setExpired(true);
@@ -117,7 +118,7 @@ public class AuthenticationService {
         tokenRepository.saveAll(validUserTokens);
     }
 
-    public ResponseEntity<String> validateToken(String token, Long userId) {
+    public ResponseEntity<String> validateToken(String token, UUID userId) {
 
         if (!jwtService.isValidUserToken(token, userId)) {
             throw new UnauthorizedException("Invalid Token");

@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -33,7 +34,7 @@ public class UserController {
     // }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<User> getUserById(@RequestHeader("Authorization") String token, @PathVariable Long userId) {
+    public ResponseEntity<User> getUserById(@RequestHeader("Authorization") String token, @PathVariable UUID userId) {
         // Validate User token access
         if (!jwtService.isValidUserToken(token, userId)) {
             throw new UnauthorizedException("Unauthorized Access");
@@ -44,7 +45,7 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<User> updateUserById(@RequestHeader("Authorization") String token, @PathVariable Long userId,
+    public ResponseEntity<User> updateUserById(@RequestHeader("Authorization") String token, @PathVariable UUID userId,
             @RequestBody User updatedUser) {
         // Validate User token access
         if (!jwtService.isValidUserToken(token, userId)) {
@@ -57,7 +58,7 @@ public class UserController {
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<User> deleteUserById(@RequestHeader("Authorization") String token,
-            @PathVariable Long userId) {
+            @PathVariable UUID userId) {
         // Validate User token access
         if (!jwtService.isValidUserToken(token, userId)) {
             throw new UnauthorizedException("Unauthorized Access");
@@ -68,7 +69,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/favorites")
-    public List<Book> getUserFavoriteList(@RequestHeader("Authorization") String token, @PathVariable Long userId) {
+    public List<Book> getUserFavoriteList(@RequestHeader("Authorization") String token, @PathVariable UUID userId) {
         // Validate User token access
         if (!jwtService.isValidUserToken(token, userId)) {
             throw new UnauthorizedException("Unauthorized Access");
@@ -89,19 +90,19 @@ public class UserController {
 
     @PatchMapping("/{userId}/favorites/{bookId}")
     public ResponseEntity<String> addBookToUserFavorites(@RequestHeader("Authorization") String token,
-            @PathVariable Long userId, @PathVariable Long bookId) {
+            @PathVariable UUID userId, @PathVariable Long bookId) {
         // Validate User token access
         if (!jwtService.isValidUserToken(token, userId)) {
             throw new UnauthorizedException("Unauthorized Access");
         }
 
         userService.addBookToUserFavorites(userId, bookId);
-        return ResponseEntity.ok("Book added to user's favorite list.");
+        return ResponseEntity.ok("Book is added to favorited list succesfully.");
     }
 
     @DeleteMapping("/{userId}/favorites/{bookId}")
     public ResponseEntity<String> removeBookFromUserFavorites(@RequestHeader("Authorization") String token,
-            @PathVariable Long userId, @PathVariable Long bookId) {
+            @PathVariable UUID userId, @PathVariable Long bookId) {
         // Validate User token access
         if (!jwtService.isValidUserToken(token, userId)) {
             throw new UnauthorizedException("Unauthorized Access");
@@ -113,7 +114,7 @@ public class UserController {
 
     @PatchMapping("/{userId}/password")
     public ResponseEntity<String> changePassword(@RequestHeader("Authorization") String token,
-            @PathVariable Long userId, @RequestBody ChangePasswordRequest request) {
+            @PathVariable UUID userId, @RequestBody ChangePasswordRequest request) {
         // Validate User token access
         if (!jwtService.isValidUserToken(token, userId)) {
             throw new UnauthorizedException("Unauthorized Access");

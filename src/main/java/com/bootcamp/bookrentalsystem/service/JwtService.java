@@ -122,7 +122,7 @@ public class JwtService {
         return isAdminRole && isNotExpired;
     }
 
-    public boolean isValidUserToken(String token, Long userId) {
+    public boolean isValidUserToken(String token, UUID userId) {
 
         if (token == null || token.isEmpty()) {
             throw new IllegalArgumentException("Token required");

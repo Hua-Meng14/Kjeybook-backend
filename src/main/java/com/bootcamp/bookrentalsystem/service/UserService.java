@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.List;
 
 @Component
 @Service
@@ -41,7 +40,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Optional<User> findUserById(Long userId) {
+    public Optional<User> findUserById(UUID userId) {
 
 //        if (!jwtService.isUserToken(jwtToken, userId)) {
 //            throw new UnauthorizedException("Unauthorized Access!!");
@@ -58,7 +57,7 @@ public class UserService {
     }
 
 
-    public User updateUserById(Long userId, User updatedUser) {
+    public User updateUserById(UUID userId, User updatedUser) {
 
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
@@ -75,7 +74,7 @@ public class UserService {
         return userRepository.save(existingUser);
     }
 
-    public Map<String, Boolean> deleteUser(Long userId) {
+    public Map<String, Boolean> deleteUser(UUID userId) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
@@ -90,13 +89,13 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public List<Book> getFavoriteBooks(Long userId) {
+    public List<Book> getFavoriteBooks(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
         return user.getFavoriteBooks();
     }
 
-    public void addBookToUserFavorites(Long userId, Long bookId) {
+    public void addBookToUserFavorites(UUID userId, Long bookId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
@@ -107,7 +106,7 @@ public class UserService {
 
         // Check if the book is already in the user's favorite list
         if (favoriteBooks.contains(book)) {
-            throw new IllegalStateException("Book is already added to the user's favorites.");
+            throw new IllegalStateException("Book already in favorited list.");
         }
 
         // Add the book to the user's favorite list
@@ -115,7 +114,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void removeBookFromFavorites(Long userId, Long bookId) {
+    public void removeBookFromFavorites(UUID userId, Long bookId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
@@ -157,7 +156,7 @@ public class UserService {
 
     }
 
-    public String changePassword(Long userId, ChangePasswordRequest request) {
+    public String changePassword(UUID userId, ChangePasswordRequest request) {
 
         // Retrieve the user by userId
         User existingUser = userRepository.findById(userId)
