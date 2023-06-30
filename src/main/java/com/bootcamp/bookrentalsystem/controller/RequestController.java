@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/request")
@@ -29,7 +30,7 @@ public class RequestController {
     }
 
     @PostMapping()
-    public ResponseEntity<Request> createRequest(@RequestParam("userId") Long userId,
+    public ResponseEntity<Request> createRequest(@RequestParam("userId") UUID userId,
             @RequestParam("bookId") Long bookId,
             @RequestParam("requestDuration") Long requestDuration,
             @RequestHeader("Authorization") String token) {
@@ -94,7 +95,7 @@ public class RequestController {
 
     @GetMapping("/user")
     public ResponseEntity<List<Request>> getRequestsByUserId(@RequestHeader("Authorization") String token,
-            @RequestParam("userId") Long userId) {
+            @RequestParam("userId") UUID userId) {
         // Validate User token access
         if (!jwtService.isValidUserToken(token, userId)) {
             throw new UnauthorizedException("Unauthorized Access");
