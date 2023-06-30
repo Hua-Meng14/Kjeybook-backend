@@ -29,23 +29,25 @@ public class Request {
     @ApiModelProperty(notes = "Reason for rejecting request")
     private String rejectedReason;
     @ApiModelProperty(notes = "Date of request submitted")
-    private LocalDate dateOfRequest;
+    private String dateOfRequest;
     @ApiModelProperty(notes = "Request duration")
     private Long requestDuration;
     @ApiModelProperty(notes = "Date of request got accepted")
-    private LocalDate dateOfAccepted = null;
+    private String dateOfAccepted = null;
     @ApiModelProperty(notes = "Date of request got rejected")
-    private LocalDate dateOfRejected = null;
+    private String dateOfRejected = null;
     @ApiModelProperty(notes = "Date of book to be returned")
-    private LocalDate dateOfReturn = null;
+    private String dateOfReturn = null;
     @ApiModelProperty(notes = "Date of book returned back to library")
-    private LocalDate dateOfReceived = null;
+    private String dateOfReceived = null;
 
     public Request() {
         // Default constructor
     }
 
-    public Request(Long requestId, User borrower, Book book, String status, Long requestDuration, LocalDate dateOfAccepted, LocalDate dateOfReturn, LocalDate dateOfRequest, LocalDate dateOfRejected, Boolean isApproved, LocalDate dateOfReceived, String rejectedReason) {
+    public Request(Long requestId, User borrower, Book book, String status, Long requestDuration,
+            String dateOfAccepted, String dateOfReturn, String dateOfRequest, String dateOfRejected,
+            Boolean isApproved, String dateOfReceived, String rejectedReason) {
         this.requestId = requestId;
         this.borrower = borrower;
         this.book = book;
@@ -100,35 +102,35 @@ public class Request {
         this.requestDuration = requestDuration;
     }
 
-    public LocalDate getDateOfAccepted() {
+    public String getDateOfAccepted() {
         return dateOfAccepted;
     }
 
-    public void setDateOfAccepted(LocalDate dateOfAccepted) {
+    public void setDateOfAccepted(String dateOfAccepted) {
         this.dateOfAccepted = dateOfAccepted;
     }
 
-    public LocalDate getDateOfReturn() {
+    public String getDateOfReturn() {
         return dateOfReturn;
     }
 
-    public void setDateOfReturn(LocalDate dateOfReturn) {
+    public void setDateOfReturn(String dateOfReturn) {
         this.dateOfReturn = dateOfReturn;
     }
 
-    public LocalDate getDateOfRequest() {
+    public String getDateOfRequest() {
         return dateOfRequest;
     }
 
-    public void setDateOfRequest(LocalDate dateOfRequest) {
+    public void setDateOfRequest(String dateOfRequest) {
         this.dateOfRequest = dateOfRequest;
     }
 
-    public LocalDate getDateOfRejected() {
+    public String getDateOfRejected() {
         return dateOfRejected;
     }
 
-    public void setDateOfRejected(LocalDate dateOfRejected) {
+    public void setDateOfRejected(String dateOfRejected) {
         this.dateOfRejected = dateOfRejected;
     }
 
@@ -140,11 +142,11 @@ public class Request {
         isApproved = accepted;
     }
 
-    public LocalDate getDateOfReceived() {
+    public String getDateOfReceived() {
         return dateOfReceived;
     }
 
-    public void setDateOfReceived(LocalDate dateOfReceived) {
+    public void setDateOfReceived(String dateOfReceived) {
         this.dateOfReceived = dateOfReceived;
     }
 
