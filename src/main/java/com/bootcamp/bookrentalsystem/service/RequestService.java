@@ -67,7 +67,8 @@ public class RequestService {
         request.setRequestDuration(requestDuration);
         // Set the dateOfRequest as the current date
         LocalDateTime currentDateTime = LocalDateTime.now();
-        String currentDateTimeStr = currentDateTime.format(DateTimeFormatter.ISO_DATE_TIME);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String currentDateTimeStr = currentDateTime.format(formatter);
         request.setDateOfRequest(currentDateTimeStr);
 
         return requestRepository.save(request);
@@ -120,7 +121,8 @@ public class RequestService {
             default:
                 // Set the accepted date as the current date
                 LocalDateTime currentDateTime = LocalDateTime.now();
-                String currentDateTimeStr = currentDateTime.format(DateTimeFormatter.ISO_DATE_TIME);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                String currentDateTimeStr = currentDateTime.format(formatter);
                 request.setDateOfAccepted(currentDateTimeStr);
 
                 // Set the dateOfReturn based on the request duration
@@ -128,7 +130,7 @@ public class RequestService {
                 if (requestDuration != null) {
                     LocalDate dateOfReturn = currentDateTime.toLocalDate().plusDays(requestDuration + 1);
                     LocalDateTime dateTimeOfReturn = dateOfReturn.atStartOfDay();
-                    String dateOfReturnStr = dateTimeOfReturn.format(DateTimeFormatter.ISO_DATE_TIME);
+                    String dateOfReturnStr = dateTimeOfReturn.format(formatter);
                     request.setDateOfReturn(dateOfReturnStr);
                 }
 
@@ -165,7 +167,8 @@ public class RequestService {
             default:
                 // Set the rejected date as the current date
                 LocalDateTime currentDateTime = LocalDateTime.now();
-                String currentDateTimeStr = currentDateTime.format(DateTimeFormatter.ISO_DATE_TIME);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                String currentDateTimeStr = currentDateTime.format(formatter);
                 request.setDateOfRejected(currentDateTimeStr);
 
                 // Set the request status to "REJECTED"
@@ -196,7 +199,8 @@ public class RequestService {
 
         // Set the dateOfReceived as the current date
         LocalDateTime currentDateTime = LocalDateTime.now();
-        String currentDateTimeStr = currentDateTime.format(DateTimeFormatter.ISO_DATE_TIME);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String currentDateTimeStr = currentDateTime.format(formatter);
         request.setDateOfReceived(currentDateTimeStr);
 
         // Update the book isRented to false

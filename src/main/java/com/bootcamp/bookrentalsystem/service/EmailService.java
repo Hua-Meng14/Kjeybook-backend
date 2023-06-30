@@ -45,7 +45,8 @@ public class EmailService {
         String requestDate = request.getDateOfRequest();
         String returnDate = request.getDateOfReturn();
         // String acceptedDate = request.getDateOfAccepted();
-        LocalDate acceptedDate = LocalDate.parse(request.getDateOfAccepted(), DateTimeFormatter.ISO_DATE_TIME);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDate acceptedDate = LocalDate.parse(request.getDateOfAccepted(), formatter);
         LocalDate nextDay = acceptedDate.plusDays(1);
 
         // build email
