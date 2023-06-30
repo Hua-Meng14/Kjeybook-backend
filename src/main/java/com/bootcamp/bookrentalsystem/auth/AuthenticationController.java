@@ -3,6 +3,9 @@ package com.bootcamp.bookrentalsystem.auth;
 import com.bootcamp.bookrentalsystem.exception.UnauthorizedException;
 import com.bootcamp.bookrentalsystem.model.RegisterUser;
 import lombok.RequiredArgsConstructor;
+
+import java.util.UUID;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +32,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/validate-token/{userId}")
-    public ResponseEntity validateToken(@RequestHeader("Authorization") String token, @PathVariable Long userId) {
+    public ResponseEntity validateToken(@RequestHeader("Authorization") String token, @PathVariable UUID userId) {
         return ResponseEntity.ok(authenticationService.validateToken(token, userId));
     }
 
