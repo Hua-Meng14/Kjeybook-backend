@@ -10,6 +10,7 @@ import com.bootcamp.bookrentalsystem.repository.RequestRepository;
 import com.bootcamp.bookrentalsystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -186,7 +187,9 @@ public class RequestService {
     }
 
     public List<Request> getAllRequests() {
-        return requestRepository.findAll();
+        // Create a Sort object with descending order based on the 'dateOfRequest' field
+        Sort sort = Sort.by(Sort.Direction.DESC, "dateOfRequest");
+        return requestRepository.findAll(sort);
     }
 
     public Request returnBook(Long requestId) {
