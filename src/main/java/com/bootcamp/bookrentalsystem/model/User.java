@@ -6,15 +6,18 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
+
 
 @Entity
 @Table(name = "_user")
 @ApiModel(description = "User details")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(columnDefinition = "uuid")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @ApiModelProperty(notes = "User ID")
-    private Long userId;
+    private UUID userId;
     @ApiModelProperty(notes = "User's username")
     private String username;
     @ApiModelProperty(notes = "User's password")
@@ -57,11 +60,11 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
-    public Long getUserId() {
+    public UUID getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(UUID userId) {
         this.userId = userId;
     }
 
