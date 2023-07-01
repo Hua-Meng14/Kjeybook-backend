@@ -13,6 +13,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.tags.HtmlEscapeTag;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -82,235 +83,66 @@ public class EmailService {
         String borrower = request.getBorrower().getUsername();
         String bookTitle = request.getBook().getTitle();
         String author = request.getBook().getAuthor();
-        String requestDate = request.getDateOfRequest();
+        String requestDate = request.getDateOfRequest().substring(0, 10);;
         String rejectedReason = request.getRejectedReason();
+        String bookImg = request.getBook().getBookImg();
 
         // Build the HTML email content
         StringBuilder htmlContentBuilder = new StringBuilder();
-        htmlContentBuilder.append("<!DOCTYPE html>\n");
-        htmlContentBuilder.append("<html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\">\n");
-        htmlContentBuilder.append("<head>\n");
-        htmlContentBuilder.append("<title></title>\n");
-        htmlContentBuilder.append("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />\n");
-        htmlContentBuilder.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n");
-        htmlContentBuilder.append("<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\" />\n");
-        htmlContentBuilder.append("<style type=\"text/css\">#outlook a {padding: 0;} .ReadMsgBody {width: 100%;} .ExternalClass {width: 100%;} .ExternalClass * {line-height: 100%;} body {margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;} table, td {border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;} img {border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;} p {display: block; margin: 13px 0;}</style>\n");
-        htmlContentBuilder.append("<style type=\"text/css\">@media only screen and (max-width: 480px) {@-ms-viewport {width: 320px;} @viewport {width: 320px;}}</style>\n");
-        htmlContentBuilder.append("<link href=\"https://fonts.googleapis.com/css2?family=Poppins\" rel=\"stylesheet\" type=\"text/css\" />\n");
-        htmlContentBuilder.append("<style type=\"text/css\">@import url(https://fonts.googleapis.com/css2?family=Poppins);</style>\n");
-        htmlContentBuilder.append("<style type=\"text/css\">@media only screen and (min-width: 480px) {.mj-column-per-100 { width: 100% !important; max-width: 100%;} .mj-column-px-400 {width: 400px !important; max-width: 400px;}}</style>\n");
-        htmlContentBuilder.append("<style type=\"text/css\">@media only screen and (max-width: 480px) {table.full-width-mobile {width: 100% !important;} td.full-width-mobile {width: auto !important;}}</style>\n");
-        htmlContentBuilder.append("<style type=\"text/css\">.poster {border-radius: 20px; overflow: clip;}</style>\n");
-        htmlContentBuilder.append("</head>\n");
-        htmlContentBuilder.append("<body>\n");
-        htmlContentBuilder.append("<div>\n");
-        htmlContentBuilder.append("<div style=\"background: #ffffff; background-color: #ffffff; margin: 0px auto; max-width: 600px;\">");
-        htmlContentBuilder.append("<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"background: #ffffff; background-color: #ffffff; width: 100%\">");
-        htmlContentBuilder.append("<tbody>\n");
-        htmlContentBuilder.append("<tr>\n");
-        htmlContentBuilder.append("<td style=\"direction: ltr; font-size: 0px; padding: 0; text-align: center; vertical-align: top;\">\n");
-        htmlContentBuilder.append("<div style=\"background: #a37551; background-color: #a37551; margin: 0px auto; max-width: 600px;\">\n");
-        htmlContentBuilder.append("<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"background: #a37551; background-color: #a37551; width: 100%;\">\n");
-        htmlContentBuilder.append("<tbody>\n");
-        htmlContentBuilder.append("<tr>\n");
-        htmlContentBuilder.append("<td style=\"direction: ltr; font-size: 0px; padding: 20px 0; text-align: center; vertical-align: top;\">\n");
-        htmlContentBuilder.append("<div class=\"mj-column-per-100 outlook-group-fix\" style=\"font-size: 13px; text-align: left; direction: ltr; display: inline-block; vertical-align: top; width: 100%;\">\n");
-        htmlContentBuilder.append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"vertical-align: top\" width=\"100%\">\n");
-        htmlContentBuilder.append("<tr>\n");
-        htmlContentBuilder.append("<td align=\"center\" style=\"font-size: 0px; padding: 10px 25px; word-break: break-word;\">\n");
-        htmlContentBuilder.append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"border-collapse: collapse; border-spacing: 0px;\">\n");
-        htmlContentBuilder.append("<tbody>\n");
-        htmlContentBuilder.append("<tr>\n");
-        htmlContentBuilder.append("<td style=\"width: 150px\">\n");
-        htmlContentBuilder.append("<img height=\"auto\" src=\"https://firebasestorage.googleapis.com/v0/b/kjeybook-81ae5.appspot.com/o/bootcamp-logo.png?alt=media&token=6ca4b3f7-da55-4955-97e5-ddc483f194c0\" style=\"border: 0; display: block; outline: none; text-decoration: none; height: auto; width: 100%;\" width=\"150\" />\n");
-        htmlContentBuilder.append("</td>\n");
-        htmlContentBuilder.append("</tr>\n");
-        htmlContentBuilder.append("</tbody>\n");
-        htmlContentBuilder.append("</table>\n");
-        htmlContentBuilder.append("</td>\n");
-        htmlContentBuilder.append("</tr>\n");
-        htmlContentBuilder.append("</table>\n");
-        htmlContentBuilder.append("</div>\n");
-        htmlContentBuilder.append("</td>\n");
-        htmlContentBuilder.append("</tr>\n");
-        htmlContentBuilder.append("</tbody>\n");
-        htmlContentBuilder.append("</table>\n");
-        htmlContentBuilder.append("</div>\n");
-        htmlContentBuilder.append("<div style=\"background: #ffffff; background-color: #ffffff; margin: 0px auto; max-width: 600px;\">\n");
-        htmlContentBuilder.append("<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"background: #ffffff; background-color: #ffffff; width: 100%;\">\n");
-        htmlContentBuilder.append("<tbody>\n");
-        htmlContentBuilder.append("<tr>\n");
-        htmlContentBuilder.append("<td style=\"direction: ltr; font-size: 0px; padding: 20px 0; text-align: center; vertical-align: top;\">\n");
-        htmlContentBuilder.append("<div class=\"mj-column-per-100 outlook-group-fix\" style=\"font-size: 13px; text-align: left; direction: ltr; display: inline-block; vertical-align: top; width: 100%;\">\n");
-        htmlContentBuilder.append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"vertical-align: top\" width=\"100%\">\n");
-        htmlContentBuilder.append("<tr>\n");
-        htmlContentBuilder.append("<td align=\"left\" style=\"font-size: 0px; padding: 10px 25px; word-break: break-word;\">\n");
-        htmlContentBuilder.append("<div style=\"font-family: Poppins; font-size: 20px; font-weight: 700; line-height: normal; text-align: left; color: #000000;\">\n");
-        htmlContentBuilder.append("Dear ").append(request.getBorrower().getUsername()).append(",\n");// DATA BORROW USERNAME
-        htmlContentBuilder.append("</div>\n");
-        htmlContentBuilder.append("</td>\n");
-        htmlContentBuilder.append("</tr>\n");
-        htmlContentBuilder.append("<tr>\n");
-        htmlContentBuilder.append("<td align=\"left\" style=\"font-size: 0px; padding: 10px 25px; word-break: break-word;\">\n");
-        htmlContentBuilder.append("<div style=\"font-family: Poppins; font-size: 16px; line-height: normal; text-align: left; color: #000000;\">\n");
-        htmlContentBuilder.append("We regret to inform you that your book rental request has been rejected.\n");
-        htmlContentBuilder.append("</div>\n");
-        htmlContentBuilder.append("</td>\n");
-        htmlContentBuilder.append("</tr>\n");
-        htmlContentBuilder.append("</table>\n");
-        htmlContentBuilder.append("</div>\n");
-        htmlContentBuilder.append("</td>\n");
-        htmlContentBuilder.append("</tr>\n");
-        htmlContentBuilder.append("</tbody>\n");
-        htmlContentBuilder.append("</table>\n");
-        htmlContentBuilder.append("</div>\n");
-        htmlContentBuilder.append("<div style=\"background: #ffffff; background-color: #ffffff; margin: 0px auto; max-width: 600px;\">\n");
-        htmlContentBuilder.append("<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"background: #ffffff; background-color: #ffffff; width: 100%;\">\n");
-        htmlContentBuilder.append("<tbody>\n");
-        htmlContentBuilder.append("<tr>\n");
-        htmlContentBuilder.append("<td style=\"direction: ltr; font-size: 0px; padding: 20px 0; padding-bottom: 0px; padding-top: 0px; text-align: center; vertical-align: top;\">\n");
-        htmlContentBuilder.append("<div class=\"mj-column-per-100 outlook-group-fix\" style=\"font-size: 13px; text-align: left; direction: ltr; display: inline-block; vertical-align: top; width: 100%;\">\n");
-        htmlContentBuilder.append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"vertical-align: top\" width=\"100%\">\n");
-        htmlContentBuilder.append("<tr>\n");
-        htmlContentBuilder.append("<td align=\"center\" style=\"font-size: 0px; padding: 10px 25px; word-break: break-word;\">\n");
-        htmlContentBuilder.append("<div style=\"font-family: Poppins; font-size: 20px; font-weight: 700; line-height: normal; text-align: center; color: #000000;\">Here is the request detail:</div>\n");
-        htmlContentBuilder.append("</td>\n");
-        htmlContentBuilder.append("</tr>\n");
-        htmlContentBuilder.append("</table>\n");
-        htmlContentBuilder.append("</div>\n");
-        htmlContentBuilder.append("</td>\n");
-        htmlContentBuilder.append("</tr>\n");
-        htmlContentBuilder.append("</tbody>\n");
-        htmlContentBuilder.append("</table>\n");
-        htmlContentBuilder.append("</div>\n");
-        htmlContentBuilder.append("<div style=\"margin: 0px auto; max-width: 600px\">\n");
-        htmlContentBuilder.append("<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width: 100%\">\n");
-        htmlContentBuilder.append("<tbody>\n");
-        htmlContentBuilder.append("<tr>\n");
-        htmlContentBuilder.append("<td style=\"direction: ltr; font-size: 0px; padding: 20px 0; padding-bottom: 0; padding-left: 20px; padding-right: 20px; padding-top: 5px; text-align: center; vertical-align: top;\">\n");
-        htmlContentBuilder.append("<div class=\"mj-column-px-400 outlook-group-fix poster\" style=\"font-size: 13px; text-align: left; direction: ltr; display: inline-block; vertical-align: top; width: 100%;\">\n");
-        htmlContentBuilder.append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n");
-        htmlContentBuilder.append("<tbody>\n");
-        htmlContentBuilder.append("<tr>\n");
-        htmlContentBuilder.append("<td style=\"background-color: rgba(208,180,159,0.2);vertical-align: top; padding: 20px;\">\n");
-        htmlContentBuilder.append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\">\n");
-        htmlContentBuilder.append("<tr>\n");
-        htmlContentBuilder.append("<td align=\"center\" style=\"font-size: 0px; padding: 10px 25px; word-break: break-word;\">\n");
-        htmlContentBuilder.append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"border-collapse: collapse; border-spacing: 0px;\">\n");
-        htmlContentBuilder.append("<tbody>\n");
-        htmlContentBuilder.append("<tr>\n");
-        htmlContentBuilder.append("<td style=\"width: 167px\">\n");
-        htmlContentBuilder.append("<img alt=\"image cover\" height=\"auto\" src=\"https://firebasestorage.googleapis.com/v0/b/kjeybook-81ae5.appspot.com/o/education%2F1.jpg?alt=media&token=f491da18-0db6-496f-a958-3e8643f94c35\" style=\"border: 0; display: block; outline: none; text-decoration: none; height: auto; width: 100%; \" width=\"167\" />\n");
-        htmlContentBuilder.append("</td>\n");
-        htmlContentBuilder.append("</tr>\n");
-        htmlContentBuilder.append("</tbody>\n");
-        htmlContentBuilder.append("</table>\n");
-        htmlContentBuilder.append("</td>\n");
-        htmlContentBuilder.append("</tr>\n");
-        htmlContentBuilder.append("<tr>\n");
-        htmlContentBuilder.append("<td align=\"center\" style=\"font-size: 0px; padding: 10px 25px; word-break: break-word;\">\n");
-        htmlContentBuilder.append("<div style=\"font-family: Poppins; font-size: 16px; line-height: normal; text-align: center; color: #000000;\">\n");
-        htmlContentBuilder.append("<span style=\"font-weight: 700;font-size: 20px;\">")
-                  .append(request.getBook().getTitle())
-                  .append("</span><br /><br />\n"); // DATA BOOK TITLE
-        htmlContentBuilder.append("Author:\n");
-        htmlContentBuilder.append("<span style=\"font-weight: 700;\">")
-                .append(request.getBook().getAuthor())
-                .append("</span>\n");               // DATA BOOK AUTHOR
-        htmlContentBuilder.append("</div>\n");
-        htmlContentBuilder.append("</td>\n");
-        htmlContentBuilder.append("</tr>\n");
-        htmlContentBuilder.append("</table>\n");
-        htmlContentBuilder.append("</td>\n");
-        htmlContentBuilder.append("</tr>\n");
-        htmlContentBuilder.append("</tbody>\n");
-        htmlContentBuilder.append("</table>\n");
-        htmlContentBuilder.append("</div>");
-        htmlContentBuilder.append("<div class=\"mj-column-per-100 outlook-group-fix\" style=\"font-size: 13px; text-align: left; direction: ltr; display: inline-block; vertical-align: top; width: 100%;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><td style=\"vertical-align: top; padding-top: 5px; padding-bottom: 5px;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"left\" style=\"font-size: 0px; padding: 10px 25px; word-break: break-word;\"><div style=\"font-family: Poppins; font-size: 16px; line-height: normal; text-align: left; color: #000000;\"><ul style=\"margin: 0; padding: 0\"><li style=\"margin: 0 0 1em; list-style: disc inside; mso-special-format: bullet;\"><span style=\"font-weight: 700\">Request Date</span>: ")
-        .append(request.getDateOfRequest())         // DATA DATE OF REQUEST
-        .append("</li><li style=\"list-style: disc inside; mso-special-format: bullet;\"><span style=\"font-weight: 700\">Reject Reason:</span></li></ul></div></td></tr></table></td></tr></tbody></table></div>\n");
-        htmlContentBuilder.append("<div class=\"mj-column-px-400 outlook-group-fix poster\" style=\"font-size: 13px; text-align: left; direction: ltr; display: inline-block; vertical-align: top; width: 100%;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><td style=\"background-color: rgba(208,180,159,0.2); vertical-align: top; padding: 20px; padding-top: 10px;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"left\" style=\"font-size: 0px; padding: 10px 25px; word-break: break-word;\"><div style=\"font-family: Poppins; font-size: 16px; line-height: normal; text-align: left; color: #000000;\">")
-        .append(request.getRejectedReason())        // DATA REJECTED REASON
-        .append("</div></td></tr></table></td></tr></tbody></table></div>\n");
-        htmlContentBuilder.append("</td>\n");
-        htmlContentBuilder.append("</tr>\n");
-        htmlContentBuilder.append("</tbody>\n");
-        htmlContentBuilder.append("</table>\n");
-        htmlContentBuilder.append("</div>\n");
-        htmlContentBuilder.append("<div style=\"margin: 0px auto; max-width: 600px\"><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width: 100%\"><tbody><tr><td style=\"direction: ltr; font-size: 0px; padding: 20px 0; padding-bottom: 0px; text-align: center; vertical-align: top;\"><div class=\"mj-column-per-100 outlook-group-fix\" style=\"font-size: 13px; text-align: left; direction: ltr; display: inline-block; vertical-align: top; width: 100%;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tbody><tr><td style=\"vertical-align: top; padding-top: 0px;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" width=\"100%\"><tr><td align=\"left\" style=\"font-size: 0px; padding: 10px 25px; word-break: break-word;\"><div style=\" font-family: Poppins; font-size: 16px; line-height: normal; text-align: left; color: #000000;\">We apologize for any inconvenience caused. If you have any further questions or concerns, please don't hesitate to reach out to our support team.<br />Thank you for considering our book rental service.</div></td></tr><tr><td align=\"left\" style=\"font-size: 0px; padding: 10px 25px; word-break: break-word;\"><div style=\"font-family: Poppins; font-size: 16px; line-height: normal; text-align: left; color: #000000;\">Best regards,<br /><span style=\"font-weight: 700\">The Kjey Book Team</span></div></td></tr></table></td></tr></tbody></table></div></td></tr></tbody></table></div>\n");
-        htmlContentBuilder.append("<div style=\"margin: 0px auto; max-width: 600px\"><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"width: 100%\"><tbody><tr><td style=\"direction: ltr; font-size: 0px; padding: 20px 0; padding-top: 5px; text-align: center; vertical-align: top;\"><div class=\"mj-column-per-100 outlook-group-fix\" style=\"font-size: 13px; text-align: left; direction: ltr; display: inline-block; vertical-align: top; width: 100%;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"vertical-align: top\" width=\"100%\"><tr><td align=\"center\" vertical-align=\"middle\" style=\"font-size: 0px; padding: 10px 25px; word-break: break-word;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"border-collapse: separate; width: 200px; line-height: 100%;\"><tr><td align=\"center\" bgcolor=\"#A37551\" role=\"presentation\" style=\"border: none; border-radius: 15px; cursor: auto; height: 30px; padding: 10px 25px; background: #a37551;\" valign=\"middle\"><p style=\"background: #a37551; color: #ffffff; font-family: Poppins; font-size: 16px; font-weight: 700; line-height: normal; margin: 0; text-decoration: none; text-transform: none;\">EXPLORE MORE</p></td></tr></table></td></tr><tr><td style=\"font-size: 0px; padding: 10px 25px; word-break: break-word;\"><p style=\"border-top: solid 2px #a37551; font-size: 1; margin: 0px auto;width: 100%;\"></p></td></tr></table></div><div class=\"mj-column-per-100 outlook-group-fix\" style=\"font-size: 13px; text-align: left; direction: ltr; display: inline-block; vertical-align: top; width: 100%;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"vertical-align: top\" width=\"100%\"><tr><td align=\"center\" style=\"font-size: 0px; padding: 10px 25px; word-break: break-word;\"><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"float: none; display: inline-table\"><tr><td style=\"padding: 4px\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"background: #a37551; border-radius: 3px; width: 40px;\"><tr><td style=\"font-size: 0; height: 40px; vertical-align: middle; width: 40px;\"><a href=\"https://www.facebook.com/sharer/sharer.php?u=[[SHORT_PERMALINK]]\"target=\"_blank\"><img height=\"40\" src=\"https://www.mailjet.com/images/theme/v1/icons/ico-social/facebook.png\" style=\"border-radius: 3px\" width=\"40\" /></a></td></tr></table></td></tr></table><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"float: none; display: inline-table\"><tr><td style=\"padding: 4px\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"background: #a37551; border-radius: 3px; width: 40px;\"><tr><td style=\"font-size: 0; height: 40px; vertical-align: middle; width: 40px;\"><a href=\"[[SHORT_PERMALINK]]\" target=\"_blank\"><img height=\"40\" src=\"https://www.mailjet.com/images/theme/v1/icons/ico-social/instagram.png\" style=\"border-radius: 3px\" width=\"40\" /></a></td></tr></table></td></tr></table><table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"float: none; display: inline-table\"><tr><td style=\"padding: 4px\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"background: #a37551; border-radius: 3px; width: 40px;\"><tr><td style=\"font-size: 0; height: 40px; vertical-align: middle; width: 40px;\"><a href=\"https://twitter.com/home?status=[[SHORT_PERMALINK]]\" target=\"_blank\"><img height=\"40\" src=\"https://www.mailjet.com/images/theme/v1/icons/ico-social/twitter.png\" style=\"border-radius: 3px\" width=\"40\" /></a></td></tr></table></td></tr></table></td></tr></table></div><div class=\"mj-column-per-100 outlook-group-fix\" style=\"font-size: 13px; text-align: left; direction: ltr; display: inline-block; vertical-align: top; width: 100%;\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"vertical-align: top\" width=\"100%\"><tr><td align=\"center\" style=\"font-size: 0px; padding: 10px 25px; word-break: break-word;\"><div style=\"font-family: Poppins; font-size: 12px; line-height: normal; text-align: center; color: #000000;\">\u00A9 2023 Kjey Book. All rights reserved.</div></td></tr></table></div></td></tr></tbody></table></div>\n");
-        htmlContentBuilder.append("</td></tr></tbody></table></div></div></body></html>\n");
-        // htmlContentBuilder.append("            </ul>\n");
-        // htmlContentBuilder.append("            <p>We apologize for any inconvenience caused. If you have any further questions or concerns, please don't hesitate to reach out to our support team.</p>\n");
-        // htmlContentBuilder.append("            <p>Thank you for considering our book rental service.</p>\n");
-        // htmlContentBuilder.append("            <div class=\"footer\">\n");
-        // htmlContentBuilder.append("                <p>Best regards,</p>\n");
-        // htmlContentBuilder.append("                <p>The Book Rental Team</p>\n");
-        // htmlContentBuilder.append("            </div>\n");
-        // htmlContentBuilder.append("        </div>\n");
-        // htmlContentBuilder.append("    </div>\n");
-        // htmlContentBuilder.append("</body>\n");
-        // htmlContentBuilder.append("</html>");
-        // htmlContentBuilder.append("                <li><strong>Reason:</strong> ").append(rejectedReason).append("</li>\n");
-        // htmlContentBuilder.append("            </ul>\n");
-        // htmlContentBuilder.append("            <p>We apologize for any inconvenience caused. If you have any further questions or concerns, please don't hesitate to reach out to our support team.</p>\n");
-        // htmlContentBuilder.append("            <p>Thank you for considering our book rental service.</p>\n");
-        // htmlContentBuilder.append("            <div class=\"footer\">\n");
-        // htmlContentBuilder.append("                <p>Best regards,</p>\n");
-        // htmlContentBuilder.append("                <p>The Book Rental Team</p>\n");
-        // htmlContentBuilder.append("            </div>\n");
-        // htmlContentBuilder.append("        </div>\n");
-        // htmlContentBuilder.append("    </div>\n");
-        // htmlContentBuilder.append("</body>\n");
-        // htmlContentBuilder.append("</html>");
-        // htmlContentBuilder.append("                <li><strong>Reason:</strong> ").append(rejectedReason).append("</li>\n");
-        // htmlContentBuilder.append("            </ul>\n");
-        // htmlContentBuilder.append("            <p>We apologize for any inconvenience caused. If you have any further questions or concerns, please don't hesitate to reach out to our support team.</p>\n");
-        // htmlContentBuilder.append("            <p>Thank you for considering our book rental service.</p>\n");
-        // htmlContentBuilder.append("            <div class=\"footer\">\n");
-        // htmlContentBuilder.append("                <p>Best regards,</p>\n");
-        // htmlContentBuilder.append("                <p>The Book Rental Team</p>\n");
-        // htmlContentBuilder.append("            </div>\n");
-        // htmlContentBuilder.append("        </div>\n");
-        // htmlContentBuilder.append("    </div>\n");
-        // htmlContentBuilder.append("</body>\n");
-        // htmlContentBuilder.append("</html>");
-        // htmlContentBuilder.append("                <li><strong>Reason:</strong> ").append(rejectedReason).append("</li>\n");
-        // htmlContentBuilder.append("            </ul>\n");
-        // htmlContentBuilder.append("            <p>We apologize for any inconvenience caused. If you have any further questions or concerns, please don't hesitate to reach out to our support team.</p>\n");
-        // htmlContentBuilder.append("            <p>Thank you for considering our book rental service.</p>\n");
-        // htmlContentBuilder.append("            <div class=\"footer\">\n");
-        // htmlContentBuilder.append("                <p>Best regards,</p>\n");
-        // htmlContentBuilder.append("                <p>The Book Rental Team</p>\n");
-        // htmlContentBuilder.append("            </div>\n");
-        // htmlContentBuilder.append("        </div>\n");
-        // htmlContentBuilder.append("    </div>\n");
-        // htmlContentBuilder.append("</body>\n");
-        // htmlContentBuilder.append("</html>");
+        htmlContentBuilder.append("<!doctype html><html xmlns='http://www.w3.org/1999/xhtml' xmlns:v='urn:schemas-microsoft-com:vml' xmlns:o='urn:schemas-microsoft-com:office:office'><head><title></title><!--[if !mso]><!-- --><meta http-equiv='X-UA-Compatible' content='IE=edge'><!--<![endif]--><meta http-equiv='Content-Type' content='text/html; charset=UTF-8'><meta name='viewport' content='width=device-width,initial-scale=1'><style type='text/css'>#outlook a { padding:0; }\n");
+        htmlContentBuilder.append(".ReadMsgBody { width:100%; }\n");
+        htmlContentBuilder.append(".ExternalClass { width:100%; }\n");
+        htmlContentBuilder.append(".ExternalClass * { line-height:100%; }\n");
+        htmlContentBuilder.append("body { margin:0;padding:0;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; }\n");
+        htmlContentBuilder.append("table, td { border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt; }\n");
+        htmlContentBuilder.append("img { border:0;height:auto;line-height:100%; outline:none;text-decoration:none;-ms-interpolation-mode:bicubic; }\n");
+        htmlContentBuilder.append("p { display:block;margin:13px 0; }</style><!--[if !mso]><!--><style type='text/css'>@media only screen and (max-width:480px) {\n");
+        htmlContentBuilder.append("@-ms-viewport { width:320px; }\n");
+        htmlContentBuilder.append("@viewport { width:320px; }\n");
+        htmlContentBuilder.append("}</style>\n");
+        htmlContentBuilder.append("<link href='https://fonts.googleapis.com/css2?family=Poppins' rel='stylesheet' type='text/css'><style type='text/css'>@import url(https://fonts.googleapis.com/css2?family=Poppins);</style><!--<![endif]--><style type='text/css'>@media only screen and (min-width:480px) {\n");
+        htmlContentBuilder.append(".mj-column-per-100 { width:100% !important; max-width: 100%; }\n");
+        htmlContentBuilder.append(".mj-column-px-500 { width:500px !important; max-width: 500px; }\n");
+        htmlContentBuilder.append("}</style><style type='text/css'>@media only screen and (max-width:480px) {\n");
+        htmlContentBuilder.append("table.full-width-mobile { width: 100% !important; }\n");
+        htmlContentBuilder.append("td.full-width-mobile { width: auto !important; }\n");
+        htmlContentBuilder.append("}</style><style type='text/css'>.poster {\n");
+        htmlContentBuilder.append("border-radius: 20px; overflow: clip;\n");
+        htmlContentBuilder.append("}</style></head><body><div><div style='background:#ffffff;background-color:#ffffff;Margin:0px auto;max-width:600px;'><table align='center' border='0' cellpadding='0' cellspacing='0' role='presentation' style='background:#ffffff;background-color:#ffffff;width:100%;'><tbody><tr><td style='direction:ltr;font-size:0px;padding:0;text-align:center;vertical-align:top;'><!--[if mso | IE]><table role='presentation' border='0' cellpadding='0' cellspacing='0'><![endif]--><!-- header image section --><!--[if mso | IE]><tr><td class='' width='600px' ><table align='center' border='0' cellpadding='0' cellspacing='0' class='' style='width:600px;' width='600' ><tr><td style='line-height:0px;font-size:0px;mso-line-height-rule:exactly;'><![endif]--><div style='background:#A37551;background-color:#A37551;Margin:0px auto;max-width:600px;'><table align='center' border='0' cellpadding='0' cellspacing='0' role='presentation' style='background:#A37551;background-color:#A37551;width:100%;'><tbody><tr><td style='direction:ltr;font-size:0px;padding:20px 0;text-align:center;vertical-align:top;'><!--[if mso | IE]><table role='presentation' border='0' cellpadding='0' cellspacing='0'><tr><td class='' style='vertical-align:top;width:600px;' ><![endif]--><div class='mj-column-per-100 outlook-group-fix' style='font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;'><table border='0' cellpadding='0' cellspacing='0' role='presentation' style='vertical-align:top;' width='100%'><tr><td align='center' style='font-size:0px;padding:10px 25px;word-break:break-word;'><table border='0' cellpadding='0' cellspacing='0' role='presentation' style='border-collapse:collapse;border-spacing:0px;'><tbody><tr><td style='width:150px;'><img height='auto' src='https://firebasestorage.googleapis.com/v0/b/kjeybook-81ae5.appspot.com/o/bootcamp-logo.png?alt=media&token=d34e1be2-9163-4932-8e48-eb6c4d8d3af2' style='border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;' width='150'></td></tr></tbody></table></td></tr></table></div><!--[if mso | IE]></td></tr></table><![endif]--></td></tr></tbody></table></div><!--[if mso | IE]></td></tr></table></td></tr><![endif]--><!-- header text section --><!--[if mso | IE]><tr><td class='' width='600px' ><table align='center' border='0' cellpadding='0' cellspacing='0' class='' style='width:600px;' width='600' ><tr><td style='line-height:0px;font-size:0px;mso-line-height-rule:exactly;'><![endif]--><div style='background:#ffffff;background-color:#ffffff;Margin:0px auto;max-width:600px;'><table align='center' border='0' cellpadding='0' cellspacing='0' role='presentation' style='background:#ffffff;background-color:#ffffff;width:100%;'><tbody><tr><td style='direction:ltr;font-size:0px;padding:20px 0;text-align:center;vertical-align:top;'><!--[if mso | IE]><table role='presentation' border='0' cellpadding='0' cellspacing='0'><tr><td class='' style='vertical-align:top;width:600px;' ><![endif]--><div class='mj-column-per-100 outlook-group-fix' style='font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;'><table border='0' cellpadding='0' cellspacing='0' role='presentation' style='vertical-align:top;' width='100%'><tr><td align='left' style='font-size:0px;padding:10px 25px;word-break:break-word;'><div style='font-family:Poppins;font-size:20px;font-weight:700;line-height:normal;text-align:left;color:#000000;'>Dear ")
         
-        String htmlContent = htmlContentBuilder.toString();
+        // BORROWER DATA
+        .append(borrower)        
+        .append(",</div></td></tr><tr><td align='left' style='font-size:0px;padding:10px 25px;word-break:break-word;'><div style='font-family:Poppins;font-size:16px;line-height:normal;text-align:left;color:#000000;'>We regret to inform you that your book rental request has been rejected.</div></td></tr></table></div><!--[if mso | IE]></td></tr></table><![endif]--></td></tr></tbody></table></div><!--[if mso | IE]></td></tr></table></td></tr><![endif]--><!-- request detail --><!--[if mso | IE]><tr><td class='' width='600px' ><table align='center' border='0' cellpadding='0' cellspacing='0' class='' style='width:600px;' width='600' ><tr><td style='line-height:0px;font-size:0px;mso-line-height-rule:exactly;'><![endif]--><div style='background:#ffffff;background-color:#ffffff;Margin:0px auto;max-width:600px;'><table align='center' border='0' cellpadding='0' cellspacing='0' role='presentation' style='background:#ffffff;background-color:#ffffff;width:100%;'><tbody><tr><td style='direction:ltr;font-size:0px;padding:20px 0;padding-bottom:0px;padding-top:0px;text-align:center;vertical-align:top;'><!--[if mso | IE]><table role='presentation' border='0' cellpadding='0' cellspacing='0'><tr><td class='' style='vertical-align:top;width:600px;' ><![endif]--><div class='mj-column-per-100 outlook-group-fix' style='font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;'><table border='0' cellpadding='0' cellspacing='0' role='presentation' style='vertical-align:top;' width='100%'><tr><td align='center' style='font-size:0px;padding:10px 25px;word-break:break-word;'><div style='font-family:Poppins;font-size:20px;font-weight:700;line-height:normal;text-align:center;color:#000000;'>Here is the request detail:</div></td></tr></table></div><!--[if mso | IE]></td></tr></table><![endif]--></td></tr></tbody></table></div><!--[if mso | IE]></td></tr></table></td></tr><tr><td class='' width='600px' ><table align='center' border='0' cellpadding='0' cellspacing='0' class='' style='width:600px;' width='600' ><tr><td style='line-height:0px;font-size:0px;mso-line-height-rule:exactly;'><![endif]--><div style='Margin:0px auto;max-width:600px;'><table align='center' border='0' cellpadding='0' cellspacing='0' role='presentation' style='width:100%;'><tbody><tr><td style='direction:ltr;font-size:0px;padding:20px 0;padding-bottom:0;padding-left:20px;padding-right:20px;padding-top:5px;text-align:center;vertical-align:top;'><!--[if mso | IE]><table role='presentation' border='0' cellpadding='0' cellspacing='0'><tr><td class='poster-outlook' style='vertical-align:top;width:500px;' ><![endif]--><div class='mj-column-px-500 outlook-group-fix poster' style='font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;'><table border='0' cellpadding='0' cellspacing='0' role='presentation' width='100%'><tbody><tr><td style='background-color:rgba(208, 180, 159, 0.2);vertical-align:top;padding:20px;'><table border='0' cellpadding='0' cellspacing='0' role='presentation' width='100%'><tr><td align='center' style='font-size:0px;padding:10px 25px;word-break:break-word;'><table border='0' cellpadding='0' cellspacing='0' role='presentation' style='border-collapse:collapse;border-spacing:0px;'><tbody><tr><td style='width:167px;'><img alt='image cover' height='auto' src=")
+        
+        // BOOK IMAGE DATA
+        .append(bookImg)
+        .append("style='border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;' width='167'></td></tr></tbody></table></td></tr><tr><td align='center' style='font-size:0px;padding:10px 25px;word-break:break-word;'><div style='font-family:Poppins;font-size:16px;line-height:normal;text-align:center;color:#000000;'><!-- book title --> <span style='font-weight: 700; font-size: 20px'>")
+        
+        // BOOK TITLE DATA
+        .append(bookTitle)
+        .append("</span><br><br><!-- book author --> Author: <span style='font-weight: 700'>")
+        
+        // BOOK AUTHOR DATA
+        .append(author)
+        .append("</span></div></td></tr></table></td></tr></tbody></table></div><!--[if mso | IE]></td><td class='' style='vertical-align:top;width:560px;' ><![endif]--><div class='mj-column-per-100 outlook-group-fix' style='font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;'><table border='0' cellpadding='0' cellspacing='0' role='presentation' width='100%'><tbody><tr><td style='vertical-align:top;padding-top:5px;padding-bottom:5px;'><table border='0' cellpadding='0' cellspacing='0' role='presentation' width='100%'><tr><td align='left' style='font-size:0px;padding:10px 25px;word-break:break-word;'><div style='font-family:Poppins;font-size:16px;line-height:normal;text-align:left;color:#000000;'><ul style='margin: 0; padding: 0'><li style='margin: 0 0 1em;\n");
 
-        // build email
-        // send message
-//        String message = "Dear " + borrower + ",\n" +
-//                "\n" +
-//                "We regret to inform you that your book rental request has been rejected. We appreciate your interest, but unfortunately, we are unable to fulfill your request at this time. Here are the details:\n" +
-//                "\n" +
-//                "Book Title: " + bookTitle + "\n" +
-//                "Author: " + author + "\n" +
-//                "Request Date: " + requestDate + "\n" +
-//                "Reason: " + rejectedReason + "\n" +
-//                "\n" +
-//                "We apologize for any inconvenience caused. If you have any further questions or concerns, please don't hesitate to reach out to our support team.\n" +
-//                "\n" +
-//                "Thank you for considering our book rental service.\n" +
-//                "\n" +
-//                "Best regards,\n" +
-//                "The Book Rental Team" +
-//                "" +
-//                "";
+        htmlContentBuilder.append("list-style: disc inside;\n");
+        htmlContentBuilder.append("mso-special-format: bullet;'><span style='font-weight: 700'>Request Date</span>: ")
+        
+        // REQUEST DATE DATA
+        .append(requestDate)
+        .append("</li><li style='list-style: disc inside;\n");
+
+        htmlContentBuilder.append("mso-special-format: bullet;'><span style='font-weight: 700'>Reject Reason:</span></li></ul></div></td></tr></table></td></tr></tbody></table></div><!--[if mso | IE]></td><td class='poster-outlook' style='vertical-align:top;width:500px;' ><![endif]--><div class='mj-column-px-500 outlook-group-fix poster' style='font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;'><table border='0' cellpadding='0' cellspacing='0' role='presentation' width='100%'><tbody><tr><td style='background-color:rgba(208, 180, 159, 0.2);vertical-align:top;padding:20px;padding-top:10px;padding-bottom:10px;'><table border='0' cellpadding='0' cellspacing='0' role='presentation' width='100%'><tr><td align='left' style='font-size:0px;padding:10px 25px;word-break:break-word;'><div style='font-family:Poppins;font-size:16px;line-height:normal;text-align:left;color:#000000;'>")
+        
+        // REJECTED REASON DATA
+        .append(rejectedReason)
+        .append("</div></td></tr></table></td></tr></tbody></table></div><!--[if mso | IE]></td></tr></table><![endif]--></td></tr></tbody></table></div><!--[if mso | IE]></td></tr></table></td></tr><![endif]--><!-- footer text --><!--[if mso | IE]><tr><td class='' width='600px' ><table align='center' border='0' cellpadding='0' cellspacing='0' class='' style='width:600px;' width='600' ><tr><td style='line-height:0px;font-size:0px;mso-line-height-rule:exactly;'><![endif]--><div style='Margin:0px auto;max-width:600px;'><table align='center' border='0' cellpadding='0' cellspacing='0' role='presentation' style='width:100%;'><tbody><tr><td style='direction:ltr;font-size:0px;padding:20px 0;padding-bottom:0px;text-align:center;vertical-align:top;'><!--[if mso | IE]><table role='presentation' border='0' cellpadding='0' cellspacing='0'><tr><td class='' style='vertical-align:top;width:600px;' ><![endif]--><div class='mj-column-per-100 outlook-group-fix' style='font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;'><table border='0' cellpadding='0' cellspacing='0' role='presentation' width='100%'><tbody><tr><td style='vertical-align:top;padding-top:0px;'><table border='0' cellpadding='0' cellspacing='0' role='presentation' width='100%'><tr><td align='left' style='font-size:0px;padding:10px 25px;word-break:break-word;'><div style='font-family:Poppins;font-size:16px;line-height:normal;text-align:left;color:#000000;'>We apologize for any inconvenience caused. If you have any further questions or concerns, please don't hesitate to reach out to our support team.<br>Thank you for considering our book rental service.</div></td></tr><tr><td align='left' style='font-size:0px;padding:10px 25px;word-break:break-word;'><div style='font-family:Poppins;font-size:16px;line-height:normal;text-align:left;color:#000000;'>Best regards,<br><span style='font-weight: 700'>The Kjey Book Team</span></div></td></tr></table></td></tr></tbody></table></div><!--[if mso | IE]></td></tr></table><![endif]--></td></tr></tbody></table></div><!--[if mso | IE]></td></tr></table></td></tr><![endif]--><!-- footer --><!--[if mso | IE]><tr><td class='' width='600px' ><table align='center' border='0' cellpadding='0' cellspacing='0' class='' style='width:600px;' width='600' ><tr><td style='line-height:0px;font-size:0px;mso-line-height-rule:exactly;'><![endif]--><div style='Margin:0px auto;max-width:600px;'><table align='center' border='0' cellpadding='0' cellspacing='0' role='presentation' style='width:100%;'><tbody><tr><td style='direction:ltr;font-size:0px;padding:20px 0;padding-top:5px;text-align:center;vertical-align:top;'><!--[if mso | IE]><table role='presentation' border='0' cellpadding='0' cellspacing='0'><tr><td class='' style='vertical-align:top;width:600px;' ><![endif]--><div class='mj-column-per-100 outlook-group-fix' style='font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;'><table border='0' cellpadding='0' cellspacing='0' role='presentation' style='vertical-align:top;' width='100%'><tr><td align='center' vertical-align='middle' style='font-size:0px;padding:10px 25px;word-break:break-word;'><table border='0' cellpadding='0' cellspacing='0' role='presentation' style='border-collapse:separate;width:200px;line-height:100%;'><tr><td align='center' bgcolor='#A37551' role='presentation' style='border:none;border-radius:15px;cursor:auto;height:30px;padding:10px 25px;background:#A37551;' valign='middle'><a href='https://kjeybook.vercel.app' style='background:#A37551;color:#ffffff;font-family:Poppins;font-size:16px;font-weight:700;line-height:normal;Margin:0;text-decoration:none;text-transform:none;' target='_blank'>EXPLORE MORE</a></td></tr></table></td></tr><tr><td style='font-size:0px;padding:10px 25px;word-break:break-word;'><p style='border-top:solid 2px #A37551;font-size:1;margin:0px auto;width:100%;'></p><!--[if mso | IE]><table align='center' border='0' cellpadding='0' cellspacing='0' style='border-top:solid 2px #A37551;font-size:1;margin:0px auto;width:550px;' role='presentation' width='550px' ><tr><td style='height:0;line-height:0;'> &nbsp;\n");
+
+        htmlContentBuilder.append("</td></tr></table><![endif]--></td></tr></table></div><!--[if mso | IE]></td><td class='' style='vertical-align:top;width:600px;' ><![endif]--><div class='mj-column-per-100 outlook-group-fix' style='font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;'><table border='0' cellpadding='0' cellspacing='0' role='presentation' style='vertical-align:top;' width='100%'><tr><td align='center' style='font-size:0px;padding:10px 25px;word-break:break-word;'><!--[if mso | IE]><table align='center' border='0' cellpadding='0' cellspacing='0' role='presentation' ><tr><td><![endif]--><table align='center' border='0' cellpadding='0' cellspacing='0' role='presentation' style='float:none;display:inline-table;'><tr><td style='padding:4px;'><table border='0' cellpadding='0' cellspacing='0' role='presentation' style='background:#A37551;border-radius:3px;width:40px;'><tr><td style='font-size:0;height:40px;vertical-align:middle;width:40px;'><a href='https://www.facebook.com/sharer/sharer.php?u=https://kjeybook.vercel.app' target='_blank'><img height='40' src='https://www.mailjet.com/images/theme/v1/icons/ico-social/facebook.png' style='border-radius:3px;' width='40'></a></td></tr></table></td></tr></table><!--[if mso | IE]></td><td><![endif]--><table align='center' border='0' cellpadding='0' cellspacing='0' role='presentation' style='float:none;display:inline-table;'><tr><td style='padding:4px;'><table border='0' cellpadding='0' cellspacing='0' role='presentation' style='background:#A37551;border-radius:3px;width:40px;'><tr><td style='font-size:0;height:40px;vertical-align:middle;width:40px;'><a href='https://kjeybook.vercel.app' target='_blank'><img height='40' src='https://www.mailjet.com/images/theme/v1/icons/ico-social/instagram.png' style='border-radius:3px;' width='40'></a></td></tr></table></td></tr></table><!--[if mso | IE]></td><td><![endif]--><table align='center' border='0' cellpadding='0' cellspacing='0' role='presentation' style='float:none;display:inline-table;'><tr><td style='padding:4px;'><table border='0' cellpadding='0' cellspacing='0' role='presentation' style='background:#A37551;border-radius:3px;width:40px;'><tr><td style='font-size:0;height:40px;vertical-align:middle;width:40px;'><a href='https://twitter.com/home?status=https://kjeybook.vercel.app' target='_blank'><img height='40' src='https://www.mailjet.com/images/theme/v1/icons/ico-social/twitter.png' style='border-radius:3px;' width='40'></a></td></tr></table></td></tr></table><!--[if mso | IE]></td></tr></table><![endif]--></td></tr></table></div><!--[if mso | IE]></td><td class='' style='vertical-align:top;width:600px;' ><![endif]--><div class='mj-column-per-100 outlook-group-fix' style='font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;'><table border='0' cellpadding='0' cellspacing='0' role='presentation' style='vertical-align:top;' width='100%'><tr><td align='center' style='font-size:0px;padding:10px 25px;word-break:break-word;'><div style='font-family:Poppins;font-size:12px;line-height:normal;text-align:center;color:#000000;'>© 2023 Kjey Book. All rights reserved.</div></td></tr></table></div><!--[if mso | IE]></td></tr></table><![endif]--></td></tr></tbody></table></div><!--[if mso | IE]></td></tr></table></td></tr></table><![endif]--></td></tr></tbody></table></div><!--[if mso | IE]></td></tr></table><![endif]--></div></body></html>\n");
+
+        String htmlContent = htmlContentBuilder.toString();
         String from = "no-reply@bookrentalsystem.com.kh";
-//        send(sendTo, from, message, subject);
         send(sendTo, from, htmlContent, subject);
     }
 
