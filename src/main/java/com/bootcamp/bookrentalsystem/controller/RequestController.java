@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -159,7 +158,13 @@ public class RequestController {
     }
 
     @GetMapping("/count")
-    public ResponseEntity<Map<String, Map<String, Integer>>> countRequestByStatus() {
+    public ResponseEntity<Map<String, Map<String, Integer>>> countRequestByStatus(
+            @RequestHeader("Authorization") String token) {
+        // Validate and decode the JWT token
+        if (!jwtService.isValidAdminToken(token)) {
+            throw new ForbiddenException("Access Denied!!");
+        }
+
         Map<String, Map<String, Integer>> statusCounts = requestService.countRequestsByStatus();
         return ResponseEntity.ok(statusCounts);
     }
