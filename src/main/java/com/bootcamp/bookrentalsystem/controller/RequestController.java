@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/request")
@@ -29,7 +30,7 @@ public class RequestController {
     }
 
     @PostMapping()
-    public ResponseEntity<Request> createRequest(@RequestParam("userId") Long userId,
+    public ResponseEntity<Request> createRequest(@RequestParam("userId") UUID userId,
             @RequestParam("bookId") Long bookId,
             @RequestParam("requestDuration") Long requestDuration,
             @RequestHeader("Authorization") String token) {
@@ -54,8 +55,14 @@ public class RequestController {
     }
 
     @GetMapping("/status")
-    public List<Request> getRequestsByStatus(@RequestParam("status") String status,
-            @RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+    public List<Request> getRequestsByStatus(@RequestHeader("Authorization") String token,
+            @RequestParam("status") String status,
+            @RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) String date) {
+
+        // Validate and decode the JWT token
+        if (!jwtService.isValidAdminToken(token)) {
+            throw new ForbiddenException("Access Denied!!");
+        }
         if (date == null) {
             return requestService.getRequestsByStatus(status);
         } else {
@@ -64,7 +71,12 @@ public class RequestController {
     }
 
     @GetMapping("/book")
-    public List<Request> getRequestsByBook(@RequestParam("bookId") Long bookId) {
+    public List<Request> getRequestsByBook(@RequestHeader("Authorization") String token,
+            @RequestParam("bookId") Long bookId) {
+        // Validate and decode the JWT token
+        if (!jwtService.isValidAdminToken(token)) {
+            throw new ForbiddenException("Access Denied!!");
+        }
         return requestService.getRequestsByBook(bookId);
     }
 
@@ -94,7 +106,7 @@ public class RequestController {
 
     @GetMapping("/user")
     public ResponseEntity<List<Request>> getRequestsByUserId(@RequestHeader("Authorization") String token,
-            @RequestParam("userId") Long userId) {
+            @RequestParam("userId") UUID userId) {
         // Validate User token access
         if (!jwtService.isValidUserToken(token, userId)) {
             throw new UnauthorizedException("Unauthorized Access");
@@ -144,6 +156,12 @@ public class RequestController {
     public ResponseEntity<Request> getRequestByRequestId(@PathVariable Long requestId) {
         Request request = requestService.getRequestByRequestId(requestId);
         return new ResponseEntity<>(request, HttpStatus.OK);
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<Map<String, Map<String, Integer>>> countRequestByStatus() {
+        Map<String, Map<String, Integer>> statusCounts = requestService.countRequestsByStatus();
+        return ResponseEntity.ok(statusCounts);
     }
 
 }

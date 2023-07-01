@@ -55,6 +55,7 @@ public class JwtService {
             long expiration
     ) {
         Claims claims = Jwts.claims();
+        claims.put("id", userDetails.getUserId());
         claims.put("role", userDetails.getRole());
         claims.put("email", userDetails.getEmail());
 
@@ -121,7 +122,7 @@ public class JwtService {
         return isAdminRole && isNotExpired;
     }
 
-    public boolean isValidUserToken(String token, Long userId) {
+    public boolean isValidUserToken(String token, UUID userId) {
 
         if (token == null || token.isEmpty()) {
             throw new IllegalArgumentException("Token required");

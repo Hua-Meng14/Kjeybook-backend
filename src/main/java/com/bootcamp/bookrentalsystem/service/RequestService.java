@@ -10,10 +10,13 @@ import com.bootcamp.bookrentalsystem.repository.RequestRepository;
 import com.bootcamp.bookrentalsystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Component
@@ -35,17 +38,12 @@ public class RequestService {
         this.bookRepository = bookRepository;
     }
 
-    public Request createRequest(Long userId, Long bookId, Long requestDuration) {
+    public Request createRequest(UUID userId, Long bookId, Long requestDuration) {
         User borrower = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
         Book book = (Book) bookService.findBookById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
-
-        // Check book renting status
-        if (book.getRented()) {
-            throw new BadRequestException("Book with id of " + bookId + " is not available for rent!!");
-        }
 
         // Check request duration and maximum request duration for the requested book
         // if (requestDuration > book.getMaximumRequestPeriod()) {
@@ -53,13 +51,26 @@ public class RequestService {
         // duration for book with id: " + bookId);
         // }
 
+        // Check if there is an existing request with the same userId and bookId
+        List<Request> existingRequests = requestRepository.findByBorrowerUserIdAndBookId(userId, bookId);
+        if (!existingRequests.isEmpty()) {
+            for (Request existingRequest : existingRequests) {
+                String existingStatus = existingRequest.getStatus();
+                if (existingStatus.equals("PENDING") || existingStatus.equals("ACCEPTED")) {
+                    throw new BadRequestException("Request already been created for book id: " + bookId);
+                }
+            }
+        }
+
         Request request = new Request();
         request.setBorrower(borrower);
         request.setBook(book);
         request.setRequestDuration(requestDuration);
         // Set the dateOfRequest as the current date
-        LocalDate currentDate = LocalDate.now();
-        request.setDateOfRequest(currentDate);
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String currentDateTimeStr = currentDateTime.format(formatter);
+        request.setDateOfRequest(currentDateTimeStr);
 
         return requestRepository.save(request);
     }
@@ -92,7 +103,7 @@ public class RequestService {
         return response;
     }
 
-    public List<Request> getRequestsByUserId(Long userId) {
+    public List<Request> getRequestsByUserId(UUID userId) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
         return requestRepository.findByBorrowerUserId(userId);
@@ -110,14 +121,18 @@ public class RequestService {
                 throw new BadRequestException("Request has already been archived.");
             default:
                 // Set the accepted date as the current date
-                LocalDate currentDate = LocalDate.now();
-                request.setDateOfAccepted(currentDate);
+                LocalDateTime currentDateTime = LocalDateTime.now();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                String currentDateTimeStr = currentDateTime.format(formatter);
+                request.setDateOfAccepted(currentDateTimeStr);
 
                 // Set the dateOfReturn based on the request duration
                 Long requestDuration = request.getRequestDuration();
                 if (requestDuration != null) {
-                    LocalDate dateOfReturn = currentDate.plusDays(requestDuration + 1);
-                    request.setDateOfReturn(dateOfReturn);
+                    LocalDate dateOfReturn = currentDateTime.toLocalDate().plusDays(requestDuration + 1);
+                    LocalDateTime dateTimeOfReturn = dateOfReturn.atStartOfDay();
+                    String dateOfReturnStr = dateTimeOfReturn.format(formatter);
+                    request.setDateOfReturn(dateOfReturnStr);
                 }
 
                 // Set the request status to "ACCEPTED"
@@ -152,8 +167,10 @@ public class RequestService {
                 throw new BadRequestException("Request has already been archived.");
             default:
                 // Set the rejected date as the current date
-                LocalDate currentDate = LocalDate.now();
-                request.setDateOfRejected(currentDate);
+                LocalDateTime currentDateTime = LocalDateTime.now();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                String currentDateTimeStr = currentDateTime.format(formatter);
+                request.setDateOfRejected(currentDateTimeStr);
 
                 // Set the request status to "REJECTED"
                 request.setStatus("ARCHIVED");
@@ -170,7 +187,9 @@ public class RequestService {
     }
 
     public List<Request> getAllRequests() {
-        return requestRepository.findAll();
+        // Create a Sort object with descending order based on the 'dateOfRequest' field
+        Sort sort = Sort.by(Sort.Direction.DESC, "dateOfRequest");
+        return requestRepository.findAll(sort);
     }
 
     public Request returnBook(Long requestId) {
@@ -182,8 +201,10 @@ public class RequestService {
         request.setStatus("ARCHIVED");
 
         // Set the dateOfReceived as the current date
-        LocalDate currentDate = LocalDate.now();
-        request.setDateOfReceived(currentDate);
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String currentDateTimeStr = currentDateTime.format(formatter);
+        request.setDateOfReceived(currentDateTimeStr);
 
         // Update the book isRented to false
         Long requestBookId = request.getBook().getId();
@@ -201,18 +222,80 @@ public class RequestService {
         return request;
     }
 
-    public List<Request> getRequestsByStatusAndDateOfRequest(String status, LocalDate date) {
-        return requestRepository.findByStatusAndDateOfRequest(status, date);
+    public List<Request> getRequestsByStatusAndDateOfRequest(String status, String date) {
+
+        Sort sort = Sort.by(Sort.Direction.DESC, "dateOfRequest");
+        List<Request> requests = requestRepository.findByStatus(status, sort);
+
+        // Filter requests based on date
+        List<Request> filteredRequests = new ArrayList<>();
+        for (Request request : requests) {
+            if (request.getDateOfRequest().contains(date)) {
+                filteredRequests.add(request);
+            }
+        }
+
+        return filteredRequests;
     }
 
     public List<Request> getRequestsByStatus(String status) {
-        return requestRepository.findByStatus(status);
+        Sort sort = Sort.by(Sort.Direction.DESC, "dateOfRequest");
+        return requestRepository.findByStatus(status, sort);
     }
 
     public List<Request> getRequestsByBook(Long bookId) {
         bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
+        Sort sort = Sort.by(Sort.Direction.DESC, "dateOfRequest");
+        return requestRepository.findByBookId(bookId, sort);
+    }
 
-        return requestRepository.findByBookId(bookId);
+    public Map<String, Map<String, Integer>> countRequestsByStatus() {
+
+        List<Request> requests = getAllRequests();
+
+        LocalDate today = LocalDate.now();
+        LocalDate yesterday = today.minusDays(1);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String todayString = today.format(formatter);
+        String yesterdayString = yesterday.format(formatter);
+
+        Map<String, Map<String, Integer>> data = new HashMap<>();
+
+        for (Request request : requests) {
+            String status = request.getStatus();
+            String dateOfRequest = request.getDateOfRequest();
+
+            int todayCount = dateOfRequest.contains(todayString) ? 1 : 0;
+            int yesterdayCount = dateOfRequest.contains(yesterdayString) ? 1 : 0;
+            int totalCount = 1;
+
+            Map<String, Integer> countMap = data.getOrDefault(status, new HashMap<>());
+            Map<String, Integer> renterMap = new HashMap<>();
+
+            int existingTodayCount = countMap.getOrDefault("today", 0);
+            int existingYesterdayCount = countMap.getOrDefault("yesterday", 0);
+            int existingTotalCount = countMap.getOrDefault("total", 0);
+
+            countMap.put("today", existingTodayCount + todayCount);
+            countMap.put("yesterday", existingYesterdayCount + yesterdayCount);
+            countMap.put("total", existingTotalCount + totalCount);
+
+            int todayRenterCount = (request.getIsApproved() && status.equals("ARCHIVED")
+                    && dateOfRequest.contains(todayString)) ? 1 : 0;
+            int yesterdayRenterCount = (request.getIsApproved() && status.equals("ARCHIVED")
+                    && dateOfRequest.contains(yesterdayString)) ? 1 : 0;
+            int totalRenterCount = (request.getIsApproved() && status.equals("ARCHIVED")) ? 1 : 0;
+
+            renterMap.put("today", todayRenterCount);
+            renterMap.put("yesterday", yesterdayRenterCount);
+            renterMap.put("total", totalRenterCount);
+
+            data.put(status, countMap);
+            data.put("RENTER", renterMap);
+        }
+
+        return data;
     }
 }
