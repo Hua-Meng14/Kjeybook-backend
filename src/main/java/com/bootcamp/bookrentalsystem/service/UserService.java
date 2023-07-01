@@ -218,7 +218,6 @@ public class UserService {
 
     public ResponseEntity<String> resetPassword(ResetPasswordRequest request) {
         String resetPwdToken = request.getResetPwdToken();
-        String email = request.getEmail();
         String newPassword = request.getNewPassword();
 
         // Validate the request payload
@@ -245,7 +244,7 @@ public class UserService {
         // Save new password
         userRepository.save(user);
         // Send confirmation for new password to user
-        emailService.sendResetPasswordSuccessEmail(user);
+        // emailService.sendResetPasswordSuccessEmail(user);
 
         return ResponseEntity.ok("Password Reset Succesfully");
     }
