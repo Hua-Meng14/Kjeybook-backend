@@ -1,8 +1,10 @@
 package com.bootcamp.bookrentalsystem.model;
 
+import java.util.UUID;
+
 public class ResetPasswordRequest {
 
-    private String email;
+    private UUID userId;
     private String newPassword;
     private String resetPwdToken;
 
@@ -10,17 +12,17 @@ public class ResetPasswordRequest {
 
     }
 
-    public ResetPasswordRequest(String email, String newPassword, String resetPwdToken) {
-        this.email = email;
+    public ResetPasswordRequest(UUID userId, String newPassword, String resetPwdToken) {
+        this.userId = userId;
         this.newPassword = newPassword;
         this.resetPwdToken = resetPwdToken;
     }
 
-    public String getEmail() {
-        return email;
+    public UUID getUserId() {
+        return userId;
     }
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUserId(UUID userId) {
+        this.userId = userId;
     }
     public String getNewPassword() {
         return newPassword;
