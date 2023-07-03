@@ -263,38 +263,100 @@ public class RequestService {
 
         Map<String, Map<String, Integer>> data = new HashMap<>();
 
+        Map<String, Integer> pendingMap = new HashMap<>();
+        Map<String, Integer> acceptedMap = new HashMap<>();
+        Map<String, Integer> archivedMap = new HashMap<>();
+        Map<String, Integer> renterMap = new HashMap<>();
+
+        int todayAcceptedCount = 0;
+        int yesterdayAcceptedCount = 0;
+        int totalAcceptedCount = 0;
+
+        int todayPendingCount = 0;
+        int yesterdayPendingCount = 0;
+        int totalPendingCount = 0;
+
+        int todayArchivedCount = 0;
+        int yesterdayArchivedCount = 0;
+        int totalArchivedCount = 0;
+
+        int todayRenterCount = 0;
+        int yesterdayRenterCount = 0;
+        int totalRenterCount = 0;
+
         for (Request request : requests) {
             String status = request.getStatus();
             String dateOfRequest = request.getDateOfRequest();
 
-            int todayCount = dateOfRequest.contains(todayString) ? 1 : 0;
-            int yesterdayCount = dateOfRequest.contains(yesterdayString) ? 1 : 0;
-            int totalCount = 1;
+            if (dateOfRequest.contains(todayString)) {
+                switch (status) {
+                    case "PENDING":
+                        todayPendingCount += 1;
+                        break;
+                    case "ACCEPTED":
+                        todayAcceptedCount += 1;
+                        break;
+                    case "ARCHIVED":
+                        if (request.getIsApproved()) {
+                            todayRenterCount += 1;
+                        }
+                        todayArchivedCount += 1;
+                        break;
+                }
 
-            Map<String, Integer> countMap = data.getOrDefault(status, new HashMap<>());
-            Map<String, Integer> renterMap = new HashMap<>();
+            } else if (dateOfRequest.contains(yesterdayString)) {
+                switch (status) {
+                    case "PENDING":
+                        yesterdayPendingCount += 1;
+                        break;
+                    case "ACCEPTED":
+                        yesterdayAcceptedCount += 1;
+                        break;
+                    case "ARCHIVED":
+                        if (request.getIsApproved()) {
+                            yesterdayRenterCount += 1;
+                        }
+                        yesterdayArchivedCount += 1;
+                        break;
+                }
+            }
+            switch (status) {
+                case "PENDING":
+                    totalPendingCount += 1;
+                    break;
+                case "ACCEPTED":
+                    totalAcceptedCount += 1;
+                    break;
+                case "ARCHIVED":
+                    if (request.getIsApproved()) {
+                        totalRenterCount += 1;
+                    }
+                    totalArchivedCount += 1;
+                    break;
+            }
 
-            int existingTodayCount = countMap.getOrDefault("today", 0);
-            int existingYesterdayCount = countMap.getOrDefault("yesterday", 0);
-            int existingTotalCount = countMap.getOrDefault("total", 0);
-
-            countMap.put("today", existingTodayCount + todayCount);
-            countMap.put("yesterday", existingYesterdayCount + yesterdayCount);
-            countMap.put("total", existingTotalCount + totalCount);
-
-            int todayRenterCount = (request.getIsApproved() && status.equals("ARCHIVED")
-                    && dateOfRequest.contains(todayString)) ? 1 : 0;
-            int yesterdayRenterCount = (request.getIsApproved() && status.equals("ARCHIVED")
-                    && dateOfRequest.contains(yesterdayString)) ? 1 : 0;
-            int totalRenterCount = (request.getIsApproved() && status.equals("ARCHIVED")) ? 1 : 0;
-
-            renterMap.put("today", todayRenterCount);
-            renterMap.put("yesterday", yesterdayRenterCount);
-            renterMap.put("total", totalRenterCount);
-
-            data.put(status, countMap);
-            data.put("RENTER", renterMap);
         }
+
+        renterMap.put("today", todayRenterCount);
+        renterMap.put("yesterday", yesterdayRenterCount);
+        renterMap.put("total", totalRenterCount);
+
+        pendingMap.put("today", todayPendingCount);
+        pendingMap.put("yesterday", yesterdayPendingCount);
+        pendingMap.put("total", totalPendingCount);
+
+        acceptedMap.put("today", todayAcceptedCount);
+        acceptedMap.put("yesterday", yesterdayAcceptedCount);
+        acceptedMap.put("total", totalAcceptedCount);
+
+        archivedMap.put("today", todayArchivedCount);
+        archivedMap.put("yesterday", yesterdayArchivedCount);
+        archivedMap.put("total", totalArchivedCount);
+        
+        data.put("RENTER", renterMap);
+        data.put("PENDING", pendingMap);
+        data.put("ACCEPTED", acceptedMap);
+        data.put("ARCHIVED", archivedMap);
 
         return data;
     }
