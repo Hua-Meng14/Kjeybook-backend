@@ -133,4 +133,9 @@ public class UserController {
     public ResponseEntity<String> resetNewPassword(@RequestBody ResetPasswordRequest request) {
         return userService.resetPassword(request);
     }
+
+    @PostMapping("validate/reset-password-token/")
+    public ResponseEntity validateResetPwdToken(@RequestParam String resetPwdToken) {
+        return ResponseEntity.ok(userService.validateResetPwdToken(resetPwdToken));
+    }
 }

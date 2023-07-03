@@ -23,36 +23,53 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .cors().and() // Enable CORS
-                .csrf()
-                .disable()
+
+                .cors().disable() // Disable CORS
+                .csrf().disable() // Disable CSRF protection
                 .authorizeRequests()
-                .requestMatchers(
-                        "/api/v1/auth/**",
-                        "/v2/api-docs",
-                        "/v3/api-docs",
-                        "/v3/api-docs/**",
-                        "/swagger-resources",
-                        "/swagger-resources/**",
-                        "/configuration/ui",
-                        "/configuration/security",
-                        "/swagger-ui/**",
-                        "/webjars/**",
-                        "/swagger-ui.html",
-                        "/api/v1/**")
-                .permitAll()
                 .anyRequest()
-                .authenticated();
+                .permitAll(); // Allow all requests
+
+
+                // <-----------------Uncomment to ENABLE CORS----------------->
+                // .cors().and() // Enable CORS
+                // .csrf()
+                // .disable()
+                // .authorizeRequests()
+                // .requestMatchers(
+                //         "/api/v1/auth/**",
+                //         "/v2/api-docs",
+                //         "/v3/api-docs",
+                //         "/v3/api-docs/**",
+                //         "/swagger-resources",
+                //         "/swagger-resources/**",
+                //         "/configuration/ui",
+                //         "/configuration/security",
+                //         "/swagger-ui/**",
+                //         "/webjars/**",
+                //         "/swagger-ui.html",
+                //         "/api/v1/**")
+                // .permitAll()
+                // .anyRequest()
+                // .authenticated();
         return httpSecurity.build();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://kjeybook.vercel.app")); // Update with your allowed origins
+
+        // Disable CORS
+        configuration.setAllowedOrigins(Arrays.asList("*")); // Allow all origins
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "PUT", "DELETE")); // Update with your allowed methods
         configuration.addAllowedHeader("*"); // Update with your allowed headers
-        configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(false); // Disable credentials
+
+        // <-----------------Uncomment to ENABLE CORS----------------->
+        // configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://kjeybook.vercel.app")); // Update with your allowed origins
+        // configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "PUT", "DELETE")); // Update with your allowed methods
+        // configuration.addAllowedHeader("*"); // Update with your allowed headers
+        // configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
