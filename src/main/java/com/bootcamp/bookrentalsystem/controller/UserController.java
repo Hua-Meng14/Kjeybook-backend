@@ -134,8 +134,8 @@ public class UserController {
         return userService.resetPassword(request);
     }
 
-    @PostMapping("validate/reset-password-token/{userId}")
-    public ResponseEntity validateResetPwdToken(@PathVariable UUID userId, @RequestParam String resetPwdToken) {
-        return ResponseEntity.ok(userService.validateResetPwdToken(userId,resetPwdToken));
+    @PostMapping("validate/reset-password-token/")
+    public ResponseEntity validateResetPwdToken(@RequestParam String resetPwdToken) {
+        return ResponseEntity.ok(userService.validateResetPwdToken(resetPwdToken));
     }
 }
