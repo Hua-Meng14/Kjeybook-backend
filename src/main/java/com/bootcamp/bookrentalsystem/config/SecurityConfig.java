@@ -51,30 +51,13 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // <-----------------Uncomment to ENABLE CORS----------------->
-        // configuration.addAllowedOrigin("*"); // Allow any origin
-        configuration.setAllowedOrigins(Collections.singletonList("*")); // Allow any origin
-        // configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://kjeybook.vercel.app")); // Update with your allowed origins
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://kjeybook.vercel.app")); // Update with your allowed origins
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "PUT", "DELETE")); // Update with your allowed methods
         configuration.addAllowedHeader("*"); // Update with your allowed headers
         configuration.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source = new
-        UrlBasedCorsConfigurationSource();
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
-    // @Bean
-    // public CorsConfigurationSource corsConfigurationSource() {
-    //     CorsConfiguration configuration = new CorsConfiguration();
-    //     configuration.setAllowCredentials(true);
-    //     configuration.addAllowedOrigin("*");
-    //     configuration.addAllowedHeader("*");
-    //     configuration.addAllowedMethod("*");
-
-    //     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    //     source.registerCorsConfiguration("/**", configuration);
-    //     return source;
-    // }
 }
