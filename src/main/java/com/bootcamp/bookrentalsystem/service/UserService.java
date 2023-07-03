@@ -26,9 +26,9 @@ public class UserService {
     private EmailService emailService;
     private PasswordEncoder passwordEncoder;
 
-
     @Autowired
-    public UserService(@Qualifier("user") UserRepository userRepository, BookRepository bookRepository, RequestRepository requestRepository, EmailService emailService, PasswordEncoder passwordEncoder) {
+    public UserService(@Qualifier("user") UserRepository userRepository, BookRepository bookRepository,
+            RequestRepository requestRepository, EmailService emailService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.bookRepository = bookRepository;
         this.requestRepository = requestRepository;
@@ -42,20 +42,20 @@ public class UserService {
 
     public Optional<User> findUserById(UUID userId) {
 
-//        if (!jwtService.isUserToken(jwtToken, userId)) {
-//            throw new UnauthorizedException("Unauthorized Access!!");
-//        }
+        // if (!jwtService.isUserToken(jwtToken, userId)) {
+        // throw new UnauthorizedException("Unauthorized Access!!");
+        // }
 
-//        System.out.println("--------- IS TOKEN EXPIRED: " + jwtService.isTokenExpired(jwtToken));
-//        if (jwtService.isTokenExpired(jwtToken)) {
-//            throw new BadRequestException("Invalid Token!!");
-//        }
+        // System.out.println("--------- IS TOKEN EXPIRED: " +
+        // jwtService.isTokenExpired(jwtToken));
+        // if (jwtService.isTokenExpired(jwtToken)) {
+        // throw new BadRequestException("Invalid Token!!");
+        // }
 
         return userRepository.findById(userId)
                 .map(Optional::of)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
     }
-
 
     public User updateUserById(UUID userId, User updatedUser) {
 
@@ -128,12 +128,13 @@ public class UserService {
             throw new ResourceNotFoundException("Book not found in the user's favorites with book id: " + bookId);
         }
 
-//        System.out.println("---------------BEFORE DELETE: "+ user.getFavoriteBooks());
+        // System.out.println("---------------BEFORE DELETE: "+
+        // user.getFavoriteBooks());
 
         // Remove the book from the user's favorite list
         favoriteBooks.removeIf(book -> book.getId().equals(bookId));
 
-//        System.out.println("---------------AFTER DELETE: "+ user.getFavoriteBooks());
+        // System.out.println("---------------AFTER DELETE: "+ user.getFavoriteBooks());
 
         userRepository.save(user);
     }
@@ -175,7 +176,8 @@ public class UserService {
         return "Password changed successfully!";
     }
 
-    // Utility method to generate a password reset token (you can customize this as needed)
+    // Utility method to generate a password reset token (you can customize this as
+    // needed)
     private String generateResetToken() {
         // Implement your logic to generate a unique token
         // You can use UUID or any other secure random generator
@@ -200,7 +202,8 @@ public class UserService {
         User existingUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
 
-        // Generate a password reset token (you can use a library or custom implementation)
+        // Generate a password reset token (you can use a library or custom
+        // implementation)
         String resetPwdToken = generateResetToken();
 
         // Set the expiration time (e.g., 1 hour from the current time)
@@ -233,7 +236,8 @@ public class UserService {
                 .orElseThrow(() -> new UnauthorizedException("Unauthorized Access"));
 
         // Check if the reset token has expired
-        if (user.getResetPwdExpirationTime() == null || user.getResetPwdExpirationTime().isBefore(LocalDateTime.now())) {
+        if (user.getResetPwdExpirationTime() == null
+                || user.getResetPwdExpirationTime().isBefore(LocalDateTime.now())) {
             throw new BadRequestException("Invalid Token");
         }
 
@@ -247,5 +251,17 @@ public class UserService {
         // emailService.sendResetPasswordSuccessEmail(user);
 
         return ResponseEntity.ok("Password Reset Succesfully");
+    }
+
+    public ResponseEntity<String> validateResetPwdToken(String resetPwdToken) {
+
+        User existingUser = userRepository.findByResetPwdToken(resetPwdToken)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+
+        // Check if the reset token has expired
+        if (existingUser.getResetPwdExpirationTime() == null || existingUser.getResetPwdExpirationTime().isBefore(LocalDateTime.now())) {
+            throw new BadRequestException("Invalid Reset Password Token");
+        }
+        return ResponseEntity.ok("Reset Password Token is valid");
     }
 }
