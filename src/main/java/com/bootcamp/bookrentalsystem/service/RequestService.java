@@ -106,7 +106,8 @@ public class RequestService {
     public List<Request> getRequestsByUserId(UUID userId) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
-        return requestRepository.findByBorrowerUserId(userId);
+        Sort sort = Sort.by(Sort.Direction.DESC, "dateOfRequest");
+        return requestRepository.findByBorrowerUserId(userId, sort);
     }
 
     public Request acceptRequest(Long requestId) {
@@ -352,7 +353,7 @@ public class RequestService {
         archivedMap.put("today", todayArchivedCount);
         archivedMap.put("yesterday", yesterdayArchivedCount);
         archivedMap.put("total", totalArchivedCount);
-        
+
         data.put("RENTER", renterMap);
         data.put("PENDING", pendingMap);
         data.put("ACCEPTED", acceptedMap);
