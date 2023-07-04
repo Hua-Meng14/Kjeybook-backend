@@ -67,7 +67,7 @@ public class RequestService {
         request.setBook(book);
         request.setRequestDuration(requestDuration);
         // Set the dateOfRequest as the current date
-        LocalDateTime currentDateTime = LocalDateTime.now();
+        LocalDateTime currentDateTime = LocalDateTime.now().plusHours(7); // convert to ICT
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String currentDateTimeStr = currentDateTime.format(formatter);
         request.setDateOfRequest(currentDateTimeStr);
@@ -122,7 +122,7 @@ public class RequestService {
                 throw new BadRequestException("Request has already been archived.");
             default:
                 // Set the accepted date as the current date
-                LocalDateTime currentDateTime = LocalDateTime.now();
+                LocalDateTime currentDateTime = LocalDateTime.now().plusHours(7); // convert to ICT
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
                 String currentDateTimeStr = currentDateTime.format(formatter);
                 request.setDateOfAccepted(currentDateTimeStr);
@@ -168,7 +168,7 @@ public class RequestService {
                 throw new BadRequestException("Request has already been archived.");
             default:
                 // Set the rejected date as the current date
-                LocalDateTime currentDateTime = LocalDateTime.now();
+                LocalDateTime currentDateTime = LocalDateTime.now().plusHours(7); // convert to ICT
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
                 String currentDateTimeStr = currentDateTime.format(formatter);
                 request.setDateOfRejected(currentDateTimeStr);
@@ -202,7 +202,7 @@ public class RequestService {
         request.setStatus("ARCHIVED");
 
         // Set the dateOfReceived as the current date
-        LocalDateTime currentDateTime = LocalDateTime.now();
+        LocalDateTime currentDateTime = LocalDateTime.now().plusHours(7); // convert to ICT
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String currentDateTimeStr = currentDateTime.format(formatter);
         request.setDateOfReceived(currentDateTimeStr);
