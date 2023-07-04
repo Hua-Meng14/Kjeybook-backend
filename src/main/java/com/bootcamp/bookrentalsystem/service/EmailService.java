@@ -205,7 +205,7 @@ public class EmailService {
         String subject = "Password Reset Request";
         String sendTo = existingUser.getEmail();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        String expirationDateStr = expirationTime.plusHours(6).format(formatter);
+        String expirationDateStr = expirationTime.plusHours(7).format(formatter);
         String resetPasswordLink = "https://kjeybook.vercel.app/reset-password/" + existingUser.getUserId() + "/"+ resetPwdToken;
 
 
