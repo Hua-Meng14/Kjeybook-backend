@@ -256,7 +256,7 @@ public class UserService {
     public ResponseEntity<String> validateResetPwdToken(String resetPwdToken) {
 
         User existingUser = userRepository.findByResetPwdToken(resetPwdToken)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+                .orElseThrow(() -> new BadRequestException("Invalid Reset Password Token"));
 
         // Check if the reset token has expired
         if (existingUser.getResetPwdExpirationTime() == null || existingUser.getResetPwdExpirationTime().isBefore(LocalDateTime.now())) {
