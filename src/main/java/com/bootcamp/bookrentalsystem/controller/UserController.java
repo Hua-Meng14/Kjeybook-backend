@@ -90,7 +90,7 @@ public class UserController {
 
     @PatchMapping("/{userId}/favorites/{bookId}")
     public ResponseEntity<String> addBookToUserFavorites(@RequestHeader("Authorization") String token,
-            @PathVariable UUID userId, @PathVariable Long bookId) {
+            @PathVariable UUID userId, @PathVariable UUID bookId) {
         // Validate User token access
         if (!jwtService.isValidUserToken(token, userId)) {
             throw new UnauthorizedException("Unauthorized Access");
@@ -102,7 +102,7 @@ public class UserController {
 
     @DeleteMapping("/{userId}/favorites/{bookId}")
     public ResponseEntity<String> removeBookFromUserFavorites(@RequestHeader("Authorization") String token,
-            @PathVariable UUID userId, @PathVariable Long bookId) {
+            @PathVariable UUID userId, @PathVariable UUID bookId) {
         // Validate User token access
         if (!jwtService.isValidUserToken(token, userId)) {
             throw new UnauthorizedException("Unauthorized Access");

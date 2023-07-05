@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import jakarta.persistence.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "_book")
@@ -11,9 +12,10 @@ import java.util.List;
 public class Book {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(columnDefinition = "uuid")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @ApiModelProperty(notes = "Book ID")
-    private Long bookId;
+    private UUID bookId;
     @ApiModelProperty(notes = "Book Title")
     private String title;
     @ApiModelProperty(notes = "Book Author")
@@ -39,7 +41,7 @@ public class Book {
         // Default constructor
     }
 
-    public Book(Long bookId, String title, String author, String category, String bookImg,Boolean isRented, String description) {
+    public Book(UUID bookId, String title, String author, String category, String bookImg,Boolean isRented, String description) {
         this.bookId = bookId;
         this.title = title;
         this.author = author;
@@ -50,11 +52,11 @@ public class Book {
         // this.maximumRequestPeriod = maximumRequestPeriod;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return bookId;
     }
 
-    public void setId(Long bookId) {
+    public void setId(UUID bookId) {
         this.bookId = bookId;
     }
 

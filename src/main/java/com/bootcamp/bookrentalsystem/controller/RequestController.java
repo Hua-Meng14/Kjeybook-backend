@@ -30,7 +30,7 @@ public class RequestController {
 
     @PostMapping()
     public ResponseEntity<Request> createRequest(@RequestParam("userId") UUID userId,
-            @RequestParam("bookId") Long bookId,
+            @RequestParam("bookId") UUID bookId,
             @RequestParam("requestDuration") Long requestDuration,
             @RequestHeader("Authorization") String token) {
         // Validate User token access
@@ -71,7 +71,7 @@ public class RequestController {
 
     @GetMapping("/book")
     public List<Request> getRequestsByBook(@RequestHeader("Authorization") String token,
-            @RequestParam("bookId") Long bookId) {
+            @RequestParam("bookId") UUID bookId) {
         // Validate and decode the JWT token
         if (!jwtService.isValidAdminToken(token)) {
             throw new ForbiddenException("Access Denied!!");
