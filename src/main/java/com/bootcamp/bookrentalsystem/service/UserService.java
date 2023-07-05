@@ -95,7 +95,7 @@ public class UserService {
         return user.getFavoriteBooks();
     }
 
-    public void addBookToUserFavorites(UUID userId, Long bookId) {
+    public void addBookToUserFavorites(UUID userId, UUID bookId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
@@ -114,7 +114,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void removeBookFromFavorites(UUID userId, Long bookId) {
+    public void removeBookFromFavorites(UUID userId, UUID bookId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 

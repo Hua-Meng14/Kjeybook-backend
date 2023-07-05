@@ -38,7 +38,7 @@ public class RequestService {
         this.bookRepository = bookRepository;
     }
 
-    public Request createRequest(UUID userId, Long bookId, Long requestDuration) {
+    public Request createRequest(UUID userId, UUID bookId, Long requestDuration) {
         User borrower = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
@@ -208,7 +208,7 @@ public class RequestService {
         request.setDateOfReceived(currentDateTimeStr);
 
         // Update the book isRented to false
-        Long requestBookId = request.getBook().getId();
+        UUID requestBookId = request.getBook().getId();
         Book book = bookService.getBookById(requestBookId);
         book.setRented(false);
 
@@ -244,7 +244,7 @@ public class RequestService {
         return requestRepository.findByStatus(status, sort);
     }
 
-    public List<Request> getRequestsByBook(Long bookId) {
+    public List<Request> getRequestsByBook(UUID bookId) {
         bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
         Sort sort = Sort.by(Sort.Direction.DESC, "dateOfRequest");

@@ -18,6 +18,6 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     List<Request> findByBorrowerUserId(UUID userId, Sort sort);
     List<Request> findByStatusAndDateOfRequest(String status, LocalDateTime startTime, Sort sort);
     List<Request> findByStatus(String status, Sort sort);
-    List<Request> findByBookId(Long bookId, Sort sort);
-    List<Request> findByBorrowerUserIdAndBookId(UUID userId, Long bookId);
+    List<Request> findByBookId(UUID bookId, Sort sort);
+    List<Request> findByBorrowerUserIdAndBookId(UUID userId, UUID bookId);
 }
