@@ -15,7 +15,7 @@ import java.util.UUID;
 @Qualifier("request")
 @Repository
 public interface RequestRepository extends JpaRepository<Request, Long> {
-    List<Request> findByBorrowerUserId(UUID userId);
+    List<Request> findByBorrowerUserId(UUID userId, Sort sort);
     List<Request> findByStatusAndDateOfRequest(String status, LocalDateTime startTime, Sort sort);
     List<Request> findByStatus(String status, Sort sort);
     List<Request> findByBookId(Long bookId, Sort sort);
