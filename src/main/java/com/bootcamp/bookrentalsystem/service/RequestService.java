@@ -67,7 +67,7 @@ public class RequestService {
         request.setBook(book);
         request.setRequestDuration(requestDuration);
         // Set the dateOfRequest as the current date
-        LocalDateTime currentDateTime = LocalDateTime.now();
+        LocalDateTime currentDateTime = LocalDateTime.now().plusHours(7); // convert to ICT
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String currentDateTimeStr = currentDateTime.format(formatter);
         request.setDateOfRequest(currentDateTimeStr);
@@ -106,7 +106,8 @@ public class RequestService {
     public List<Request> getRequestsByUserId(UUID userId) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
-        return requestRepository.findByBorrowerUserId(userId);
+        Sort sort = Sort.by(Sort.Direction.DESC, "dateOfRequest");
+        return requestRepository.findByBorrowerUserId(userId, sort);
     }
 
     public Request acceptRequest(Long requestId) {
@@ -121,7 +122,7 @@ public class RequestService {
                 throw new BadRequestException("Request has already been archived.");
             default:
                 // Set the accepted date as the current date
-                LocalDateTime currentDateTime = LocalDateTime.now();
+                LocalDateTime currentDateTime = LocalDateTime.now().plusHours(7); // convert to ICT
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
                 String currentDateTimeStr = currentDateTime.format(formatter);
                 request.setDateOfAccepted(currentDateTimeStr);
@@ -167,7 +168,7 @@ public class RequestService {
                 throw new BadRequestException("Request has already been archived.");
             default:
                 // Set the rejected date as the current date
-                LocalDateTime currentDateTime = LocalDateTime.now();
+                LocalDateTime currentDateTime = LocalDateTime.now().plusHours(7); // convert to ICT
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
                 String currentDateTimeStr = currentDateTime.format(formatter);
                 request.setDateOfRejected(currentDateTimeStr);
@@ -201,7 +202,7 @@ public class RequestService {
         request.setStatus("ARCHIVED");
 
         // Set the dateOfReceived as the current date
-        LocalDateTime currentDateTime = LocalDateTime.now();
+        LocalDateTime currentDateTime = LocalDateTime.now().plusHours(7); // convert to ICT
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String currentDateTimeStr = currentDateTime.format(formatter);
         request.setDateOfReceived(currentDateTimeStr);
@@ -352,7 +353,7 @@ public class RequestService {
         archivedMap.put("today", todayArchivedCount);
         archivedMap.put("yesterday", yesterdayArchivedCount);
         archivedMap.put("total", totalArchivedCount);
-        
+
         data.put("RENTER", renterMap);
         data.put("PENDING", pendingMap);
         data.put("ACCEPTED", acceptedMap);
