@@ -33,7 +33,7 @@ public class BookService {
         return bookRepository.findAll();
     }
 
-    public Book updateBookById(Long bookId, Book updatedBook) {
+    public Book updateBookById(UUID bookId, Book updatedBook) {
         Book existingBook = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
 
@@ -53,7 +53,7 @@ public class BookService {
         return bookRepository.save(existingBook);
     }
 
-    public Map<String, Boolean> deletBookById(Long bookId) {
+    public Map<String, Boolean> deletBookById(UUID bookId) {
         
         bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
@@ -70,7 +70,7 @@ public class BookService {
         return response;
     }
 
-    public Optional<Book> findBookById(Long bookId) {
+    public Optional<Book> findBookById(UUID bookId) {
         return Optional.ofNullable(bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId)
                 ));
@@ -94,7 +94,7 @@ public class BookService {
         return result;
     }
 
-    public Book getBookById(Long bookId) {
+    public Book getBookById(UUID bookId) {
         Optional<Book> optionalBook = bookRepository.findById(bookId);
         return optionalBook.orElse(null);
     }

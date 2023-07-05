@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/book")
@@ -45,7 +46,7 @@ public class BookController {
     }
 
     @PatchMapping("/{bookId}")
-    public ResponseEntity<Book> updateBook(@RequestHeader("Authorization") String token, @PathVariable Long bookId, @RequestBody Book updatedBook) {
+    public ResponseEntity<Book> updateBook(@RequestHeader("Authorization") String token, @PathVariable UUID bookId, @RequestBody Book updatedBook) {
         // Validate and decode the JWT token
         if (!jwtService.isValidAdminToken(token)) {
             throw new ForbiddenException("Access Denied!!");
@@ -56,7 +57,7 @@ public class BookController {
     }
 
     @DeleteMapping("/{bookId}")
-    public ResponseEntity<Map<String, Boolean>> deleteBookB(@RequestHeader("Authorization") String token,@PathVariable Long bookId) {
+    public ResponseEntity<Map<String, Boolean>> deleteBookB(@RequestHeader("Authorization") String token,@PathVariable UUID bookId) {
         // Validate and decode the JWT token
         if (!jwtService.isValidAdminToken(token)) {
             throw new ForbiddenException("Access Denied!!");
@@ -72,7 +73,7 @@ public class BookController {
     }
 
     @GetMapping("/{bookId}")
-    public ResponseEntity<?> getBookById(@PathVariable Long bookId) {
+    public ResponseEntity<?> getBookById(@PathVariable UUID bookId) {
         Book book = bookService.getBookById(bookId);
 
         if (book != null) {
