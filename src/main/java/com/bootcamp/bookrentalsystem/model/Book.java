@@ -1,4 +1,5 @@
 package com.bootcamp.bookrentalsystem.model;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import jakarta.persistence.*;
@@ -28,20 +29,24 @@ public class Book {
     private String description;
     @ApiModelProperty(notes = "Book Rental status")
     private Boolean isRented = false;
+    @ApiModelProperty(notes = "Book Rental delete status")
+    private Boolean isDeleted = false;
+
     // @ApiModelProperty(notes = "Book maximum request duration")
     // private Long maximumRequestPeriod;
     @ApiModelProperty(notes = "User favorite book mapping.")
     @ManyToMany(mappedBy = "favoriteBooks")
     private List<User> users;
-//    @ApiModelProperty(notes = "Requests book mapping.")
-//    @OneToMany(mappedBy = "book")
-//    private List<Request> requests;
+    // @ApiModelProperty(notes = "Requests book mapping.")
+    // @OneToMany(mappedBy = "book")
+    // private List<Request> requests;
 
     public Book() {
         // Default constructor
     }
 
-    public Book(UUID bookId, String title, String author, String category, String bookImg,Boolean isRented, String description) {
+    public Book(UUID bookId, String title, String author, String category, String bookImg, Boolean isRented,
+            String description, Boolean isDeleted) {
         this.bookId = bookId;
         this.title = title;
         this.author = author;
@@ -49,6 +54,7 @@ public class Book {
         this.bookImg = bookImg;
         this.isRented = isRented;
         this.description = description;
+        this.isDeleted = isDeleted;
         // this.maximumRequestPeriod = maximumRequestPeriod;
     }
 
@@ -101,11 +107,11 @@ public class Book {
     }
 
     // public Long getMaximumRequestPeriod() {
-    //     return maximumRequestPeriod;
+    // return maximumRequestPeriod;
     // }
 
     // public void setMaximumRequestPeriod(Long maximumRequestPeriod) {
-    //     this.maximumRequestPeriod = maximumRequestPeriod;
+    // this.maximumRequestPeriod = maximumRequestPeriod;
     // }
 
     public Boolean getRented() {
@@ -116,11 +122,21 @@ public class Book {
         isRented = rented;
     }
 
-//    public List<Request> getRequests() {
-//        return requests;
-//    }
-//
-//    public void setRequests(List<Request> requests) {
-//        this.requests = requests;
-//    }
+    public Boolean getDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        isDeleted = deleted;
+    } 
+
+
+
+    // public List<Request> getRequests() {
+    // return requests;
+    // }
+    //
+    // public void setRequests(List<Request> requests) {
+    // this.requests = requests;
+    // }
 }
