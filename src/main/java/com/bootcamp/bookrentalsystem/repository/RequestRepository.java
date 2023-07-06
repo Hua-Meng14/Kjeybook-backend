@@ -1,5 +1,6 @@
 package com.bootcamp.bookrentalsystem.repository;
 
+import com.bootcamp.bookrentalsystem.model.Book;
 import com.bootcamp.bookrentalsystem.model.Request;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Sort;
@@ -20,4 +21,5 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     List<Request> findByStatus(String status, Sort sort);
     List<Request> findByBookId(UUID bookId, Sort sort);
     List<Request> findByBorrowerUserIdAndBookId(UUID userId, UUID bookId);
+    List<Request> findByBook(Book book);
 }
