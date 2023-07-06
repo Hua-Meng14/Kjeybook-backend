@@ -11,11 +11,11 @@ import com.bootcamp.bookrentalsystem.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Service
@@ -33,7 +33,11 @@ public class BookService {
     }
 
     public List<Book> getBooksByTitle(String title) {
-        return bookRepository.findByTitle(title);
+        List<Book> books = bookRepository.findByTitle(title);
+
+        return books.stream()
+                .filter(book -> !book.getDeleted())
+                .collect(Collectors.toList());
     }
 
     public Book createBook(Book book) {
@@ -41,7 +45,11 @@ public class BookService {
     }
 
     public List<Book> getAllBook() {
-        return bookRepository.findAll();
+        List<Book> books = bookRepository.findAll();
+
+        return books.stream()
+                .filter(book -> !book.getDeleted())
+                .collect(Collectors.toList());
     }
 
     public Book updateBookById(UUID bookId, Book updatedBook) {
@@ -123,14 +131,9 @@ public class BookService {
     // }
 
     public List<Book> getBooksByAuthor(String author) {
-        List<Book> result = new ArrayList<>();
-
-        for (Book book : bookRepository.findAll()) {
-            if (book.getAuthor().contains(author)) {
-                result.add(book);
-            }
-        }
-        return result;
+        return bookRepository.findAll().stream()
+                .filter(book -> !book.getDeleted() && book.getAuthor().contains(author))
+                .collect(Collectors.toList());
     }
 
     public Book getBookById(UUID bookId) {
