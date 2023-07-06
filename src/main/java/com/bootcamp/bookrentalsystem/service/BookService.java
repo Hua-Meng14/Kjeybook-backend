@@ -3,7 +3,10 @@ package com.bootcamp.bookrentalsystem.service;
 
 import com.bootcamp.bookrentalsystem.exception.ResourceNotFoundException;
 import com.bootcamp.bookrentalsystem.model.Book;
+import com.bootcamp.bookrentalsystem.model.User;
 import com.bootcamp.bookrentalsystem.repository.BookRepository;
+import com.bootcamp.bookrentalsystem.repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -15,10 +18,12 @@ import java.util.*;
 @Service
 public class BookService {
     private final BookRepository bookRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public BookService(@Qualifier("book") BookRepository bookRepository) {
+    public BookService(@Qualifier("book") BookRepository bookRepository, UserRepository userRepository) {
         this.bookRepository = bookRepository;
+        this.userRepository = userRepository;
     }
 
     public List<Book> getBooksByTitle(String title) {
@@ -55,13 +60,20 @@ public class BookService {
 
     public Map<String, Boolean> deletBookById(UUID bookId) {
         
-        bookRepository.findById(bookId)
+        Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
 
 //         Check if the book has any associated requests
 //        if (!hasAssociatedRequests(bookId)) {
 //            throw new ForeignKeyConstraintException("Cannot delete the book because it has associated requests.");
 //        }
+
+        List<User> users = userRepository.findByFavoriteBooks(book);
+        for(User user: users) {
+            user.getFavoriteBooks().remove(book);
+            userRepository.save(user);
+        }
+
 
         bookRepository.deleteById(bookId);
 
