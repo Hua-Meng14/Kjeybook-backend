@@ -43,8 +43,8 @@ public class GlobalExceptionHanlder {
         CustomErrorResponse errors = new CustomErrorResponse();
         errors.setTimestamp(LocalDateTime.now());
         errors.setError(e.getMessage());
-        errors.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        return new ResponseEntity<>(errors, HttpStatus.INTERNAL_SERVER_ERROR);
+        errors.setStatus(HttpStatus.BAD_REQUEST.value());
+        return new ResponseEntity<>(errors, HttpStatus.BAD_GATEWAY);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
