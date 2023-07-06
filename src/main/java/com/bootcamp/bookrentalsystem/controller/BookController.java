@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -57,14 +56,14 @@ public class BookController {
     }
 
     @DeleteMapping("/{bookId}")
-    public ResponseEntity<Map<String, Boolean>> deleteBookB(@RequestHeader("Authorization") String token,@PathVariable UUID bookId) {
+    public ResponseEntity<String> deleteBookById(@RequestHeader("Authorization") String token,@PathVariable UUID bookId) {
         // Validate and decode the JWT token
         if (!jwtService.isValidAdminToken(token)) {
             throw new ForbiddenException("Access Denied!!");
         }
 
-        Map<String, Boolean> response = bookService.deletBookById(bookId);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        String response = bookService.deletBookById(bookId);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/author")

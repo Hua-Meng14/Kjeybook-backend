@@ -62,6 +62,11 @@ public class RequestService {
             }
         }
 
+        // Check if the request book is archived
+        if (book.getDeleted()) {
+            throw new BadRequestException("Requested book has already been archived.");
+        }
+
         Request request = new Request();
         request.setBorrower(borrower);
         request.setBook(book);
