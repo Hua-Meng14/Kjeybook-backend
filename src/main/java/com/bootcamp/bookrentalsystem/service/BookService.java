@@ -99,7 +99,7 @@ public class BookService {
                 .anyMatch(request -> !request.getStatus().equals("ARCHIVED"));
 
         if (hasPendingOrAcceptedRequests) {
-            throw new BadRequestException("Book is assocaited with PENDING/ACCEPTED request!!");
+            throw new BadRequestException("Book is associated with PENDING/ACTIVE request!!");
         }
 
         book.setDeleted(true);

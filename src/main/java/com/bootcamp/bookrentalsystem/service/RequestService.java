@@ -57,7 +57,7 @@ public class RequestService {
             for (Request existingRequest : existingRequests) {
                 String existingStatus = existingRequest.getStatus();
                 if (existingStatus.equals("PENDING") || existingStatus.equals("ACCEPTED")) {
-                    throw new BadRequestException("Request already been created for book id: " + bookId);
+                    throw new BadRequestException("You have already in the process of requesting this book.");
                 }
             }
         }
