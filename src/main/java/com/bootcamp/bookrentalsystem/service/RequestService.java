@@ -1,6 +1,7 @@
 package com.bootcamp.bookrentalsystem.service;
 
 import com.bootcamp.bookrentalsystem.exception.BadRequestException;
+import com.bootcamp.bookrentalsystem.exception.ForbiddenException;
 import com.bootcamp.bookrentalsystem.exception.ResourceNotFoundException;
 import com.bootcamp.bookrentalsystem.model.Book;
 import com.bootcamp.bookrentalsystem.model.Request;
@@ -27,15 +28,18 @@ public class RequestService {
     private final BookService bookService;
     private final UserService userService;
     private final BookRepository bookRepository;
+    private final JwtService jwtService;
 
     @Autowired
     public RequestService(@Qualifier("request") RequestRepository requestRepository, UserService userService,
-            BookService bookService, UserRepository userRepository, BookRepository bookRepository) {
+            BookService bookService, UserRepository userRepository, BookRepository bookRepository,
+            JwtService jwtService) {
         this.requestRepository = requestRepository;
         this.userRepository = userRepository;
         this.bookService = bookService;
         this.userService = userService;
         this.bookRepository = bookRepository;
+        this.jwtService = jwtService;
     }
 
     public Request createRequest(UUID userId, UUID bookId, Long requestDuration) {
@@ -97,15 +101,23 @@ public class RequestService {
         return requestRepository.save(existingRequest);
     }
 
-    public Map<String, Boolean> deleteRequestById(Long requestId) {
-        requestRepository.findById(requestId)
+    public String deleteRequestById(Long requestId, String token) {
+        Request request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
 
-        requestRepository.deleteById(requestId);
+        if (!request.getStatus().equals("PENDING")) {
+            throw new BadRequestException("ACTIVE/ARCHIVED requests cannot be deleted!!");
+        }
 
-        Map<String, Boolean> response = new HashMap<>();
-        response.put("deleted", Boolean.TRUE);
-        return response;
+        UUID requestedUserId = request.getBorrower().getUserId();
+
+        // Validate and decode the JWT token
+        if (!jwtService.isValidUserToken(token, requestedUserId)) {
+            throw new ForbiddenException("Access Denied!!");
+        }
+
+        requestRepository.delete(request);
+        return "Request deleted succesfully";
     }
 
     public List<Request> getRequestsByUserId(UUID userId) {
