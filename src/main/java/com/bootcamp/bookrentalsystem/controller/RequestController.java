@@ -92,15 +92,15 @@ public class RequestController {
     }
 
     @DeleteMapping("/{requestId}")
-    public ResponseEntity<Map<String, Boolean>> deleteRequestById(@RequestHeader("Authorization") String token,
+    public ResponseEntity<String> deleteRequestById(@RequestHeader("Authorization") String token,
             @PathVariable Long requestId) {
         // Validate and decode the JWT token
-        if (!jwtService.isValidAdminToken(token)) {
-            throw new ForbiddenException("Access Denied!!");
-        }
+        // if (!jwtService.isValidUserToken(token)) {
+        //     throw new ForbiddenException("Access Denied!!");
+        // }
 
-        Map<String, Boolean> response = requestService.deleteRequestById(requestId);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        String response = requestService.deleteRequestById(requestId, token);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/user")
