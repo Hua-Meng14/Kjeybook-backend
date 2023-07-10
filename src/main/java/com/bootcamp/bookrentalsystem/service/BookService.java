@@ -11,6 +11,9 @@ import com.bootcamp.bookrentalsystem.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +35,7 @@ public class BookService {
         this.requestRepository = requestRepository;
     }
 
+    @Cacheable(value = "booksByTitle", key = "#title")
     public List<Book> getBooksByTitle(String title) {
         List<Book> books = bookRepository.findByTitle(title);
 
@@ -40,10 +44,12 @@ public class BookService {
                 .collect(Collectors.toList());
     }
 
+    @CacheEvict(value = { "books", "booksByTitle", "booksByAuthor" }, allEntries = true)
     public Book createBook(Book book) {
         return bookRepository.save(book);
     }
 
+    @Cacheable("books")
     public List<Book> getAllBook() {
         List<Book> books = bookRepository.findAll();
 
@@ -52,6 +58,7 @@ public class BookService {
                 .collect(Collectors.toList());
     }
 
+    @CachePut(value = "books", key = "#bookId")
     public Book updateBookById(UUID bookId, Book updatedBook) {
         Book existingBook = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
@@ -72,6 +79,7 @@ public class BookService {
         return bookRepository.save(existingBook);
     }
 
+    @CacheEvict(value = { "books", "booksByTitle", "booksByAuthor" }, allEntries = true)
     public String deletBookById(UUID bookId) {
 
         Book book = bookRepository.findById(bookId)
@@ -116,6 +124,7 @@ public class BookService {
 
     }
 
+    @Cacheable(value = "books", key = "#bookId")
     public Optional<Book> findBookById(UUID bookId) {
         return Optional.ofNullable(bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId)));
@@ -130,12 +139,14 @@ public class BookService {
     // return !book.getRequests().isEmpty();
     // }
 
+    @Cacheable(value = "booksByAuthor", key = "#author")
     public List<Book> getBooksByAuthor(String author) {
         return bookRepository.findAll().stream()
                 .filter(book -> !book.getDeleted() && book.getAuthor().contains(author))
                 .collect(Collectors.toList());
     }
 
+    @Cacheable(value = "books", key = "#bookId")
     public Book getBookById(UUID bookId) {
         Optional<Book> optionalBook = bookRepository.findById(bookId);
         return optionalBook.orElse(null);
