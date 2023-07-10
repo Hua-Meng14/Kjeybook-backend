@@ -11,6 +11,9 @@ import com.bootcamp.bookrentalsystem.repository.RequestRepository;
 import com.bootcamp.bookrentalsystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -42,6 +45,8 @@ public class RequestService {
         this.jwtService = jwtService;
     }
 
+    @CacheEvict(value = { "requests", "requestsByUserId", "requestsByStatus", "requestsByBook",
+            "requestsCountByStatus" }, allEntries = true)
     public Request createRequest(UUID userId, UUID bookId, Long requestDuration) {
         User borrower = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
@@ -84,6 +89,7 @@ public class RequestService {
         return requestRepository.save(request);
     }
 
+    @CachePut(value = "requests", key = "#requestId")
     public Request updateRequestById(Long requestId, Request updatedRequest) {
 
         Request existingRequest = requestRepository.findById(requestId)
@@ -101,6 +107,8 @@ public class RequestService {
         return requestRepository.save(existingRequest);
     }
 
+    @CacheEvict(value = { "requests", "requestsByUserId", "requestsByStatus", "requestsByBook",
+            "requestsCountByStatus" }, allEntries = true)
     public String deleteRequestById(Long requestId, String token) {
         Request request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
@@ -120,6 +128,7 @@ public class RequestService {
         return "Request deleted succesfully";
     }
 
+    @Cacheable(value = "requestsByUserId", key = "#userId")
     public List<Request> getRequestsByUserId(UUID userId) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
@@ -127,6 +136,8 @@ public class RequestService {
         return requestRepository.findByBorrowerUserId(userId, sort);
     }
 
+    @CacheEvict(value = { "requests", "requestsByUserId", "requestsByStatus", "requestsByBook",
+            "requestsCountByStatus" }, key = "#requestId")
     public Request acceptRequest(Long requestId) {
         Request request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
@@ -173,6 +184,8 @@ public class RequestService {
 
     }
 
+    @CacheEvict(value = { "requests", "requestsByUserId", "requestsByStatus", "requestsByBook",
+            "requestsCountByStatus" }, key = "requestId")
     public Request rejectRequest(Long requestId, String reason) {
         Request request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
@@ -204,12 +217,15 @@ public class RequestService {
         }
     }
 
+    @Cacheable("requests")
     public List<Request> getAllRequests() {
         // Create a Sort object with descending order based on the 'dateOfRequest' field
         Sort sort = Sort.by(Sort.Direction.DESC, "dateOfRequest");
         return requestRepository.findAll(sort);
     }
 
+    @CacheEvict(value = { "requests", "requestsByUserId", "requestsByStatus", "requestsByBook",
+            "requestsCountByStatus" }, key = "#requestId")
     public Request returnBook(Long requestId) {
         // Retrieve the request by ID
         Request request = requestRepository.findById(requestId)
@@ -234,6 +250,7 @@ public class RequestService {
         return request;
     }
 
+    @Cacheable(value = "requests", key = "#requestId")
     public Request getRequestByRequestId(long requestId) {
         Request request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
@@ -256,11 +273,13 @@ public class RequestService {
         return filteredRequests;
     }
 
+    @Cacheable(value = "requestsByStatus", key = "#status")
     public List<Request> getRequestsByStatus(String status) {
         Sort sort = Sort.by(Sort.Direction.DESC, "dateOfRequest");
         return requestRepository.findByStatus(status, sort);
     }
 
+    @Cacheable(value = "requestsByBook", key = "#bookId")
     public List<Request> getRequestsByBook(UUID bookId) {
         bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
@@ -268,6 +287,7 @@ public class RequestService {
         return requestRepository.findByBookId(bookId, sort);
     }
 
+    @Cacheable(value = "requestsCountByStatus")
     public Map<String, Map<String, Integer>> countRequestsByStatus() {
 
         List<Request> requests = getAllRequests();
