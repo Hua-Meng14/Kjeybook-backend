@@ -43,8 +43,8 @@ public class BookService {
                 .filter(book -> !book.getDeleted())
                 .collect(Collectors.toList());
     }
-    
-    // @CacheEvict(value = "bookByTitle", allEntries = true)
+
+    @CacheEvict(value = { "books", "booksByTitle", "booksByAuthor" }, allEntries = true)
     public Book createBook(Book book) {
         return bookRepository.save(book);
     }
@@ -79,7 +79,7 @@ public class BookService {
         return bookRepository.save(existingBook);
     }
 
-    @CachePut(value = {"booksByTitle", "books"}, key = "#bookId")
+    @CacheEvict(value = { "books", "booksByTitle", "booksByAuthor" }, allEntries = true)
     public String deletBookById(UUID bookId) {
 
         Book book = bookRepository.findById(bookId)
@@ -146,7 +146,7 @@ public class BookService {
                 .collect(Collectors.toList());
     }
 
-    @Cacheable(value = "booksbyId", key = "#bookId")
+    @Cacheable(value = "books", key = "#bookId")
     public Book getBookById(UUID bookId) {
         Optional<Book> optionalBook = bookRepository.findById(bookId);
         return optionalBook.orElse(null);

@@ -45,7 +45,8 @@ public class RequestService {
         this.jwtService = jwtService;
     }
 
-    // @CacheEvict(value = "requests", allEntries = true)
+    @CacheEvict(value = { "requests", "requestsByUserId", "requestsByStatus", "requestsByBook",
+            "requestsCountByStatus" }, allEntries = true)
     public Request createRequest(UUID userId, UUID bookId, Long requestDuration) {
         User borrower = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
@@ -106,7 +107,8 @@ public class RequestService {
         return requestRepository.save(existingRequest);
     }
 
-    @CacheEvict(value = "requests", allEntries = true)
+    @CacheEvict(value = { "requests", "requestsByUserId", "requestsByStatus", "requestsByBook",
+            "requestsCountByStatus" }, allEntries = true)
     public String deleteRequestById(Long requestId, String token) {
         Request request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
@@ -134,7 +136,8 @@ public class RequestService {
         return requestRepository.findByBorrowerUserId(userId, sort);
     }
 
-    @CacheEvict(value = "requests", key = "#requestId")
+    @CacheEvict(value = { "requests", "requestsByUserId", "requestsByStatus", "requestsByBook",
+            "requestsCountByStatus" }, key = "#requestId")
     public Request acceptRequest(Long requestId) {
         Request request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
@@ -181,7 +184,8 @@ public class RequestService {
 
     }
 
-    @CacheEvict(value = "requests", key = "requestId")
+    @CacheEvict(value = { "requests", "requestsByUserId", "requestsByStatus", "requestsByBook",
+            "requestsCountByStatus" }, key = "requestId")
     public Request rejectRequest(Long requestId, String reason) {
         Request request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
@@ -220,7 +224,8 @@ public class RequestService {
         return requestRepository.findAll(sort);
     }
 
-    @CacheEvict(value = "requests", key = "#requestId")
+    @CacheEvict(value = { "requests", "requestsByUserId", "requestsByStatus", "requestsByBook",
+            "requestsCountByStatus" }, key = "#requestId")
     public Request returnBook(Long requestId) {
         // Retrieve the request by ID
         Request request = requestRepository.findById(requestId)
@@ -281,7 +286,6 @@ public class RequestService {
         Sort sort = Sort.by(Sort.Direction.DESC, "dateOfRequest");
         return requestRepository.findByBookId(bookId, sort);
     }
-
 
     @Cacheable(value = "requestsCountByStatus")
     public Map<String, Map<String, Integer>> countRequestsByStatus() {
