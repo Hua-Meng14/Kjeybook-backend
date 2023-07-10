@@ -45,7 +45,7 @@ public class RequestService {
         this.jwtService = jwtService;
     }
 
-    @CacheEvict(value = "requests", allEntries = true)
+    // @CacheEvict(value = "requests", allEntries = true)
     public Request createRequest(UUID userId, UUID bookId, Long requestDuration) {
         User borrower = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
