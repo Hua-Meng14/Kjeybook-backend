@@ -35,7 +35,7 @@ public class BookService {
         this.requestRepository = requestRepository;
     }
 
-    @Cacheable("booksByTitle")
+    @Cacheable(value = "booksByTitle", key = "#title")
     public List<Book> getBooksByTitle(String title) {
         List<Book> books = bookRepository.findByTitle(title);
 
@@ -44,12 +44,12 @@ public class BookService {
                 .collect(Collectors.toList());
     }
     
-    @CacheEvict(value = "bookByTitle", allEntries = true)
+    // @CacheEvict(value = "bookByTitle", allEntries = true)
     public Book createBook(Book book) {
         return bookRepository.save(book);
     }
 
-    @Cacheable("allBooks")
+    @Cacheable("books")
     public List<Book> getAllBook() {
         List<Book> books = bookRepository.findAll();
 
@@ -58,7 +58,7 @@ public class BookService {
                 .collect(Collectors.toList());
     }
 
-    @CacheEvict(value = "allBooks", key = "#bookId")
+    @CachePut(value = "books", key = "#bookId")
     public Book updateBookById(UUID bookId, Book updatedBook) {
         Book existingBook = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
@@ -79,7 +79,7 @@ public class BookService {
         return bookRepository.save(existingBook);
     }
 
-    @CacheEvict(value = {"booksByTitle", "allBooks"}, key = "#bookId")
+    @CachePut(value = {"booksByTitle", "books"}, key = "#bookId")
     public String deletBookById(UUID bookId) {
 
         Book book = bookRepository.findById(bookId)
@@ -124,7 +124,7 @@ public class BookService {
 
     }
 
-    @Cacheable("bookById")
+    @Cacheable(value = "books", key = "#bookId")
     public Optional<Book> findBookById(UUID bookId) {
         return Optional.ofNullable(bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId)));
@@ -139,14 +139,14 @@ public class BookService {
     // return !book.getRequests().isEmpty();
     // }
 
-    @Cacheable("booksByAuthor")
+    @Cacheable(value = "booksByAuthor", key = "#author")
     public List<Book> getBooksByAuthor(String author) {
         return bookRepository.findAll().stream()
                 .filter(book -> !book.getDeleted() && book.getAuthor().contains(author))
                 .collect(Collectors.toList());
     }
 
-    @Cacheable("bookbyId")
+    @Cacheable(value = "booksbyId", key = "#bookId")
     public Book getBookById(UUID bookId) {
         Optional<Book> optionalBook = bookRepository.findById(bookId);
         return optionalBook.orElse(null);
