@@ -8,6 +8,9 @@ import com.bootcamp.bookrentalsystem.repository.RequestRepository;
 import com.bootcamp.bookrentalsystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,6 +43,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Cacheable(value = "usersById", key = "#userId")
     public Optional<User> findUserById(UUID userId) {
 
         // if (!jwtService.isUserToken(jwtToken, userId)) {
@@ -57,6 +61,7 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
     }
 
+    @CachePut(value = "usersById", key = "#userId")
     public User updateUserById(UUID userId, User updatedUser) {
 
         User existingUser = userRepository.findById(userId)
@@ -74,6 +79,7 @@ public class UserService {
         return userRepository.save(existingUser);
     }
 
+    @CacheEvict(value = "usersById", key = "#userId")
     public Map<String, Boolean> deleteUser(UUID userId) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
@@ -85,14 +91,22 @@ public class UserService {
         return response;
     }
 
+    @Cacheable("allUsers")
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
+    @Cacheable(value = "favoriteBooksByUserId", key = "#userId")
     public List<Book> getFavoriteBooks(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
         return user.getFavoriteBooks();
+    }
+
+    @CacheEvict(value = "favoriteBooksByUserId", key = "#userId")
+    public void evictFavoriteBooksCache(UUID userId) {
+        // This method is used to invalidate the cache for getFavoriteBooks() method
+        // No implementation is needed as the @CacheEvict annotation takes care of cache eviction
     }
 
     public void addBookToUserFavorites(UUID userId, UUID bookId) {
@@ -112,6 +126,9 @@ public class UserService {
         // Add the book to the user's favorite list
         favoriteBooks.add(book);
         userRepository.save(user);
+
+        // Invalidate the cache for getFavoriteBooks() method
+        evictFavoriteBooksCache(userId);
     }
 
     public void removeBookFromFavorites(UUID userId, UUID bookId) {
@@ -137,6 +154,9 @@ public class UserService {
         // System.out.println("---------------AFTER DELETE: "+ user.getFavoriteBooks());
 
         userRepository.save(user);
+
+        // Invalidate the cache for getFavoriteBooks() method
+        evictFavoriteBooksCache(userId);
     }
 
     public void notifyUserRequestAccepted(Long requestId) {
