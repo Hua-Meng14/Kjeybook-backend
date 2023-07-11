@@ -48,7 +48,7 @@ public class AuthenticationService {
         // Create a new user entity
         User newUser = new User(username, email, passwordEncoder.encode(password), "USER", phoneNumber);
 
-        System.out.println("-------------NEW USER-------------: "+newUser);
+        // System.out.println("-------------NEW USER-------------: "+newUser);
 
         // Save the user entity in the database
         User savedUser = userRepository.save(newUser);
