@@ -103,12 +103,14 @@ public class UserService {
         return user.getFavoriteBooks();
     }
 
-    @CacheEvict(value = "favoriteBooksByUserId", key = "#userId")
+    @CacheEvict(value = "favoriteBooksByUserId", allEntries = true)
     public void evictFavoriteBooksCache(UUID userId) {
         // This method is used to invalidate the cache for getFavoriteBooks() method
-        // No implementation is needed as the @CacheEvict annotation takes care of cache eviction
+        // No implementation is needed as the @CacheEvict annotation takes care of cache
+        // eviction
     }
 
+    @CacheEvict(value = "favoriteBooksByUserId", key = "#userId", allEntries = true)
     public void addBookToUserFavorites(UUID userId, UUID bookId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
@@ -128,9 +130,10 @@ public class UserService {
         userRepository.save(user);
 
         // Invalidate the cache for getFavoriteBooks() method
-        evictFavoriteBooksCache(userId);
+        // evictFavoriteBooksCache(userId);
     }
 
+    @CacheEvict(value = "favoriteBooksByUserId", key = "#userId", allEntries = true)
     public void removeBookFromFavorites(UUID userId, UUID bookId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
@@ -156,7 +159,7 @@ public class UserService {
         userRepository.save(user);
 
         // Invalidate the cache for getFavoriteBooks() method
-        evictFavoriteBooksCache(userId);
+        // evictFavoriteBooksCache(userId);
     }
 
     public void notifyUserRequestAccepted(Long requestId) {
@@ -279,7 +282,8 @@ public class UserService {
                 .orElseThrow(() -> new BadRequestException("Invalid Reset Password Token"));
 
         // Check if the reset token has expired
-        if (existingUser.getResetPwdExpirationTime() == null || existingUser.getResetPwdExpirationTime().isBefore(LocalDateTime.now())) {
+        if (existingUser.getResetPwdExpirationTime() == null
+                || existingUser.getResetPwdExpirationTime().isBefore(LocalDateTime.now())) {
             throw new BadRequestException("Invalid Reset Password Token");
         }
         return ResponseEntity.ok("Reset Password Token is valid");
