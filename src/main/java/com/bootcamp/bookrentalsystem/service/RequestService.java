@@ -137,7 +137,7 @@ public class RequestService {
     }
 
     @CacheEvict(value = { "requests", "requestsByUserId", "requestsByStatus", "requestsByBook",
-            "requestsCountByStatus" }, key = "#requestId")
+            "requestsCountByStatus" }, key = "#requestId", allEntries = true)
     public Request acceptRequest(Long requestId) {
         Request request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
@@ -185,7 +185,7 @@ public class RequestService {
     }
 
     @CacheEvict(value = { "requests", "requestsByUserId", "requestsByStatus", "requestsByBook",
-            "requestsCountByStatus" }, key = "requestId")
+            "requestsCountByStatus" }, key = "requestId", allEntries = true)
     public Request rejectRequest(Long requestId, String reason) {
         Request request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
@@ -225,7 +225,7 @@ public class RequestService {
     }
 
     @CacheEvict(value = { "requests", "requestsByUserId", "requestsByStatus", "requestsByBook",
-            "requestsCountByStatus" }, key = "#requestId")
+            "requestsCountByStatus" }, key = "#requestId", allEntries = true)
     public Request returnBook(Long requestId) {
         // Retrieve the request by ID
         Request request = requestRepository.findById(requestId)
