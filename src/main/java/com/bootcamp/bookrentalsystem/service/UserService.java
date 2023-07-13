@@ -110,7 +110,7 @@ public class UserService {
         // eviction
     }
 
-    @CacheEvict(value = "favoriteBooksByUserId", key = "#userId", allEntries = true)
+    @CacheEvict(value = {"favoriteBooksByUserId", "usersById"}, key = "#userId", allEntries = true)
     public void addBookToUserFavorites(UUID userId, UUID bookId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
@@ -133,7 +133,7 @@ public class UserService {
         // evictFavoriteBooksCache(userId);
     }
 
-    @CacheEvict(value = "favoriteBooksByUserId", key = "#userId", allEntries = true)
+    @CacheEvict(value = {"favoriteBooksByUserId", "usersById"}, key = "#userId", allEntries = true)
     public void removeBookFromFavorites(UUID userId, UUID bookId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
