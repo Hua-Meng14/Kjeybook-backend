@@ -50,7 +50,7 @@ public class Book {
     }
 
     public Book(UUID bookId, String title, String author, String category, String bookImg, Boolean isRented,
-            String description, Boolean isDeleted) {
+            String description, Boolean isDeleted, List<Review> reviews) {
         this.bookId = bookId;
         this.title = title;
         this.author = author;
@@ -59,6 +59,7 @@ public class Book {
         this.isRented = isRented;
         this.description = description;
         this.isDeleted = isDeleted;
+        this.reviews = reviews;
         // this.maximumRequestPeriod = maximumRequestPeriod;
     }
 
@@ -132,15 +133,13 @@ public class Book {
 
     public void setDeleted(Boolean deleted) {
         isDeleted = deleted;
-    } 
+    }
 
+    public List<Review> getReviews() {
+        return reviews;
+    }
 
-
-    // public List<Request> getRequests() {
-    // return requests;
-    // }
-    //
-    // public void setRequests(List<Request> requests) {
-    // this.requests = requests;
-    // }
+    public void setReviews(List<Review> reviewList) {
+        reviews = reviewList;
+    }
 }
