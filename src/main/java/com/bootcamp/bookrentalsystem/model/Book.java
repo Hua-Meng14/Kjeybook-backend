@@ -41,6 +41,10 @@ public class Book {
     // @OneToMany(mappedBy = "book")
     // private List<Request> requests;
 
+    @ApiModelProperty(notes = "Book Reviews")
+    @OneToMany(mappedBy = "bookId", cascade = CascadeType.ALL)
+    private List<Review> reviews;
+
     public Book() {
         // Default constructor
     }
