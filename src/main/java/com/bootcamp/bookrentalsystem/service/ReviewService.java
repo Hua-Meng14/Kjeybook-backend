@@ -2,18 +2,24 @@ package com.bootcamp.bookrentalsystem.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.bootcamp.bookrentalsystem.exception.BadRequestException;
 import com.bootcamp.bookrentalsystem.exception.ResourceNotFoundException;
@@ -174,4 +180,78 @@ public class ReviewService {
 
     }
 
+    public ResponseEntity<String> addReactionToReview(UUID reviewId, UUID userId, String action) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ResourceNotFoundException("Review not found with ID: " + reviewId));
+        userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
+
+        Set<UUID> likeUserIds = new HashSet<>(review.getLikeUserIds());
+        Set<UUID> dislikeUserIds = new HashSet<>(review.getDislikeUserIds());
+
+        boolean hasLiked = likeUserIds.contains(userId);
+        boolean hasDisliked = dislikeUserIds.contains(userId);
+
+        if ("like".equalsIgnoreCase(action)) {
+            if (hasLiked) {
+                throw new BadRequestException("User with ID: " + userId + " has already liked the review.");
+            } else {
+                if (hasDisliked) {
+                    dislikeUserIds.remove(userId);
+                }
+                likeUserIds.add(userId);
+            }
+        } else if ("dislike".equalsIgnoreCase(action)) {
+            if (hasDisliked) {
+                throw new BadRequestException("User with ID: " + userId + " has already disliked the review.");
+            } else {
+                if (hasLiked) {
+                    likeUserIds.remove(userId);
+                }
+                dislikeUserIds.add(userId);
+            }
+        } else {
+            return ResponseEntity.badRequest().body("Invalid action provided.");
+        }
+
+        review.setLikeUserIds(new ArrayList<>(likeUserIds));
+        review.setDislikeUserIds(new ArrayList<>(dislikeUserIds));
+        reviewRepository.save(review);
+        return ResponseEntity.ok("User with ID: " + userId + " " + action + "d the review.");
+    }
+
+    public ResponseEntity<String> removeReactionFromReview(UUID reviewId, UUID userId, String action) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ResourceNotFoundException("Review not found with ID: " + reviewId));
+        userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
+
+        Set<UUID> likeUserIds = new HashSet<>(review.getLikeUserIds());
+        Set<UUID> dislikeUserIds = new HashSet<>(review.getDislikeUserIds());
+
+        boolean hasLiked = likeUserIds.contains(userId);
+        boolean hasDisliked = dislikeUserIds.contains(userId);
+
+        if ("like".equalsIgnoreCase(action)) {
+            if (!hasLiked) {
+                throw new BadRequestException("User with ID: " + userId + " has not liked the review.");
+            }
+            likeUserIds.remove(userId);
+            review.setLikeUserIds(new ArrayList<>(likeUserIds));
+            reviewRepository.save(review);
+            return ResponseEntity.ok("User with ID: " + userId + " removed the like from the review.");
+
+        } else if ("dislike".equalsIgnoreCase(action)) {
+            if (!hasDisliked) {
+                throw new BadRequestException("User with ID: " + userId + " has not disliked the review.");
+            }
+            dislikeUserIds.remove(userId);
+            review.setDislikeUserIds(new ArrayList<>(dislikeUserIds));
+            reviewRepository.save(review);
+            return ResponseEntity.ok("User with ID: " + userId + " removed the dislike from the review.");
+
+        } else {
+            return ResponseEntity.badRequest().body("Invalid action provided.");
+        }
+    }
 }

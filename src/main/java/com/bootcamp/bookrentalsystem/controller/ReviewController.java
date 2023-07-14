@@ -16,12 +16,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.bootcamp.bookrentalsystem.exception.UnauthorizedException;
 import com.bootcamp.bookrentalsystem.model.Review;
 import com.bootcamp.bookrentalsystem.service.ReviewService;
-
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @RestController
 @RequestMapping("/api/v1/review")
@@ -76,6 +72,20 @@ public class ReviewController {
     @GetMapping("/book/{bookId}")
     public List<Review> getAllReviewsByBook(@PathVariable UUID bookId) {
         return reviewService.getAllReviewsByBook(bookId);
+    }
+
+    @PostMapping("/{reviewId}/reaction")
+    public ResponseEntity<String> addReactionToReview(
+            @PathVariable UUID reviewId,
+            @RequestParam UUID userId,
+            @RequestParam String action) {
+        return reviewService.addReactionToReview(reviewId, userId, action);
+    }
+
+    @DeleteMapping("/{reviewId}/reaction")
+    public ResponseEntity<String> removeReactionFromReview(@PathVariable UUID reviewId, @RequestParam UUID userId,
+            @RequestParam String action) {
+        return reviewService.removeReactionFromReview(reviewId, userId, action);
     }
 
 }
