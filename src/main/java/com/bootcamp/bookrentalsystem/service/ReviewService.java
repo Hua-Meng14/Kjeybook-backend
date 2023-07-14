@@ -2,6 +2,7 @@ package com.bootcamp.bookrentalsystem.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +45,8 @@ public class ReviewService {
     }
 
     public List<Review> getAllReviews() {
-        return reviewRepository.findAll();
+        Sort sort = Sort.by(Sort.Direction.DESC, "timestamp");
+        return reviewRepository.findAll(sort);
     }
 
     public Review addReview(String token, UUID userId, UUID bookId, int rating, String comment) {
@@ -142,7 +145,9 @@ public class ReviewService {
     public List<Review> getAllReviewsByBook(UUID bookId) {
         bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with ID: " + bookId));
-        return reviewRepository.findByBookId(bookId);
+
+        Sort sort = Sort.by(Sort.Direction.DESC, "timestamp");
+        return reviewRepository.findByBookId(bookId, sort);
     }
 
     public Map<Double, Integer> calculateOverallRating(UUID bookId) {
