@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -23,11 +24,17 @@ public class Review {
     @ApiModelProperty(notes = "Review Start rating")
     private int rating;
 
-    @ApiModelProperty(notes = "Review like")
-    private int likeCount;
+    @ElementCollection
+    @CollectionTable(name = "review_likes", joinColumns = @JoinColumn(name = "review_id"))
+    @Column(name = "user_id")
+    @ApiModelProperty(notes = "User IDs who clicked like on the review")
+    private List<UUID> likeUserIds;
 
-    @ApiModelProperty(notes = "Review dislike")
-    private int disLikeCount;
+    @ElementCollection
+    @CollectionTable(name = "review_dislikes", joinColumns = @JoinColumn(name = "review_id"))
+    @Column(name = "user_id")
+    @ApiModelProperty(notes = "User IDs who clicked dislike on the review")
+    private List<UUID> dislikeUserIds;
 
     @ApiModelProperty(notes = "Flag indicating whether the review has been edited")
     private boolean isEdited;
@@ -48,13 +55,13 @@ public class Review {
         // Default constructor
     }
 
-    public Review(UUID reviewId, String comment, int rating, int likeCount, int disLikeCount, boolean isEdited,
+    public Review(UUID reviewId, String comment, int rating, List<UUID> likeUserIds, List<UUID> dislikeUserIds, boolean isEdited,
             String timestamp) {
         this.reviewId = reviewId;
         this.comment = comment;
         this.rating = rating;
-        this.likeCount = likeCount;
-        this.disLikeCount = disLikeCount;
+        this.likeUserIds = likeUserIds;
+        this.dislikeUserIds = dislikeUserIds;
         this.isEdited = isEdited;
         this.timestamp = timestamp;
     }
@@ -82,21 +89,21 @@ public class Review {
     public void setRating(int rating) {
         this.rating = rating;
     }
-
-    public int getLikeCount() {
-        return likeCount;
+    
+    public List<UUID> getLikeUserIds() {
+        return likeUserIds;
     }
 
-    public void setLikeCount(int likeCount) {
-        this.likeCount = likeCount;
+    public void setLikeUserIds(List<UUID> likeUserIds) {
+        this.likeUserIds = likeUserIds;
     }
 
-    public int getDisLikeCount() {
-        return disLikeCount;
+    public List<UUID> getDislikeUserIds() {
+        return dislikeUserIds;
     }
 
-    public void setDisLikeCount(int disLikeCount) {
-        this.disLikeCount = disLikeCount;
+    public void setDislikeUserIds(List<UUID> dislikeUserIds) {
+        this.dislikeUserIds = dislikeUserIds;
     }
 
     public boolean isEdited() {
