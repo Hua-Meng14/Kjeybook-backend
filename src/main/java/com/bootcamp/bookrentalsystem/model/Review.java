@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -15,37 +16,47 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @ApiModelProperty(notes = "Review ID")
     private UUID reviewId;
-    
+
     @ApiModelProperty(notes = "Review comment")
     private String comment;
-    
+
     @ApiModelProperty(notes = "Review Start rating")
     private int rating;
 
-    @ApiModelProperty(notes = "Review upVotes")
-    private int upVotes;
-    
-    @ApiModelProperty(notes = "Review downVotes")
-    private int downVotes;
+    @ApiModelProperty(notes = "Review like")
+    private int likeCount;
+
+    @ApiModelProperty(notes = "Review dislike")
+    private int disLikeCount;
 
     @ApiModelProperty(notes = "Flag indicating whether the review has been edited")
     private boolean isEdited;
 
+    @ApiModelProperty(notes = "Date of review posted")
+    private String timestamp = null;
+
     @Column(columnDefinition = "uuid")
     @ApiModelProperty(notes = "Book ID")
     private UUID bookId;
-    
+
+    // @Column(columnDefinition = "uuid")
+    @ApiModelProperty(notes = "User ID")
+    @ManyToOne
+    private User reveiwer;
+
     public Review() {
         // Default constructor
     }
 
-    public Review(UUID reviewId, String comment, int rating, int upVotes, int downVotes, boolean isEdited) {
+    public Review(UUID reviewId, String comment, int rating, int likeCount, int disLikeCount, boolean isEdited,
+            String timestamp) {
         this.reviewId = reviewId;
         this.comment = comment;
         this.rating = rating;
-        this.upVotes = upVotes;
-        this.downVotes = downVotes;
+        this.likeCount = likeCount;
+        this.disLikeCount = disLikeCount;
         this.isEdited = isEdited;
+        this.timestamp = timestamp;
     }
 
     public UUID getReviewId() {
@@ -72,20 +83,20 @@ public class Review {
         this.rating = rating;
     }
 
-    public int getUpVotes() {
-        return upVotes;
+    public int getLikeCount() {
+        return likeCount;
     }
 
-    public void setUpVotes(int upVotes) {
-        this.upVotes = upVotes;
+    public void setLikeCount(int likeCount) {
+        this.likeCount = likeCount;
     }
 
-    public int getDownVotes() {
-        return downVotes;
+    public int getDisLikeCount() {
+        return disLikeCount;
     }
 
-    public void setDownVotes(int downVotes) {
-        this.downVotes = downVotes;
+    public void setDisLikeCount(int disLikeCount) {
+        this.disLikeCount = disLikeCount;
     }
 
     public boolean isEdited() {
@@ -100,10 +111,26 @@ public class Review {
         return bookId;
     }
 
-    public void setBookId(UUID bookId) {
+    public void setBookid(UUID bookId) {
         this.bookId = bookId;
     }
 
     
 
- }
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public User getReveiwer() {
+        return reveiwer;
+    }
+
+    public void setReveiwer(User reveiwer) {
+        this.reveiwer = reveiwer;
+    }
+
+}

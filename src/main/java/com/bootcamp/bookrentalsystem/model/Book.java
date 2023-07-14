@@ -45,12 +45,18 @@ public class Book {
     @OneToMany(mappedBy = "bookId", cascade = CascadeType.ALL)
     private List<Review> reviews;
 
+    @ApiModelProperty(notes = "Book over all start rating")
+    private double overAllRating;
+
+    @ApiModelProperty(notes = "Number of reviews")
+    private int reviewsCount;
+
     public Book() {
         // Default constructor
     }
 
     public Book(UUID bookId, String title, String author, String category, String bookImg, Boolean isRented,
-            String description, Boolean isDeleted, List<Review> reviews) {
+            String description, Boolean isDeleted, double overAllRating, int reviewsCount) {
         this.bookId = bookId;
         this.title = title;
         this.author = author;
@@ -59,7 +65,9 @@ public class Book {
         this.isRented = isRented;
         this.description = description;
         this.isDeleted = isDeleted;
-        this.reviews = reviews;
+        // this.reviews = reviews;
+        this.reviewsCount = reviewsCount;
+        this.overAllRating = overAllRating;
         // this.maximumRequestPeriod = maximumRequestPeriod;
     }
 
@@ -135,11 +143,29 @@ public class Book {
         isDeleted = deleted;
     }
 
-    public List<Review> getReviews() {
-        return reviews;
+    // public List<Review> getReviews() {
+    //     return reviews;
+    // }
+
+    // public void setReviews(List<Review> reviewList) {
+    //     reviews = reviewList;
+    // }
+
+    public double getOverAllRating() {
+        return overAllRating;
     }
 
-    public void setReviews(List<Review> reviewList) {
-        reviews = reviewList;
+    public void setOverAllRating(double overAllRating) {
+        this.overAllRating = overAllRating;
     }
+
+    public int getReviewsCount() {
+        return reviewsCount;
+    }
+
+    public void setReviewsCount(int reviewsCount) {
+        this.reviewsCount = reviewsCount;
+    }
+
+    
 }
