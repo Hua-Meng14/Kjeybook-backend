@@ -13,6 +13,9 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -47,11 +50,14 @@ public class ReviewService {
         this.userRepository = userRepository;
     }
 
+    @Cacheable(value = "allReviews")
     public List<Review> getAllReviews() {
         Sort sort = Sort.by(Sort.Direction.DESC, "timestamp");
         return reviewRepository.findAll(sort);
     }
 
+    @CacheEvict(value = { "allReviews", "reviewById", "reviewsByBookId", "books", "booksByTitle",
+            "booksByAuthor" }, allEntries = true)
     public Review addReview(String token, UUID userId, UUID bookId, int rating, String comment) {
         Claims claims = jwtService.extractClaimsFromToken(token);
         UUID tokenUserId = UUID.fromString(claims.get("id", String.class));
@@ -82,6 +88,8 @@ public class ReviewService {
         review.setBookid(bookId);
         review.setComment(comment);
         review.setRating(rating);
+        review.setLikeUserIds(new ArrayList<>());
+        review.setDislikeUserIds(new ArrayList<>());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         review.setTimestamp(LocalDateTime.now().plusHours(7).format(formatter)); // Convert to ICT
 
@@ -98,12 +106,14 @@ public class ReviewService {
         return review;
     }
 
+    @Cacheable(value = "reviewById", key = "#reviewId")
     public Optional<Review> getReviewById(UUID reviewId) {
         return reviewRepository.findById(reviewId)
                 .map(Optional::of)
                 .orElseThrow(() -> new ResourceNotFoundException("Review not found with ID: " + reviewId));
     }
 
+    @CachePut(value = { "allReviews", "reviewById", "reviewsByBookId" }, key = "#reviewId")
     public Review updateReview(String token, UUID reviewId, Optional<Integer> ratingOptional,
             Optional<String> commentOptional) {
 
@@ -131,6 +141,7 @@ public class ReviewService {
         return reviewRepository.save(existingReview);
     }
 
+    @CacheEvict(value = { "allReviews", "reviewById", "reviewsByBookId" }, allEntries = true)
     public String deleteReview(String token, UUID reviewId) {
         Claims claims = jwtService.extractClaimsFromToken(token);
         UUID userId = UUID.fromString(claims.get("id", String.class));
@@ -145,6 +156,7 @@ public class ReviewService {
         return "Review deleted successfully with ID: " + reviewId;
     }
 
+    @Cacheable(value = "reviewsByBookId", key = "#bookId")
     public List<Review> getAllReviewsByBook(UUID bookId) {
         bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with ID: " + bookId));
@@ -177,7 +189,14 @@ public class ReviewService {
 
     }
 
-    public ResponseEntity<String> addReactionToReview(UUID reviewId, UUID userId, String action) {
+    @CacheEvict(value = { "allReviews", "reviewById", "reviewsByBookId" }, allEntries = true)
+    public ResponseEntity<String> addReactionToReview(String token, UUID reviewId, UUID userId, String action) {
+        Claims claims = jwtService.extractClaimsFromToken(token);
+        UUID tokenUserId = UUID.fromString(claims.get("id", String.class));
+        if (!tokenUserId.equals(userId)) {
+            throw new UnauthorizedException("Unauthorized Access");
+        }
+
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ResourceNotFoundException("Review not found with ID: " + reviewId));
         userRepository.findById(userId)
@@ -217,7 +236,14 @@ public class ReviewService {
         return ResponseEntity.ok("User with ID: " + userId + " " + action + "d the review.");
     }
 
-    public ResponseEntity<String> removeReactionFromReview(UUID reviewId, UUID userId, String action) {
+    @CacheEvict(value = { "allReviews", "reviewById", "reviewsByBookId" }, allEntries = true)
+    public ResponseEntity<String> removeReactionFromReview(String token, UUID reviewId, UUID userId, String action) {
+        Claims claims = jwtService.extractClaimsFromToken(token);
+        UUID tokenUserId = UUID.fromString(claims.get("id", String.class));
+        if (!tokenUserId.equals(userId)) {
+            throw new UnauthorizedException("Unauthorized Access");
+        }
+
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ResourceNotFoundException("Review not found with ID: " + reviewId));
         userRepository.findById(userId)
