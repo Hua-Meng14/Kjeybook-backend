@@ -4,7 +4,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
