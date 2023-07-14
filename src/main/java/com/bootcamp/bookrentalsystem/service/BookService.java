@@ -79,7 +79,7 @@ public class BookService {
         return bookRepository.save(existingBook);
     }
 
-    @CacheEvict(value = { "books", "booksByTitle", "booksByAuthor" }, allEntries = true)
+    @CacheEvict(value = { "books", "booksByTitle", "booksByAuthor", "usersById" }, allEntries = true)
     public String deletBookById(UUID bookId) {
 
         Book book = bookRepository.findById(bookId)
