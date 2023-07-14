@@ -149,6 +149,6 @@ public class BookService {
     @Cacheable(value = "books", key = "#bookId")
     public Book getBookById(UUID bookId) {
         Optional<Book> optionalBook = bookRepository.findById(bookId);
-        return optionalBook.orElse(null);
+        return optionalBook.orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
     }
 }
