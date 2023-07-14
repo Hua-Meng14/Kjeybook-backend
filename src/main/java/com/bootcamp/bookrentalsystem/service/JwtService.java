@@ -40,8 +40,7 @@ public class JwtService {
 
     public String generateToken(
             Map<String, Object> extraClaims,
-            User userDetails
-    ) {
+            User userDetails) {
         return buildToken(extraClaims, userDetails, Long.parseLong(jwtExpiration));
     }
 
@@ -52,8 +51,7 @@ public class JwtService {
     public String buildToken(
             Map<String, Object> extraClaims,
             User userDetails,
-            long expiration
-    ) {
+            long expiration) {
         Claims claims = Jwts.claims();
         claims.put("id", userDetails.getUserId());
         claims.put("role", userDetails.getRole());
@@ -90,7 +88,7 @@ public class JwtService {
     }
 
     public boolean isTokenNotExpired(Date expiration) {
-//        System.out.println("-----------EXPIRATION: " + expiration);
+        // System.out.println("-----------EXPIRATION: " + expiration);
         return expiration != null && expiration.after(new Date());
 
     }
@@ -148,10 +146,16 @@ public class JwtService {
         // Check token is NOT expired
         boolean isNotExpired = isTokenNotExpired(expiration);
 
-//        System.out.println("----------------EMAIL MATCHED: " + emailMatched);
-//        System.out.println("----------------TOKEN IS NOT EXPIRED: " + isNotExpired);
-//        System.out.println("----------------EMAIL MATCHED AND TOKEN NOT EXPIRED: " + (emailMatched && isNotExpired));
+        // System.out.println("----------------EMAIL MATCHED: " + emailMatched);
+        // System.out.println("----------------TOKEN IS NOT EXPIRED: " + isNotExpired);
+        // System.out.println("----------------EMAIL MATCHED AND TOKEN NOT EXPIRED: " +
+        // (emailMatched && isNotExpired));
 
         return emailMatched && isNotExpired;
+    }
+
+    public Claims extractClaimsFromToken(String token) {
+        String jwtToken = token.substring(7);
+        return decodeToken(jwtToken);
     }
 }

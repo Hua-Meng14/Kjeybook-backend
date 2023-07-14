@@ -79,7 +79,7 @@ public class BookService {
         return bookRepository.save(existingBook);
     }
 
-    @CacheEvict(value = { "books", "booksByTitle", "booksByAuthor" }, allEntries = true)
+    @CacheEvict(value = { "books", "booksByTitle", "booksByAuthor", "usersById" }, allEntries = true)
     public String deletBookById(UUID bookId) {
 
         Book book = bookRepository.findById(bookId)
@@ -149,6 +149,6 @@ public class BookService {
     @Cacheable(value = "books", key = "#bookId")
     public Book getBookById(UUID bookId) {
         Optional<Book> optionalBook = bookRepository.findById(bookId);
-        return optionalBook.orElse(null);
+        return optionalBook.orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
     }
 }
