@@ -75,7 +75,7 @@ public class ReviewController {
     }
 
     @PostMapping("/{reviewId}/reaction")
-    public ResponseEntity<String> addReactionToReview(
+    public Review addReactionToReview(
             @RequestHeader("Authorization") String token,
             @PathVariable UUID reviewId,
             @RequestParam UUID userId,
@@ -84,7 +84,7 @@ public class ReviewController {
     }
 
     @DeleteMapping("/{reviewId}/reaction")
-    public ResponseEntity<String> removeReactionFromReview(@RequestHeader("Authorization") String token, @PathVariable UUID reviewId, @RequestParam UUID userId,
+    public Review removeReactionFromReview(@RequestHeader("Authorization") String token, @PathVariable UUID reviewId, @RequestParam UUID userId,
             @RequestParam String action) {
         return reviewService.removeReactionFromReview(token, reviewId, userId, action);
     }

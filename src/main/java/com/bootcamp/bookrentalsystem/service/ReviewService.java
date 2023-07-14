@@ -113,7 +113,8 @@ public class ReviewService {
                 .orElseThrow(() -> new ResourceNotFoundException("Review not found with ID: " + reviewId));
     }
 
-    @CachePut(value = { "allReviews", "reviewById", "reviewsByBookId" }, key = "#reviewId")
+    @CacheEvict(value = { "allReviews", "reviewById", "reviewsByBookId", "books", "booksByTitle",
+            "booksByAuthor" }, allEntries = true, key = "#reviewId")
     public Review updateReview(String token, UUID reviewId, Optional<Integer> ratingOptional,
             Optional<String> commentOptional) {
 
@@ -190,7 +191,7 @@ public class ReviewService {
     }
 
     @CacheEvict(value = { "allReviews", "reviewById", "reviewsByBookId" }, allEntries = true)
-    public ResponseEntity<String> addReactionToReview(String token, UUID reviewId, UUID userId, String action) {
+    public Review addReactionToReview(String token, UUID reviewId, UUID userId, String action) {
         Claims claims = jwtService.extractClaimsFromToken(token);
         UUID tokenUserId = UUID.fromString(claims.get("id", String.class));
         if (!tokenUserId.equals(userId)) {
@@ -227,17 +228,18 @@ public class ReviewService {
                 dislikeUserIds.add(userId);
             }
         } else {
-            return ResponseEntity.badRequest().body("Invalid action provided.");
+            throw new BadRequestException("Invalid action provided.");
         }
 
         review.setLikeUserIds(new ArrayList<>(likeUserIds));
         review.setDislikeUserIds(new ArrayList<>(dislikeUserIds));
         reviewRepository.save(review);
-        return ResponseEntity.ok("User with ID: " + userId + " " + action + "d the review.");
+        return review;
+        // return ResponseEntity.ok("User with ID: " + userId + " " + action + "d the review.");
     }
 
     @CacheEvict(value = { "allReviews", "reviewById", "reviewsByBookId" }, allEntries = true)
-    public ResponseEntity<String> removeReactionFromReview(String token, UUID reviewId, UUID userId, String action) {
+    public Review removeReactionFromReview(String token, UUID reviewId, UUID userId, String action) {
         Claims claims = jwtService.extractClaimsFromToken(token);
         UUID tokenUserId = UUID.fromString(claims.get("id", String.class));
         if (!tokenUserId.equals(userId)) {
@@ -262,7 +264,8 @@ public class ReviewService {
             likeUserIds.remove(userId);
             review.setLikeUserIds(new ArrayList<>(likeUserIds));
             reviewRepository.save(review);
-            return ResponseEntity.ok("User with ID: " + userId + " removed the like from the review.");
+            return review;
+            // return ResponseEntity.ok("User with ID: " + userId + " removed the like from the review.");
 
         } else if ("dislike".equalsIgnoreCase(action)) {
             if (!hasDisliked) {
@@ -271,10 +274,11 @@ public class ReviewService {
             dislikeUserIds.remove(userId);
             review.setDislikeUserIds(new ArrayList<>(dislikeUserIds));
             reviewRepository.save(review);
-            return ResponseEntity.ok("User with ID: " + userId + " removed the dislike from the review.");
+            return review;
+            // return ResponseEntity.ok("User with ID: " + userId + " removed the dislike from the review.");
 
         } else {
-            return ResponseEntity.badRequest().body("Invalid action provided.");
+            throw new BadRequestException("Invalid action provided.");
         }
     }
 }
