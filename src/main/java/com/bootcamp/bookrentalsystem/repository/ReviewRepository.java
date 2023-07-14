@@ -16,5 +16,7 @@ import com.bootcamp.bookrentalsystem.model.Review;
 public interface ReviewRepository extends JpaRepository<Review, UUID>{
 
     List<Review> findByBookId(UUID bookId);
+
+    // boolean existsByUserAndBookId(User existingUser, UUID bookId);
     
 }
