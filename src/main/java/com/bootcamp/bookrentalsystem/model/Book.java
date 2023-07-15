@@ -46,7 +46,7 @@ public class Book {
     private List<Review> reviews;
 
     @ApiModelProperty(notes = "Book over all start rating")
-    private double overAllRating;
+    private int overAllRating;
 
     @ApiModelProperty(notes = "Number of reviews")
     private int reviewsCount;
@@ -56,7 +56,7 @@ public class Book {
     }
 
     public Book(UUID bookId, String title, String author, String category, String bookImg, Boolean isRented,
-            String description, Boolean isDeleted, double overAllRating, int reviewsCount) {
+            String description, Boolean isDeleted, int overAllRating, int reviewsCount) {
         this.bookId = bookId;
         this.title = title;
         this.author = author;
@@ -151,11 +151,11 @@ public class Book {
     //     reviews = reviewList;
     // }
 
-    public double getOverAllRating() {
+    public int getOverAllRating() {
         return overAllRating;
     }
 
-    public void setOverAllRating(double overAllRating) {
+    public void setOverAllRating(int overAllRating) {
         this.overAllRating = overAllRating;
     }
 
