@@ -132,6 +132,17 @@ public class ReviewService {
                 throw new BadRequestException("Rating must be a whole number between 1 and 5 (inclusive)");
             }
             existingReview.setRating(rating);
+            // Recalculate the Book overall rating
+            Map<Double, Integer> result = calculateOverallRating(existingReview.getBookId());
+            double updateBookOverAllRating = result.keySet().iterator().next();
+            int numberOfReviews = result.get(updateBookOverAllRating);
+
+            // Save the update book
+            Book existingBook = bookRepository.findById(existingReview.getBookId()).get();
+            existingBook.setOverAllRating(updateBookOverAllRating);
+            existingBook.setReviewsCount(numberOfReviews);
+            bookRepository.save(existingBook);
+
         });
 
         commentOptional.ifPresent(existingReview::setComment);
@@ -142,7 +153,8 @@ public class ReviewService {
         return reviewRepository.save(existingReview);
     }
 
-    @CacheEvict(value = { "allReviews", "reviewById", "reviewsByBookId" }, allEntries = true)
+    @CacheEvict(value = { "allReviews", "reviewById", "reviewsByBookId", "books", "booksByTitle",
+            "booksByAuthor" }, allEntries = true, key = "#reviewID")
     public String deleteReview(String token, UUID reviewId) {
         Claims claims = jwtService.extractClaimsFromToken(token);
         UUID userId = UUID.fromString(claims.get("id", String.class));
@@ -154,6 +166,16 @@ public class ReviewService {
         }
 
         reviewRepository.delete(existingReview);
+        // Recalculate the Book overall rating
+        Map<Double, Integer> result = calculateOverallRating(existingReview.getBookId());
+        double updateBookOverAllRating = result.keySet().iterator().next();
+        int numberOfReviews = result.get(updateBookOverAllRating);
+
+        // Save the update book
+        Book existingBook = bookRepository.findById(existingReview.getBookId()).get();
+        existingBook.setOverAllRating(updateBookOverAllRating);
+        existingBook.setReviewsCount(numberOfReviews);
+        bookRepository.save(existingBook);
         return "Review deleted successfully with ID: " + reviewId;
     }
 
@@ -235,7 +257,8 @@ public class ReviewService {
         review.setDislikeUserIds(new ArrayList<>(dislikeUserIds));
         reviewRepository.save(review);
         return review;
-        // return ResponseEntity.ok("User with ID: " + userId + " " + action + "d the review.");
+        // return ResponseEntity.ok("User with ID: " + userId + " " + action + "d the
+        // review.");
     }
 
     @CacheEvict(value = { "allReviews", "reviewById", "reviewsByBookId" }, allEntries = true)
@@ -265,7 +288,8 @@ public class ReviewService {
             review.setLikeUserIds(new ArrayList<>(likeUserIds));
             reviewRepository.save(review);
             return review;
-            // return ResponseEntity.ok("User with ID: " + userId + " removed the like from the review.");
+            // return ResponseEntity.ok("User with ID: " + userId + " removed the like from
+            // the review.");
 
         } else if ("dislike".equalsIgnoreCase(action)) {
             if (!hasDisliked) {
@@ -275,7 +299,8 @@ public class ReviewService {
             review.setDislikeUserIds(new ArrayList<>(dislikeUserIds));
             reviewRepository.save(review);
             return review;
-            // return ResponseEntity.ok("User with ID: " + userId + " removed the dislike from the review.");
+            // return ResponseEntity.ok("User with ID: " + userId + " removed the dislike
+            // from the review.");
 
         } else {
             throw new BadRequestException("Invalid action provided.");
