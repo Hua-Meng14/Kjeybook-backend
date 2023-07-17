@@ -58,7 +58,7 @@ public class BookService {
                 .collect(Collectors.toList());
     }
 
-    @CachePut(value = "books", key = "#bookId")
+    @CacheEvict(value = { "books", "booksByTitle", "booksByAuthor", "usersById" }, allEntries = true)
     public Book updateBookById(UUID bookId, Book updatedBook) {
         Book existingBook = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
